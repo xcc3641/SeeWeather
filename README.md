@@ -4,10 +4,10 @@ _ _ _
 
 ### 前言
 最初上线是在2015年10月，是自己第一个较为成熟的应用，开发完之后刚好答了知乎这篇从零到就看天气上线，但是因为代码确实写的很烂，所以决定全部重构代码全新风格的展示就看天气Ver2.0.当然自己也在学习之中，如果发现有任何问题，随时欢迎Email或者开Issues
-**开源不易，希望能给个Star鼓励**
-项目地址：https://github.com/xcc3641/SeeWeather
-项目主页发布issue: https://github.com/xcc3641/SeeWeather/issues
-本项目为开源项目,技术交流可以通过邮箱联系: Hugo3641@gmail.com
+- **开源不易，希望能给个Star鼓励** 
+- 项目地址：https://github.com/xcc3641/SeeWeather
+- 项目主页发布issue: https://github.com/xcc3641/SeeWeather/issues
+- 本项目为开源项目,技术交流可以通过邮箱联系: Hugo3641@gmail.com
 
 ### 简介
 就看天气——是一款遵循**Material Design**风格的只看天气的APP。无流氓权限，无自启，xxx，用最少的权限做最优的体验。
@@ -62,7 +62,7 @@ _ _ _
 ##### 网络
 就看天气的网络部分的支持是用`RxJava+RxAndroid+Retrofit+Gson`再加上`ACache`缓存
 ```
-**
+   /**
      * <p/>
      * 首先从本地缓存获取数据
      * if 有
@@ -153,19 +153,19 @@ _ _ _
 
 #### 感谢
 感谢开源，学习到了前辈们优秀的代码
-[@张鸿洋](https://github.com/hongyangAndroid)
-[@扔物线](https://github.com/rengwuxian)
-[@drakeet](https://github.com/drakeet)
-[@代码家](https://github.com/daimajia)
-[@程序亦非猿](https://github.com/AlanCheen)
-[@小鄧子](https://github.com/SmartDengg)
+- [@张鸿洋](https://github.com/hongyangAndroid)
+- [@扔物线](https://github.com/rengwuxian)
+- [@drakeet](https://github.com/drakeet)
+- [@代码家](https://github.com/daimajia)
+- [@程序亦非猿](https://github.com/AlanCheen)
+- [@小鄧子](https://github.com/SmartDengg)
 
 #### 关于作者
 ![](http://)
-简书：http://www.jianshu.com/users/3372b4a3b9e5/latest_articles
-知乎：https://www.zhihu.com/people/xcc3641.github.io
-微博：http://weibo.com/xcc3641
-个人博客： http://IMXIE.CC
+- 简书：http://www.jianshu.com/users/3372b4a3b9e5/latest_articles
+- 知乎：https://www.zhihu.com/people/xcc3641.github.io
+- 微博：http://weibo.com/xcc3641
+- 个人博客： http://IMXIE.CC
 
 
 #### 请我喝杯咖啡
