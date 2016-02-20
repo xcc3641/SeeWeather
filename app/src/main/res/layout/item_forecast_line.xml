@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:paddingLeft="32dp"
+    android:paddingRight="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/forecast_icon"
+        android:layout_gravity="center_vertical"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        />
+
+    <RelativeLayout
+        android:layout_marginLeft="36dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/forecast_date"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="今日"/>
+
+        <TextView
+            android:textSize="18sp"
+            android:id="@+id/forecast_temp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="5° 13°"/>
+
+        <TextView
+            android:textColor="#969696"
+            android:layout_marginTop="4dp"
+            android:textSize="10sp"
+            android:layout_below="@+id/forecast_date"
+            android:id="@+id/forecast_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="少云。最高12℃。东北风 10 到 15 km/h"/>
+
+    </RelativeLayout>
+</LinearLayout>
