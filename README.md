@@ -45,7 +45,7 @@ _ _ _
 ```
 
 ### 版本更新&&下载地址
-Fir.im: http://fir.im/74ra
+Fir.im: http://fir.im/seeWeather
 
 豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
 
@@ -92,6 +92,7 @@ _ _ _
 #### 公开 API
 天气数据来源于：和风天气
 城市信息来源于：CSDN
+地理定位服务： 高德地图
 
 #### 开源技术
 1. [Rxjava](https://github.com/ReactiveX/RxJava)
@@ -205,6 +206,10 @@ _ _ _
 - [@代码家](https://github.com/daimajia)
 - [@程序亦非猿](https://github.com/AlanCheen)
 - [@小鄧子](https://github.com/SmartDengg)
+- [@Jude95](https://github.com/Jude95)
+- 
+
+特别感谢**简书猿圈**
 
 ### 关于作者
  
