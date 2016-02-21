@@ -19,8 +19,11 @@ _ _ _
 
 ### 版本更新&&下载地址
 Fir.im: http://fir.im/74ra
+
 豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
+
 魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
+
 酷安市场：http://www.coolapk.com/apk/com.xiecc.seeWeather
 
 v2.0
@@ -51,7 +54,7 @@ v1.0
 - [ ] 通知栏提醒
 - [ ] 更好，更多的天气ICONS
 - [ ] 管理城市（多城市选择）
-- [ ] 自动定位
+- [x] 自动定位
 - [ ] 自由定制的Item界面
 
 
@@ -163,7 +166,9 @@ _ _ _
 
 
 #### 截图
-
+![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E9%97%AA%E5%B1%8F.png)
+![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E7%99%BD%E5%A4%A9%E6%A8%A1%E5%BC%8F.png)
+![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E5%A4%9C%E6%99%9A%E6%A8%A1%E5%BC%8F.png)
 
 #### 感谢
 感谢开源，学习到了前辈们优秀的代码
