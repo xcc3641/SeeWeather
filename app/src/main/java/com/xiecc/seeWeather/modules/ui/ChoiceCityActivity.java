@@ -8,6 +8,7 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.modules.adatper.CityAdapter;
 import com.xiecc.seeWeather.modules.db.DBManager;
 import com.xiecc.seeWeather.modules.db.WeatherDB;
@@ -103,7 +105,8 @@ public class ChoiceCityActivity extends BaseActivity {
                                            .replace("省", "")
                                            .replace("自治区", "")
                                            .replace("特别行政区", "")
-                                           .replace("地区", "");
+                                           .replace("地区", "")
+                                           .replace("盟", "");
                     }
                     intent.putExtra(Setting.CITY_NAME, cityName);
                     setResult(2, intent);

@@ -36,6 +36,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.CheckVersion;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.Util;
 import com.xiecc.seeWeather.component.ApiInterface;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -72,6 +73,8 @@ public class MainActivity extends BaseActivity
     //private Weather mWeatherData = null;
     private WeatherAdapter mAdapter;
     private Observer<Weather> observer;
+
+    private long exitTime = 0; ////记录第一次点击的时间
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -260,6 +263,7 @@ public class MainActivity extends BaseActivity
      */
     private void fetchDataByNetWork(Observer<Weather> observer) {
         String cityName = mSetting.getString(Setting.CITY_NAME, "重庆");
+
         RetrofitSingleton.getApiService(this)
                          .mWeatherAPI(cityName, Setting.KEY)
                          .subscribeOn(Schedulers.io())
@@ -333,7 +337,14 @@ public class MainActivity extends BaseActivity
             drawer.closeDrawer(GravityCompat.START);
         }
         else {
-            super.onBackPressed();
+            //super.onBackPressed();
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Snackbar.make(fab, "再按一次退出程序", Snackbar.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            }
+            else {
+                finish();
+            }
         }
     }
 
