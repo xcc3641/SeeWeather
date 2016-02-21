@@ -213,7 +213,7 @@ _ _ _
 - [@程序亦非猿](https://github.com/AlanCheen)
 - [@小鄧子](https://github.com/SmartDengg)
 - [@Jude95](https://github.com/Jude95)
-- 
+- [@泡在网上编代码](http://weibo.com/u/2711441293?topnav=1&wvr=6&topsug=1&is_all=1)
 
 特别感谢**简书猿圈**
 
