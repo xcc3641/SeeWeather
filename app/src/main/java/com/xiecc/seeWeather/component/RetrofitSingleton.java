@@ -75,8 +75,7 @@ public class RetrofitSingleton {
     public static void disposeFailureInfo(Throwable t, Context context, View view) {
         if (t.toString().contains("GaiException") || t.toString().contains("SocketTimeoutException") ||
                 t.toString().contains("UnknownHostException")) {
-            Snackbar.make(view, "网络不好，( •̀ .̫ •́ )✧", Snackbar.LENGTH_LONG).show();
-            //Toast.makeText(context, "网络不好", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_LONG).show();
         }
         else {
             Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();

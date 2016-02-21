@@ -10,10 +10,17 @@ import com.xiecc.seeWeather.base.BaseApplication;
  */
 public class Setting {
 
-    public static final String CHANGE_ICONS = "change_icons";
-    public static final String CLEAR_CACHE = "clear_cache";
-    public static final String CITY_NAME = "城市";
-    public static final String HOUR ="小时";
+    public static final String CHANGE_ICONS = "change_icons";//切换图标
+    public static final String CLEAR_CACHE = "clear_cache";//清空缓存
+    public static final String AUTO_UPDATE = "change_update_time"; //自动更新时长
+    public static final String CITY_NAME = "城市";//选择城市
+    public static final String HOUR = "小时";//当前小时
+
+    public static final String API_TOKEN = "7db041d0c3013b63e4bed2a554f02d85";
+    public static  final String KEY ="282f3846df6b41178e4a2218ae083ea7";
+
+    public static int ONE_HOUR = 3600;
+
     private static Setting sInstance;
 
     private SharedPreferences mPrefs;

@@ -7,12 +7,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.DialogPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.common.CheckVersion;
 import com.xiecc.seeWeather.common.Util;
 
 /**
@@ -30,9 +32,11 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
     private final String BLOG = "blog";
     private final String GITHUB = "github";
     private final String EMAIL = "email";
+    private final String CHECK = "check_version";
 
     private Preference mIntroduction;
     private Preference mVersion;
+    private Preference mCheckVersion;
     private Preference mShare;
     private Preference mStar;
     private Preference mEncounrage;
@@ -52,6 +56,7 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
 
         mIntroduction = findPreference(INTRODUCTION);
         mVersion = findPreference(CURRENT_VERSION);
+        mCheckVersion = findPreference(CHECK);
         mShare = findPreference(SHARE);
         mStar = findPreference(STAR);
         mEncounrage = findPreference(ENCOURAGE);
@@ -61,6 +66,7 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
 
         mIntroduction.setOnPreferenceClickListener(this);
         mVersion.setOnPreferenceClickListener(this);
+        mCheckVersion.setOnPreferenceClickListener(this);
         mShare.setOnPreferenceClickListener(this);
         mStar.setOnPreferenceClickListener(this);
         mEncounrage.setOnPreferenceClickListener(this);
@@ -68,7 +74,7 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         mGithub.setOnPreferenceClickListener(this);
         mEmail.setOnPreferenceClickListener(this);
 
-        mVersion.setSummary(Util.getVersion(getActivity()));
+        mVersion.setSummary(getActivity().getString(R.string.version_name) + Util.getVersion(getActivity()));
     }
 
 
@@ -91,7 +97,14 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
 
             new AlertDialog.Builder(getActivity()).setTitle("点赞")
                                                   .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-                                                  .setPositiveButton("好叻", new DialogInterface.OnClickListener() {
+                                                  .setNegativeButton("复制", new DialogInterface.OnClickListener() {
+                                                      @Override public void onClick(DialogInterface dialog, int which) {
+                                                          copyToClipboard(getView(), getActivity().getResources()
+                                                                                                  .getString(
+                                                                                                          R.string.app_html));
+                                                      }
+                                                  })
+                                                  .setPositiveButton("打开", new DialogInterface.OnClickListener() {
                                                       @Override public void onClick(DialogInterface dialog, int which) {
                                                           Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
                                                           Intent intent = new Intent();
@@ -101,6 +114,13 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
                                                       }
                                                   })
                                                   .show();
+        }
+        else if (mIntroduction == preference) {
+            Uri uri = Uri.parse(getString(R.string.readme));   //指定网址
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);           //指定Action
+            intent.setData(uri);                            //设置Uri
+            getActivity().startActivity(intent);        //启动Activity
         }
         else if (mEncounrage == preference) {
             new AlertDialog.Builder(getActivity()).setTitle("请作者喝杯咖啡？(〃ω〃)")
@@ -123,6 +143,10 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         }
         else if (mEmail == preference) {
             copyToClipboard(getView(), mEmail.getSummary().toString());
+        }
+        else if (mCheckVersion == preference) {
+            Snackbar.make(getView(), "正在检查(σﾟ∀ﾟ)σ", Snackbar.LENGTH_SHORT).show();
+            CheckVersion.checkVersion(getActivity(), getView());
         }
         return false;
     }

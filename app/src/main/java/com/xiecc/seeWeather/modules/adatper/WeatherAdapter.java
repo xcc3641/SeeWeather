@@ -83,7 +83,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (holder instanceof NowWeatherViewHolder) {
 
-            ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.fl + "℃");
+            ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.tmp + "℃");
             ((NowWeatherViewHolder) holder).tempMax.setText("↑ " + mWeatherData.dailyForecast.get(0).tmp.max + "°");
             ((NowWeatherViewHolder) holder).tempMin.setText("↓ " + mWeatherData.dailyForecast.get(0).tmp.min + "°");
             try {

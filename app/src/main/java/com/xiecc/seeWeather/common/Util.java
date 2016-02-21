@@ -21,10 +21,28 @@ public class Util {
             PackageManager manager = context.getPackageManager();
             PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
             String version = info.versionName;
-            return context.getString(R.string.version_name) + version;
+            return version;
         } catch (Exception e) {
             e.printStackTrace();
             return context.getString(R.string.can_not_find_version_name);
+        }
+    }
+
+
+    /**
+     *
+     * @param context
+     * @return 版本号
+     */
+    public static int getVersionCode(Context context) {
+        try {
+            PackageManager manager = context.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            int version = info.versionCode;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 }

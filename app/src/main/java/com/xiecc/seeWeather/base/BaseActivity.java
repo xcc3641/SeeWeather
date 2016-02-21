@@ -15,7 +15,7 @@ import com.xiecc.seeWeather.modules.domain.Setting;
 public class BaseActivity extends AppCompatActivity {
 
     public ACache aCache;
-    public Setting mSetting;
+    public Setting mSetting = null;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {

@@ -39,6 +39,7 @@
             android:screenOrientation="portrait"
             android:name="com.xiecc.seeWeather.modules.ui.about.AboutActivity"
             android:theme="@style/AppTheme.transpant"/>
+
     </application>
 
 </manifest>

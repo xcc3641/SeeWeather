@@ -8,6 +8,9 @@
             android:key="current_version"
             android:title="当前版本"/>
         <Preference
+            android:key="check_version"
+            android:title="检查更新"/>
+        <Preference
             android:key="share"
             android:title="推荐给朋友"/>
         <Preference

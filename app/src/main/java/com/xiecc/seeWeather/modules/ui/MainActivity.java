@@ -1,6 +1,8 @@
 package com.xiecc.seeWeather.modules.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -33,9 +35,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.common.CheckVersion;
+import com.xiecc.seeWeather.common.Util;
+import com.xiecc.seeWeather.component.ApiInterface;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.adatper.WeatherAdapter;
 import com.xiecc.seeWeather.modules.domain.Setting;
+import com.xiecc.seeWeather.modules.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.domain.Weather;
 import com.xiecc.seeWeather.modules.domain.WeatherAPI;
 import com.xiecc.seeWeather.modules.listener.HidingScrollListener;
@@ -52,7 +58,6 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     private final String TAG = MainActivity.class.getSimpleName();
-    private static final String key = "282f3846df6b41178e4a2218ae083ea7";
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Toolbar toolbar;
@@ -72,12 +77,11 @@ public class MainActivity extends BaseActivity
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();
+        CheckVersion.checkVersion(this, fab);
 
         initDrawer();
         initIcon();
-
         new RefreshHandler().sendEmptyMessage(1);
         fetchData();
     }
@@ -100,10 +104,10 @@ public class MainActivity extends BaseActivity
 
         //彩蛋-夜间模式
         Calendar calendar = Calendar.getInstance();
-        mSetting.putInt("hour", calendar.get(Calendar.HOUR_OF_DAY));
+        mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
         if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
             Glide.with(this).load(R.mipmap.sunset).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
-            collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorSunset));
+            collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             //setStatusBarColor(R.color.colorSunset);
         }
 
@@ -111,7 +115,7 @@ public class MainActivity extends BaseActivity
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                showDialog();
+                showFabDialog();
             }
         });
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
@@ -197,27 +201,11 @@ public class MainActivity extends BaseActivity
     }
 
 
-    private void showDialog() {
-        new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
-                                                  .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-                                                  .setPositiveButton("好叻", new DialogInterface.OnClickListener() {
-                                                      @Override public void onClick(DialogInterface dialog, int which) {
-                                                          Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
-                                                          Intent intent = new Intent();
-                                                          intent.setAction(Intent.ACTION_VIEW);           //指定Action
-                                                          intent.setData(uri);                            //设置Uri
-                                                          MainActivity.this.startActivity(intent);        //启动Activity
-                                                      }
-                                                  })
-                                                  .show();
-    }
-
-
     /**
      * <p/>
      * 首先从本地缓存获取数据
      * if 有
-     * 更新UI,并进行网络请求，请求成功后保存在本地缓存，不再更新UI
+     * 更新UI
      * else
      * 直接进行网络请求，更新UI并保存在本地
      */
@@ -236,8 +224,6 @@ public class MainActivity extends BaseActivity
 
             @Override public void onNext(Weather weather) {
                 new RefreshHandler().sendEmptyMessage(2);
-                //stopRefresh();
-                //mWeatherData = weather;
                 collapsingToolbarLayout.setTitle(weather.basic.city);
                 mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 mRecyclerView.setAdapter(mAdapter);
@@ -245,7 +231,6 @@ public class MainActivity extends BaseActivity
         };
 
         fetchDataByCache(observer);
-        fetchDataByNetWork(observer);
     }
 
 
@@ -257,14 +242,15 @@ public class MainActivity extends BaseActivity
         Weather weather = null;
         try {
             weather = (Weather) aCache.getAsObject("WeatherData");
-            Log.i(TAG, "weather.hashCode()" + weather.hashCode() + "");
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
 
         if (weather != null) {
             Observable.just(weather).distinct().subscribe(observer);
-            Log.e(TAG, "本地获取");
+        }
+        else {
+            fetchDataByNetWork(observer);
         }
     }
 
@@ -274,9 +260,8 @@ public class MainActivity extends BaseActivity
      */
     private void fetchDataByNetWork(Observer<Weather> observer) {
         String cityName = mSetting.getString(Setting.CITY_NAME, "重庆");
-
         RetrofitSingleton.getApiService(this)
-                         .mWeatherAPI(cityName, key)
+                         .mWeatherAPI(cityName, Setting.KEY)
                          .subscribeOn(Schedulers.io())
                          .observeOn(AndroidSchedulers.mainThread())
                          .filter(new Func1<WeatherAPI, Boolean>() {
@@ -291,11 +276,27 @@ public class MainActivity extends BaseActivity
                          })
                          .doOnNext(new Action1<Weather>() {
                              @Override public void call(Weather weather) {
-                                 aCache.put("WeatherData", weather);
-                                 Log.i(TAG, "已缓存" + weather.toString());
+                                 aCache.put("WeatherData", weather,
+                                         (mSetting.getInt(Setting.AUTO_UPDATE, 0) + 1) * Setting.ONE_HOUR);//默认一小时后缓存失效
                              }
                          })
                          .subscribe(observer);
+    }
+
+
+    private void showFabDialog() {
+        new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
+                                                  .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
+                                                  .setPositiveButton("好叻", new DialogInterface.OnClickListener() {
+                                                      @Override public void onClick(DialogInterface dialog, int which) {
+                                                          Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
+                                                          Intent intent = new Intent();
+                                                          intent.setAction(Intent.ACTION_VIEW);           //指定Action
+                                                          intent.setData(uri);                            //设置Uri
+                                                          MainActivity.this.startActivity(intent);        //启动Activity
+                                                      }
+                                                  })
+                                                  .show();
     }
 
 
@@ -316,7 +317,7 @@ public class MainActivity extends BaseActivity
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             case R.id.nav_city:
-                startActivityForResult(new Intent(this,ChoiceCityActivity.class),1);
+                startActivityForResult(new Intent(this, ChoiceCityActivity.class), 1);
                 //Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
                 //intentCity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //startActivityForResult(intentCity, 1);
@@ -352,7 +353,7 @@ public class MainActivity extends BaseActivity
                 case 2:
                     if (mRefreshLayout.isRefreshing()) {
                         mRefreshLayout.setRefreshing(false);
-                        Snackbar.make(fab, "加载完毕，( •̀ .̫ •́ )✧", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺", Snackbar.LENGTH_SHORT).show();
                     }
                     break;
             }
@@ -369,4 +370,17 @@ public class MainActivity extends BaseActivity
             fetchDataByNetWork(observer);
         }
     }
+
+    //private void showNotificatison(Weather weather) {
+    //    Intent intent = new Intent(this, MainActivity.class);
+    //    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    //    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+    //
+    //    Notification.Builder builder = new Notification.Builder(this);
+    //    builder.setSmallIcon(mSetting.getInt(weather.now.cond.txt, R.mipmap.none));
+    //    builder.setWhen(System.currentTimeMillis());
+    //    builder.setContentTitle(weather.basic.city);
+    //    builder.setContentText(weather.now.cond.txt + weather.now.fl + "℃");
+    //    builder.setContentIntent(pendingIntent);
+    //}
 }

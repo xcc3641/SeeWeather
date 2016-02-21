@@ -16,10 +16,17 @@
     <string name="alipay">xcc3641@163.com</string>
     <string name="license">Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\"); you
         may not use this file except in compliance with the License. You may obtain a copy of the License at     http://www.apache.org/licenses/LICENSE-2.0  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</string>
-    <string name="app_html">http:</string>
+    <string name="app_html">https://github.com/xcc3641/SeeWeather</string>
+    <string name="readme">https://github.com/xcc3641/SeeWeather/blob/master/README.md</string>
     <string-array name="icons">
         <item>图标一</item>
         <item>图标二</item>
+    </string-array>
+
+    <string-array name="cache_time">
+        <item>1小时</item>
+        <item>3小时</item>
+        <item>6小时</item>
     </string-array>
 
 </resources>
