@@ -3,7 +3,7 @@
 _ _ _
 
 ### 前言
-最初上线是在2015年10月，是自己第一个较为成熟的应用，开发完之后刚好答了知乎这篇从零到就看天气上线，但是因为代码确实写的很烂，所以决定全部重构代码全新风格的展示就看天气Ver2.0.当然自己也在学习之中，如果发现有任何问题，随时欢迎Email或者开Issues
+最初上线是在2015年10月，是自己第一个较为成熟的应用，开发完之后刚好答了知乎这篇从零到就看天气上线，但是因为代码确实写的很烂，所以决定全部重构代码全新风格的展示就看天气Ver2.0.当然自己也在学习之中，如果发现有任何问题和建议，随时欢迎Email或者开Issues
 - **开源不易，希望能给个Star鼓励** 
 - 项目地址：https://github.com/xcc3641/SeeWeather
 - 项目主页发布issue: https://github.com/xcc3641/SeeWeather/issues
@@ -18,24 +18,37 @@ _ _ _
 - 内置两套图标（设置里更改）
 
 ### 版本更新&&下载地址
-Fir.im:
-豌豆荚：
-魅族应用中心：
+Fir.im: http://fir.im/74ra
+豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
+魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
+酷安市场：http://www.coolapk.com/apk/com.xiecc.seeWeather
 
 v2.0
-- 重构代码，全新UI
+- 重构代码，全新UI，升级体验
+- 就看天气——是一款遵循**Material Design**风格的只看天气的APP。无流氓权限，无自启，xxx，用最少的权限做最优的体验。
+- 卡片展现（当前天气情况，未来几小时天气情况，生活建议，一周七天概况）
+- 彩蛋（自动夜间状态）
+- 补全城市（第一版本因为自己偷懒所以城市有缺陷对不起各位）
+- 缓存数据，减少网络请求，保证离线查看
+- 内置两套图标（设置里更改）
 
 
 v1.1
-- d
+- 加固
+- 兼容更多系统版本
 
 
 v1.0
-- d
+- 就看天气V1.0
+- @图片和信息来源于网络，侵权删
+
+
 
 
 ### TODO
+大三下有点忙，但是自己还是会抽空尽快做出这些功能的，谢谢大家理解和支持
 - [ ] 桌面小部件
+- [ ] 通知栏提醒
 - [ ] 更好，更多的天气ICONS
 - [ ] 管理城市（多城市选择）
 - [ ] 自动定位
@@ -77,7 +90,6 @@ _ _ _
         };
 
         fetchDataByCache(observer);
-        fetchDataByNetWork(observer);
     }
 
 
@@ -94,6 +106,8 @@ _ _ _
         if (weather != null) {
         //distinct去重
             Observable.just(weather).distinct().subscribe(observer);
+        } else {
+            fetchDataByNetWork(observer);
         }
     }
 
@@ -161,18 +175,23 @@ _ _ _
 - [@小鄧子](https://github.com/SmartDengg)
 
 #### 关于作者
-![](http://)
-- 简书：http://www.jianshu.com/users/3372b4a3b9e5/latest_articles
-- 知乎：https://www.zhihu.com/people/xcc3641.github.io
-- 微博：http://weibo.com/xcc3641
-- 个人博客： http://IMXIE.CC
+ 
+![](http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg)
+ 
+简书：http://www.jianshu.com/users/3372b4a3b9e5/latest_articles
+ 
+知乎：https://www.zhihu.com/people/xcc3641.github.io
+ 
+微博：http://weibo.com/xcc3641
+ 
+个人博客： http://IMXIE.CC
 
 
 #### 请我喝杯咖啡
 
 _ _ _
 
-![](http://7lrzxl.com1.z0.glb.clouddn.com/blog-zhifubao.jpg)
+![](http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg)
 _ _ _
 
 #### LICENSE
