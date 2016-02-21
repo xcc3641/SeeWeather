@@ -17,6 +17,32 @@ _ _ _
 - 缓存数据，减少网络请求，保证离线查看
 - 内置两套图标（设置里更改）
 
+
+_ _ _
+
+权限说明
+
+```
+    <!--用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!--获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!--用于访问网络，网络定位需要上网-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--用于读取手机当前的状态-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!--写入扩展存储，向扩展卡写入数据，用于写入缓存定位数据-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+```
+
 ### 版本更新&&下载地址
 Fir.im: http://fir.im/74ra
 
@@ -165,12 +191,12 @@ _ _ _
 _ _ _
 
 
-#### 截图
+### 截图
 ![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E9%97%AA%E5%B1%8F.png)
 ![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E7%99%BD%E5%A4%A9%E6%A8%A1%E5%BC%8F.png)
 ![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E5%A4%9C%E6%99%9A%E6%A8%A1%E5%BC%8F.png)
 
-#### 感谢
+### 感谢
 感谢开源，学习到了前辈们优秀的代码
 - [@张鸿洋](https://github.com/hongyangAndroid)
 - [@扔物线](https://github.com/rengwuxian)
@@ -179,7 +205,7 @@ _ _ _
 - [@程序亦非猿](https://github.com/AlanCheen)
 - [@小鄧子](https://github.com/SmartDengg)
 
-#### 关于作者
+### 关于作者
  
 ![](http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg)
  
@@ -192,14 +218,14 @@ _ _ _
 个人博客： http://IMXIE.CC
 
 
-#### 请我喝杯咖啡
+### 请我喝杯咖啡
 
 _ _ _
 
 ![](http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg)
 _ _ _
 
-#### LICENSE
+### LICENSE
 
 Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\")
         you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
