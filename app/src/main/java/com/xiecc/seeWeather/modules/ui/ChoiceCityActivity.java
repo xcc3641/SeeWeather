@@ -100,14 +100,6 @@ public class ChoiceCityActivity extends BaseActivity {
                     selectedCity = cityList.get(pos);
                     Intent intent = new Intent();
                     String cityName = selectedCity.getCityName();
-                    if (cityName != null) {
-                        cityName = cityName.replace("市", "")
-                                           .replace("省", "")
-                                           .replace("自治区", "")
-                                           .replace("特别行政区", "")
-                                           .replace("地区", "")
-                                           .replace("盟", "");
-                    }
                     intent.putExtra(Setting.CITY_NAME, cityName);
                     setResult(2, intent);
                     finish();

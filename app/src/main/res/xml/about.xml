@@ -37,10 +37,12 @@
             android:title="邮箱"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="版权">
-
         <Preference
             android:summary="和风天气预报接口服务"
             android:title="数据来源"/>
+        <Preference
+            android:summary="高德地图定位服务"
+            android:title="定位"/>
         <Preference
             android:summary="图片素材来源于网络，版权属于原作者"
             android:title="素材来源"/>

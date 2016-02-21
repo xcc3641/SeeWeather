@@ -1,8 +1,6 @@
 package com.xiecc.seeWeather.modules.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -30,6 +28,11 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -38,11 +41,9 @@ import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.CheckVersion;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.Util;
-import com.xiecc.seeWeather.component.ApiInterface;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.adatper.WeatherAdapter;
 import com.xiecc.seeWeather.modules.domain.Setting;
-import com.xiecc.seeWeather.modules.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.domain.Weather;
 import com.xiecc.seeWeather.modules.domain.WeatherAPI;
 import com.xiecc.seeWeather.modules.listener.HidingScrollListener;
@@ -56,8 +57,9 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
+        SwipeRefreshLayout.OnRefreshListener,
+        AMapLocationListener {
     private final String TAG = MainActivity.class.getSimpleName();
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
@@ -76,17 +78,28 @@ public class MainActivity extends BaseActivity
 
     private long exitTime = 0; ////记录第一次点击的时间
 
+    //声明AMapLocationClient类对象
+    public AMapLocationClient mLocationClient = null;
+    public AMapLocationClientOption mLocationOption = null;
+
+    private boolean isLoaction = false;
+
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        CheckVersion.checkVersion(this, fab);
-
         initDrawer();
         initIcon();
         new RefreshHandler().sendEmptyMessage(1);
         fetchData();
+        if (Util.isNetworkConnected(this)) {
+            CheckVersion.checkVersion(this, fab);
+            location();
+            if (isLoaction) {
+                onRefresh();
+            }
+        }
     }
 
 
@@ -262,8 +275,15 @@ public class MainActivity extends BaseActivity
      * 从网络获取
      */
     private void fetchDataByNetWork(Observer<Weather> observer) {
-        String cityName = mSetting.getString(Setting.CITY_NAME, "重庆");
-
+        String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
+        if (cityName != null) {
+            cityName = cityName.replace("市", "")
+                               .replace("省", "")
+                               .replace("自治区", "")
+                               .replace("特别行政区", "")
+                               .replace("地区", "")
+                               .replace("盟", "");
+        }
         RetrofitSingleton.getApiService(this)
                          .mWeatherAPI(cityName, Setting.KEY)
                          .subscribeOn(Schedulers.io())
@@ -351,6 +371,67 @@ public class MainActivity extends BaseActivity
 
     @Override public void onRefresh() {
         fetchDataByNetWork(observer);
+    }
+
+
+    /**
+     * 高德定位
+     */
+    private void location() {
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位回调监听
+        mLocationClient.setLocationListener(this);
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
+        //设置是否返回地址信息（默认返回地址信息）
+        mLocationOption.setNeedAddress(true);
+        //设置是否只定位一次,默认为false
+        mLocationOption.setOnceLocation(false);
+        //设置是否强制刷新WIFI，默认为强制刷新
+        mLocationOption.setWifiActiveScan(true);
+        //设置是否允许模拟位置,默认为false，不允许模拟位置
+        mLocationOption.setMockEnable(false);
+        //设置定位间隔 单位毫秒
+        mLocationOption.setInterval((mSetting.getInt(Setting.AUTO_UPDATE, 0) + 1) * Setting.ONE_HOUR * 1000);
+        //给定位客户端对象设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mLocationClient.startLocation();
+    }
+
+
+    @Override public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation != null) {
+            if (aMapLocation.getErrorCode() == 0) {
+                //定位成功回调信息，设置相关消息
+                aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
+                //aMapLocation.getLatitude();//获取纬度
+                //aMapLocation.getLongitude();//获取经度
+                //aMapLocation.getAccuracy();//获取精度信息
+                //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                //Date date = new Date(aMapLocation.getTime());
+                //df.format(date);//定位时间
+                //aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
+                //aMapLocation.getCountry();//国家信息
+                //aMapLocation.getProvince();//省信息
+                //aMapLocation.getCity();//城市信息
+                //aMapLocation.getDistrict();//城区信息
+                //aMapLocation.getStreet();//街道信息
+                //aMapLocation.getStreetNum();//街道门牌号信息
+                //aMapLocation.getCityCode();//城市编码
+                //aMapLocation.getAdCode();//地区编码
+                mSetting.putString(Setting.CITY_NAME, aMapLocation.getCity());
+                isLoaction = true;
+                PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity());
+            }
+            else {
+                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+                PLog.e("AmapError", "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" +
+                        aMapLocation.getErrorInfo());
+            }
+        }
     }
 
 

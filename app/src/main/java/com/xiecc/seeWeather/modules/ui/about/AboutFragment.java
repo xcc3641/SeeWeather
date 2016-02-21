@@ -82,7 +82,7 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         if (mVersion == preference) {
             new AlertDialog.Builder(getActivity()).setTitle("就看天气的完成离不开开源项目的支持，向以下致谢：")
                                                   .setMessage("Google Support Design,Gson,Rxjava,RxAndroid,Retrofit," +
-                                                          "Glide")
+                                                          "Glide,systembartint")
                                                   .setPositiveButton("关闭", null)
                                                   .show();
         }
