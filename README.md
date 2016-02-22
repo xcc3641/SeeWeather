@@ -12,6 +12,7 @@ _ _ _
 **注意:**
 
 **要pull下来运行需要自己申请和风天气的key，写在Setting里。**
+
 **如果遇到崩溃请将项目地址`/Android/data/com.xiecc.seeWeather/cache/Log`下的`log`文件邮件发给我**
 
 - **开源不易，希望能给个Star鼓励** 
