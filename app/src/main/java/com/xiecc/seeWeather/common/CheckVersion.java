@@ -20,6 +20,8 @@ import rx.schedulers.Schedulers;
  * Created by hugo on 2016/2/21 0021.
  */
 public class CheckVersion {
+    private static String TAG = CheckVersion.class.getSimpleName();
+
 
     public static void checkVersion(final Context context, final View view) {
         RetrofitSingleton.getApiService(context)
@@ -29,6 +31,7 @@ public class CheckVersion {
                          .subscribe(new Observer<VersionAPI>() {
                              @Override public void onCompleted() {
                              }
+
 
                              @Override public void onError(Throwable e) {
                                  RetrofitSingleton.disposeFailureInfo(e, context, view);
@@ -42,6 +45,7 @@ public class CheckVersion {
                                  String firVersionName = versionAPI.versionShort;
                                  int currentVersionCode = Util.getVersionCode(context);
                                  String currentVersionName = Util.getVersion(context);
+                                 PLog.i(TAG, "当前版本:" + currentVersionName + "FIR上版本：" + firVersionName);
 
                                  if (firVersionCode > currentVersionCode) {
                                      //需要更新
@@ -54,9 +58,10 @@ public class CheckVersion {
                                      }
                                  }
                                  else {
-                                     if (context instanceof MainActivity){
+                                     if (context instanceof MainActivity) {
 
-                                     }else {
+                                     }
+                                     else {
 
                                          Snackbar.make(view, "已经是最新版本(⌐■_■)", Snackbar.LENGTH_SHORT).show();
                                      }
@@ -67,7 +72,7 @@ public class CheckVersion {
 
 
     public static void showUpdateDialog(final VersionAPI versionAPI, final Context context) {
-        String title = versionAPI.name + "版本号" + versionAPI.versionShort;
+        String title = "发现新版" + versionAPI.name + "版本号：" + versionAPI.versionShort;
 
         new AlertDialog.Builder(context).setTitle(title)
                                         .setMessage(versionAPI.changelog)

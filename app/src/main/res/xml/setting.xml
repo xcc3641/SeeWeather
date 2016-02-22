@@ -11,6 +11,6 @@
     <PreferenceCategory android:title="系统">
         <Preference
             android:key="clear_cache"
-            android:title="清楚缓存"/>
+            android:title="清除缓存"/>
     </PreferenceCategory>
 </PreferenceScreen>

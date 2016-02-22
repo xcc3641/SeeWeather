@@ -24,9 +24,9 @@
     </string-array>
 
     <string-array name="cache_time">
-        <item>1小时</item>
-        <item>3小时</item>
-        <item>6小时</item>
+        <item>每1小时</item>
+        <item>每3小时</item>
+        <item>每6小时</item>
     </string-array>
 
 </resources>

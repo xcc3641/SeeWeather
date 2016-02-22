@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.modules.domain.Setting;
 import com.xiecc.seeWeather.modules.domain.Weather;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,8 @@ import java.util.Calendar;
  * Created by hugo on 2016/1/31 0031.
  */
 public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static String TAG = WeatherAdapter.class.getSimpleName();
+
     private Context mContext;
     private final int TYPE_ONE = 0;
     private final int TYPE_TWO = 1;
@@ -82,15 +85,15 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof NowWeatherViewHolder) {
-
-            ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.tmp + "℃");
-            ((NowWeatherViewHolder) holder).tempMax.setText("↑ " + mWeatherData.dailyForecast.get(0).tmp.max + "°");
-            ((NowWeatherViewHolder) holder).tempMin.setText("↓ " + mWeatherData.dailyForecast.get(0).tmp.min + "°");
             try {
+                ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.tmp + "℃");
+                ((NowWeatherViewHolder) holder).tempMax.setText("↑ " + mWeatherData.dailyForecast.get(0).tmp.max + "°");
+                ((NowWeatherViewHolder) holder).tempMin.setText("↓ " + mWeatherData.dailyForecast.get(0).tmp.min + "°");
+
                 ((NowWeatherViewHolder) holder).tempPm.setText("PM25： " + mWeatherData.aqi.city.pm25);
                 ((NowWeatherViewHolder) holder).tempQuality.setText("空气质量： " + mWeatherData.aqi.city.qlty);
             } catch (Exception e) {
-                Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                PLog.e(TAG, e.toString());
             }
             Glide.with(mContext)
                  .load(mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none))
@@ -112,7 +115,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             mWeatherData.hourlyForecast.get(i).wind.spd + "Km");
                 }
             } catch (Exception e) {
-                Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                PLog.e(TAG, e.toString());
             }
         }
         if (holder instanceof SuggestionViewHolder) {
@@ -130,7 +134,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((SuggestionViewHolder) holder).fluBrief.setText("感冒指数---" + mWeatherData.suggestion.flu.brf);
                 ((SuggestionViewHolder) holder).fluTxt.setText(mWeatherData.suggestion.flu.txt);
             } catch (Exception e) {
-                Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                PLog.e(TAG, e.toString());
             }
         }
 
@@ -145,7 +149,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             ((ForecastViewHolder) holder).forecastDate[i].setText(
                                     dayForWeek(mWeatherData.dailyForecast.get(i).date));
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            PLog.e(TAG, e.toString());
                         }
                     }
 
@@ -168,7 +172,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     "" + mWeatherData.dailyForecast.get(i).pop + "%。");
                 }
             } catch (Exception e) {
-                Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                PLog.e(TAG, e.toString());
             }
         }
     }

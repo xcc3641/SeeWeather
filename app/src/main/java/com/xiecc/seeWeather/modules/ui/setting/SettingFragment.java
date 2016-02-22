@@ -103,7 +103,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
                                                                   mSetting.putInt(Setting.AUTO_UPDATE, which);
                                                               }
                                                               dialog.dismiss();
-                                                              mChangeIcons.setSummary(getResources().getStringArray(
+                                                              mChangeUpdate.setSummary(getResources().getStringArray(
                                                                       R.array.cache_time)[mSetting.getInt(
                                                                       Setting.AUTO_UPDATE, 0)]);
 
