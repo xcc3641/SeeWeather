@@ -1,5 +1,5 @@
 # SeeWeather
-
+[中文版](https://github.com/xcc3641/SeeWeather/blob/master/README.md)丨[English](https://github.com/xcc3641/SeeWeather/edit/master/README_EN.md)
 - - -
 
 ### Foreword
