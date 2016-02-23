@@ -16,7 +16,7 @@ If you find any problems and suggestion,you can e-mail me or open issues at any 
 
 **If the application crashes, pleace e-mail the log(`/Android/data/com.xiecc.seeWeather/cache/Log`) to me**
 
-- **open-source project is valuable, hope to give me a star for support **
+- **open-source project is valuable, hope to give me a star for support**
 - This project is open-source, you can e-mail me for technical exchanging: Hugo3641@gmail.com
 
 ### Brief introduction
