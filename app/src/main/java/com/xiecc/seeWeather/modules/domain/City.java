@@ -5,8 +5,8 @@ package com.xiecc.seeWeather.modules.domain;
  */
 public class City {
 
-    private String CityName;
-    private int ProID;
+    public String CityName;
+    public int ProID;
 
 
     public String getCityName() {

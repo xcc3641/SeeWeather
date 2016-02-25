@@ -100,9 +100,21 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
                                                           @Override
                                                           public void onClick(DialogInterface dialog, int which) {
                                                               if (which != mSetting.getInt(Setting.AUTO_UPDATE, 0)) {
-                                                                  mSetting.putInt(Setting.AUTO_UPDATE, which);
-                                                              }
-                                                              dialog.dismiss();
+                                                                  switch (which) {
+                                                                      case 0:
+                                                                          mSetting.putInt(Setting.AUTO_UPDATE,0);
+                                                                          break;
+                                                                      case 1:
+                                                                          mSetting.putInt(Setting.AUTO_UPDATE,1);
+                                                                          break;
+                                                                      case 2:
+                                                                          mSetting.putInt(Setting.AUTO_UPDATE,3);
+                                                                          break;
+                                                                      case 3:
+                                                                          mSetting.putInt(Setting.AUTO_UPDATE,6);
+                                                                          break;
+                                                                  }
+                                                              } dialog.dismiss();
                                                               mChangeUpdate.setSummary(getResources().getStringArray(
                                                                       R.array.cache_time)[mSetting.getInt(
                                                                       Setting.AUTO_UPDATE, 0)]);

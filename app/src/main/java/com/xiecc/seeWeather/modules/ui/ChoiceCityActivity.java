@@ -137,7 +137,6 @@ public class ChoiceCityActivity extends BaseActivity {
             }
             mAdapter.notifyDataSetChanged();
             //定位到第一个item
-            //listView.setSelection(0);
             mRecyclerView.smoothScrollToPosition(0);
             currentLevel = LEVEL_CITY;
         }

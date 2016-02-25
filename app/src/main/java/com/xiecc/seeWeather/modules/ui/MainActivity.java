@@ -394,7 +394,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔 单位毫秒
-        mLocationOption.setInterval((mSetting.getInt(Setting.AUTO_UPDATE, 0) + 1) * Setting.ONE_HOUR * 1000);
+        mLocationOption.setInterval((mSetting.getInt(Setting.AUTO_UPDATE, 0) * Setting.ONE_HOUR * 1000));
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -424,7 +424,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //aMapLocation.getAdCode();//地区编码
                 mSetting.putString(Setting.CITY_NAME, aMapLocation.getCity());
                 isLoaction = true;
-                PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity());
+                PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() +
+                        aMapLocation.getAdCode() + aMapLocation.getCityCode());
             }
             else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。

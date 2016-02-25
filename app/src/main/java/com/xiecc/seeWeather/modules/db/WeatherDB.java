@@ -16,6 +16,8 @@ import java.util.List;
 public class WeatherDB {
 
     private Context context;
+
+
     public WeatherDB(Context context) {
         this.context = context;
     }
@@ -47,12 +49,15 @@ public class WeatherDB {
         if (cursor.moveToFirst()) {
             do {
                 City city = new City();
-                city.setCityName(cursor.getString(cursor.getColumnIndex("CityName")));
-                city.setProID(ProID);
+
+                city.CityName = cursor.getString(cursor.getColumnIndex("CityName"));
+                city.ProID = ProID;
                 list.add(city);
+                //city.setCityName(cursor.getString(cursor.getColumnIndex("CityName")));
+                //city.setProID(ProID);
+                //list.add(city);
             } while (cursor.moveToNext());
-        }
-        cursor.close();
+        } cursor.close();
 
         return list;
     }
