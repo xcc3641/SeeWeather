@@ -1,6 +1,7 @@
 # SeeWeather
 
-- - -
+[中文版](https://github.com/xcc3641/SeeWeather/blob/master/README.md)丨[English](https://github.com/xcc3641/SeeWeather/blob/master/README_EN.md)
+
 
 ### Foreword
 
@@ -10,14 +11,15 @@ Because my code was poorly written, I decided to refactor the whole project and 
 
 If you find any problems and suggestion,you can e-mail me or open issues at any time.
 
-** Attention**
 
-** If you want to pull the project to run, you should apply for API at [和风天气](http://www.heweather.com/) and add it in Setting.java**
+**Attention**
 
-** If the application crashes, pleace e-mail the log(`/Android/data/com.xiecc.seeWeather/cache/Log`) to me**
+**If you want to pull the project to run, you should apply for API at [和风天气](http://www.heweather.com/) and add it in Setting.java**
 
-- ** open-source project is valuable, hope to give me a star for support **
-- This project is open-source, you can e-mail me for technical exchanging: Hugo3641@gmail.com
+**If the application crashes, pleace e-mail the log(`/Android/data/com.xiecc.seeWeather/cache/Log`) to me**
+
+- **open-source project is valuable, hope to give me a star for support**
+
 
 ### Brief introduction
 SeeWeather is an following ** Material Design** Weather application.Use	the least Permission to do the best with the least experience.
@@ -55,9 +57,16 @@ Permission Description
 
 ```
 
-### 版本更新&&下载地址
+### Updated version && Download URL
 
 Fir.im: http://fir.im/seeWeather
+
+Wandoujia：http://www.wandoujia.com/apps/com.xiecc.seeWeather
+
+Flyme： http://developer.meizu.com/console/apps/detail/6530883
+
+Kuan：http://www.coolapk.com/apk/com.xiecc.seeWeather
+
 
 
 ### TODO
@@ -132,4 +141,6 @@ Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"Li
         you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
         Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
+
 ** Pictures from the network, the copyright belongs to the original author.**
+

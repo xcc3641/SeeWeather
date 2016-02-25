@@ -1,5 +1,5 @@
 # 就看天气
-
+[中文版](https://github.com/xcc3641/SeeWeather/blob/master/README.md)丨[English](https://github.com/xcc3641/SeeWeather/blob/master/README_EN.md)
 _ _ _
 
 ### 前言
@@ -9,7 +9,11 @@ _ _ _
 
 当然自己也在学习之中，如果发现有任何问题和建议，随时欢迎Email或者开Issues
 
-**注意：要pull下来运行需要自己申请和风天气的key，写在Setting里。**
+**注意:**
+
+**要pull下来运行需要自己申请和风天气的key，写在Setting里。**
+
+**如果遇到崩溃请将项目地址`/Android/data/com.xiecc.seeWeather/cache/Log`下的`log`文件邮件发给我**
 
 - **开源不易，希望能给个Star鼓励** 
 - 项目地址：https://github.com/xcc3641/SeeWeather
@@ -88,7 +92,7 @@ v1.0
 - [ ] 通知栏提醒
 - [ ] 更好，更多的天气ICONS
 - [ ] 管理城市（多城市选择）
-- [x] 自动定位
+- [x] ~~自动定位~~
 - [ ] 自由定制的Item界面
 
 
