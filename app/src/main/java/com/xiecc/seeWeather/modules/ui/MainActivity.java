@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +28,7 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.amap.api.location.AMapLocation;
@@ -68,7 +70,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private FloatingActionButton fab;
     private SwipeRefreshLayout mRefreshLayout;
     private ImageView bannner;
-
+    private ProgressBar mProgressBar;
     private RelativeLayout headerBackground;
 
     private RecyclerView mRecyclerView;
@@ -91,8 +93,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initView();
         initDrawer();
         initIcon();
-        new RefreshHandler().sendEmptyMessage(1);
         fetchData();
+
         if (Util.isNetworkConnected(this)) {
             CheckVersion.checkVersion(this, fab);
             location();
@@ -110,6 +112,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         bannner = (ImageView) findViewById(R.id.bannner);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiprefresh);
         mRefreshLayout.setOnRefreshListener(this);
@@ -121,10 +125,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //彩蛋-夜间模式
         Calendar calendar = Calendar.getInstance();
         mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+        setStatusBarColorForKitkat(R.color.colorSunrise);
         if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
             Glide.with(this).load(R.mipmap.sunset).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-            //setStatusBarColor(R.color.colorSunset);
+            setStatusBarColorForKitkat(R.color.colorSunset);
         }
 
         //fab
@@ -237,8 +242,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 new RefreshHandler().sendEmptyMessage(2);
             }
 
-
             @Override public void onNext(Weather weather) {
+                mProgressBar.setVisibility(View.INVISIBLE);
                 new RefreshHandler().sendEmptyMessage(2);
                 collapsingToolbarLayout.setTitle(weather.basic.city);
                 mAdapter = new WeatherAdapter(MainActivity.this, weather);
@@ -394,7 +399,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔 单位毫秒
-        mLocationOption.setInterval((mSetting.getInt(Setting.AUTO_UPDATE, 0) * Setting.ONE_HOUR * 1000));
+        mLocationOption.setInterval((mSetting.getInt(Setting.AUTO_UPDATE, 3) * Setting.ONE_HOUR * 1000));
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -446,7 +451,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 case 2:
                     if (mRefreshLayout.isRefreshing()) {
                         mRefreshLayout.setRefreshing(false);
-                        Snackbar.make(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺", Snackbar.LENGTH_SHORT).show();
+                        if (mAdapter.getItemCount()!=0){
+                            Snackbar.make(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺", Snackbar.LENGTH_SHORT).show();
+                        }else {
+                            Snackbar.make(fab, "出了些问题？( ´△｀)", Snackbar.LENGTH_SHORT).show();
+                        }
                     }
                     break;
             }

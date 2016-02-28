@@ -27,8 +27,8 @@ public class AboutActivity extends BaseActivity {
                 finish();
             }
         });
-        setStatusBarColor(R.color.colorPrimary);
 
+        setStatusBarColor(R.color.colorPrimary);
         if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
             toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColor(R.color.colorSunset);

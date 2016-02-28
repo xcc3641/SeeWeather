@@ -48,17 +48,26 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void setStatusBarColor(int color) {
         /**
-         * Android4.4以上可用
+         * Android4.4以上  但是抽屉有点冲突，目前就重写一个方法暂时解决4.4的问题
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            tintManager.setStatusBarTintResource(color);
             tintManager.setStatusBarTintEnabled(true);
-            //Window window = getWindow();
-            //window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            //window.setStatusBarColor(color);
+            tintManager.setStatusBarTintResource(color);
+        }
+    }
+
+
+    public void setStatusBarColorForKitkat(int color) {
+        /**
+         * Android4.4
+         */
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setStatusBarTintResource(color);
         }
     }
 }

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
@@ -25,6 +26,13 @@ import com.xiecc.seeWeather.modules.domain.Province;
 import com.xiecc.seeWeather.modules.domain.Setting;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by hugo on 2016/2/19 0019.
@@ -32,10 +40,12 @@ import java.util.List;
 public class ChoiceCityActivity extends BaseActivity {
     private static String TAG = ChoiceCityActivity.class.getSimpleName();
 
+
     private RecyclerView mRecyclerView;
-    private ContentLoadingProgressBar mProgressBar;
+    private ProgressBar mProgressBar;
     private DBManager mDBManager;
     private WeatherDB mWeatherDB;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
 
     private ArrayList<String> dataList = new ArrayList<>();
     private Province selectedProvince;
@@ -46,7 +56,7 @@ public class ChoiceCityActivity extends BaseActivity {
 
     public static final int LEVEL_PROVINCE = 1;
     public static final int LEVEL_CITY = 2;
-    private int currentLevel = 0;
+    private int currentLevel;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -55,31 +65,26 @@ public class ChoiceCityActivity extends BaseActivity {
         mDBManager = new DBManager(this);
         mDBManager.openDatabase();
         mWeatherDB = new WeatherDB(this);
-
         initView();
-        mProgressBar.show();
-
         initRecyclerView();
         queryProvinces();
-
-        if (mAdapter.getItemCount() != 0) {
-            mProgressBar.hide();
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
     }
 
 
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("选择城市");
-        setSupportActionBar(toolbar);
+        //toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //toolbar.setTitle("选择城市");
+        //setSupportActionBar(toolbar);
         ImageView bannner = (ImageView) findViewById(R.id.bannner);
-        mProgressBar = (ContentLoadingProgressBar) findViewById(R.id.progressbar);
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        setStatusBarColorForKitkat(R.color.colorSunrise);
         if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
+            setStatusBarColorForKitkat(R.color.colorSunset);
         }
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
 
@@ -89,8 +94,9 @@ public class ChoiceCityActivity extends BaseActivity {
         mRecyclerView.setHasFixedSize(true);
         mAdapter = new CityAdapter(this, dataList);
         mRecyclerView.setAdapter(mAdapter);
+
         mAdapter.setOnItemClickListener(new CityAdapter.OnRecyclerViewItemClickListener() {
-            @Override public void onItemClick(View view, int pos) {
+            @Override public void onItemClick(View view, final int pos) {
                 if (currentLevel == LEVEL_PROVINCE) {
                     selectedProvince = provincesList.get(pos);
                     mRecyclerView.scrollTo(0, 0);
@@ -99,7 +105,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(pos);
                     Intent intent = new Intent();
-                    String cityName = selectedCity.getCityName();
+                    String cityName = selectedCity.CityName;
                     intent.putExtra(Setting.CITY_NAME, cityName);
                     setResult(2, intent);
                     finish();
@@ -113,15 +119,34 @@ public class ChoiceCityActivity extends BaseActivity {
      * 查询全国所有的省，从数据库查询
      */
     private void queryProvinces() {
-        provincesList = mWeatherDB.loadProvinces(mDBManager.getDatabase());
-        if (provincesList.size() > 0) {
-            dataList.clear();
-            for (Province province : provincesList) {
-                dataList.add(province.getProName());
-            }
-            mAdapter.notifyDataSetChanged();
-            currentLevel = LEVEL_PROVINCE;
-        }
+        collapsingToolbarLayout.setTitle("选择省份");
+        Observable.just(1)
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .flatMap(new Func1<Integer, Observable<Province>>() {
+                      @Override public Observable<Province> call(Integer integer) {
+                          provincesList = mWeatherDB.loadProvinces(mDBManager.getDatabase());
+                          dataList.clear();
+                          return Observable.from(provincesList);
+                      }
+                  })
+                  .subscribe(new Observer<Province>() {
+                      @Override public void onCompleted() {
+                          currentLevel = LEVEL_PROVINCE;
+                          mAdapter.notifyDataSetChanged();
+                          mProgressBar.setVisibility(View.GONE);
+                      }
+
+
+                      @Override public void onError(Throwable e) {
+
+                      }
+
+
+                      @Override public void onNext(Province province) {
+                          dataList.add(province.ProName);
+                      }
+                  });
     }
 
 
@@ -129,17 +154,35 @@ public class ChoiceCityActivity extends BaseActivity {
      * 查询选中省份的所有城市，从数据库查询
      */
     private void queryCities() {
-        cityList = mWeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.getProSort());
-        if (cityList.size() > 0) {
-            dataList.clear();
-            for (City city : cityList) {
-                dataList.add(city.getCityName());
-            }
-            mAdapter.notifyDataSetChanged();
-            //定位到第一个item
-            mRecyclerView.smoothScrollToPosition(0);
-            currentLevel = LEVEL_CITY;
-        }
+        dataList.clear();
+        collapsingToolbarLayout.setTitle(selectedProvince.ProName);
+        Observable.just(1)
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .flatMap(new Func1<Integer, Observable<City>>() {
+                      @Override public Observable<City> call(Integer integer) {
+                          cityList = mWeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
+                          return Observable.from(cityList);
+                      }
+                  })
+                  .subscribe(new Observer<City>() {
+                      @Override public void onCompleted() {
+                          currentLevel = LEVEL_CITY;
+                          mAdapter.notifyDataSetChanged();
+                          //定位到第一个item
+                          mRecyclerView.smoothScrollToPosition(0);
+                      }
+
+
+                      @Override public void onError(Throwable e) {
+
+                      }
+
+
+                      @Override public void onNext(City city) {
+                          dataList.add(city.CityName);
+                      }
+                  });
     }
 
 

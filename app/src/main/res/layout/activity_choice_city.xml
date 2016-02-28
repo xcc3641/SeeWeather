@@ -38,7 +38,6 @@
                 app:layout_collapseMode="parallax"/>
 
             <android.support.v7.widget.Toolbar
-
                 android:id="@+id/toolbar"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_width="match_parent"
@@ -53,17 +52,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v4.widget.ContentLoadingProgressBar
-            android:id="@+id/progressbar"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_height="wrap_content"/>
-
         <android.support.v7.widget.RecyclerView
-            android:visibility="invisible"
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
+        <include
+            layout="@layout/progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

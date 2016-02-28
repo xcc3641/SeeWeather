@@ -33,8 +33,8 @@ public class WeatherDB {
 
             do {
                 Province province = new Province();
-                province.setProSort(cursor.getInt(cursor.getColumnIndex("ProSort")));
-                province.setProName(cursor.getString(cursor.getColumnIndex("ProName")));
+                province.ProSort = cursor.getInt(cursor.getColumnIndex("ProSort"));
+                province.ProName = cursor.getString(cursor.getColumnIndex("ProName"));
                 list.add(province);
             } while (cursor.moveToNext());
         }

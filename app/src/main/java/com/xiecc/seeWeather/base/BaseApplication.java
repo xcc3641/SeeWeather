@@ -16,7 +16,6 @@ public class BaseApplication extends Application {
     public static Context mAppContext = null;
 
 
-
     @Override public void onCreate() {
         super.onCreate();
         mAppContext = getApplicationContext();
@@ -27,15 +26,12 @@ public class BaseApplication extends Application {
         /**
          * 如果存在SD卡则将缓存写入SD卡,否则写入手机内存
          */
-        try {
-            if (getApplicationContext().getExternalCacheDir() != null && ExistSDCard()) {
-                cacheDir = getApplicationContext().getExternalCacheDir().toString();
-                Log.d("sd卡", cacheDir);
-            }
-            else {
-                cacheDir = getApplicationContext().getCacheDir().toString();
-            }
-        } catch (Exception e) {
+
+        if (getApplicationContext().getExternalCacheDir() != null && ExistSDCard()) {
+            cacheDir = getApplicationContext().getExternalCacheDir().toString();
+
+        }
+        else {
             cacheDir = getApplicationContext().getCacheDir().toString();
         }
     }

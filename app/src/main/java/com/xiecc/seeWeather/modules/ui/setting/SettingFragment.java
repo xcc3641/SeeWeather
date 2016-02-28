@@ -44,8 +44,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getInt(Setting.CHANGE_ICONS, 0)]);
         mChangeUpdate.setSummary(
-                getResources().getStringArray(R.array.cache_time)[mSetting.getInt(Setting.AUTO_UPDATE, 0)]);
-        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir));
+                getResources().getStringArray(R.array.cache_time)[mSetting.getInt(Setting.HOUR_SELECT, 0)]);
+        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
 
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
@@ -59,7 +59,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         }
         else if (mClearCache == preference) {
             mACache.clear();
-            mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir));
+            mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
             Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
         }
         else if (mChangeUpdate == preference) {
@@ -95,30 +95,31 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private void showUpdateDialog() {
         new AlertDialog.Builder(getActivity()).setTitle("更换频率")
                                               .setSingleChoiceItems(getResources().getStringArray(R.array.cache_time),
-                                                      mSetting.getInt(Setting.AUTO_UPDATE, 0),
+                                                      mSetting.getInt(Setting.HOUR_SELECT, 0),
                                                       new DialogInterface.OnClickListener() {
                                                           @Override
                                                           public void onClick(DialogInterface dialog, int which) {
-                                                              if (which != mSetting.getInt(Setting.AUTO_UPDATE, 0)) {
-                                                                  switch (which) {
-                                                                      case 0:
-                                                                          mSetting.putInt(Setting.AUTO_UPDATE,0);
-                                                                          break;
-                                                                      case 1:
-                                                                          mSetting.putInt(Setting.AUTO_UPDATE,1);
-                                                                          break;
-                                                                      case 2:
-                                                                          mSetting.putInt(Setting.AUTO_UPDATE,3);
-                                                                          break;
-                                                                      case 3:
-                                                                          mSetting.putInt(Setting.AUTO_UPDATE,6);
-                                                                          break;
-                                                                  }
-                                                              } dialog.dismiss();
+                                                              switch (which) {
+                                                                  case 0:
+                                                                      mSetting.putInt(Setting.AUTO_UPDATE, 0);
+                                                                      mSetting.putInt(Setting.HOUR_SELECT, which);
+                                                                      break;
+                                                                  case 1:
+                                                                      mSetting.putInt(Setting.AUTO_UPDATE, 1);
+                                                                      mSetting.putInt(Setting.HOUR_SELECT, which);
+                                                                      break;
+                                                                  case 2:
+                                                                      mSetting.putInt(Setting.AUTO_UPDATE, 3);
+                                                                      mSetting.putInt(Setting.HOUR_SELECT, which);
+                                                                      break;
+                                                                  case 3:
+                                                                      mSetting.putInt(Setting.AUTO_UPDATE, 6);
+                                                                      mSetting.putInt(Setting.HOUR_SELECT, which);
+                                                                      break;
+                                                              }
                                                               mChangeUpdate.setSummary(getResources().getStringArray(
-                                                                      R.array.cache_time)[mSetting.getInt(
-                                                                      Setting.AUTO_UPDATE, 0)]);
-
+                                                                      R.array.cache_time)[which]);
+                                                              dialog.dismiss();
                                                               Snackbar.make(getView(), "设置成功", Snackbar.LENGTH_SHORT)
                                                                       .show();
                                                           }
