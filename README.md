@@ -58,11 +58,11 @@ _ _ _
 ### 版本更新&&下载地址
 Fir.im: http://fir.im/seeWeather
 
+酷安市场：http://www.coolapk.com/apk/com.xiecc.seeWeather
+
 豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
 
 魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
-
-酷安市场：http://www.coolapk.com/apk/com.xiecc.seeWeather
 
 v2.0
 - 重构代码，全新UI，升级体验

@@ -17,8 +17,8 @@ public class Setting {
     public static final String HOUR = "小时";//当前小时
     public static final String HOUR_SELECT = "hour_select"; //设置更新频率的联动-需要改进
 
-    public static final String API_TOKEN = "7db041d0c3013b63e4bed2a554f02d85";//fir.im api_token
-    public static final String KEY = "282f3846df6b41178e4a2218ae083ea7";// 和风天气 key
+    public static final String API_TOKEN = "***";//fir.im api_token
+    public static final String KEY = "***";// 和风天气 key
 
     public static int ONE_HOUR = 3600;
 
