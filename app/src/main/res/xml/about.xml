@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="就看天气">
+        <Preference
+            android:key="introduction"
+            android:title="应用介绍"/>
+        <Preference
+            android:key="current_version"
+            android:title="当前版本"/>
+        <Preference
+            android:key="check_version"
+            android:title="检查更新"/>
+        <Preference
+            android:key="share"
+            android:title="推荐给朋友"/>
+        <Preference
+            android:key="Star"
+            android:summary="给个Star，鼓励作者(๑¯◡¯๑)"
+            android:title="点赞"/>
+        <Preference
+            android:key="encourage"
+            android:title="打赏"
+            android:summary="请我喝杯咖啡？(〃ω〃)"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="关于作者">
+        <Preference
+            android:key="blog"
+            android:summary="http://imxie.cc"
+            android:title="个人博客"/>
+        <Preference
+            android:key="github"
+            android:summary="https://github.com/xcc3641"
+            android:title="我的Github"/>
+        <Preference
+            android:key="email"
+            android:summary="Hugo3641@gmail.com"
+            android:title="邮箱"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="版权">
+        <Preference
+            android:summary="和风天气预报接口服务"
+            android:title="数据来源"/>
+        <Preference
+            android:summary="高德地图定位服务"
+            android:title="定位"/>
+        <Preference
+            android:summary="图片素材来源于网络，版权属于原作者"
+            android:title="素材来源"/>
+        <Preference
+            android:summary="@string/license"
+            android:title="License"/>
+    </PreferenceCategory>
+</PreferenceScreen>

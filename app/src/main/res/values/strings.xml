@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">就看天气</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="no_network">网络不好(˵¯͒⌢͗¯͒˵)</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="headerTxt">就看天气</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="api_error">出了点小问题，别担心，( •̀ .̫ •́ )✧</string>
+    <string name="version_name">就看天气 Version-</string>
+    <string name="can_not_find_version_name">找不到版本号</string>
+    <string name="share_txt">欢迎使用“就看天气”，希望每天都是好心情，您可以在http://www.wandoujia.com/apps/com.xiecc.seeWeather下载</string>
+    <string name="share_app">分享-就看天气</string>
+    <string name="alipay">xcc3641@163.com</string>
+    <string name="license">Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\"); you
+        may not use this file except in compliance with the License. You may obtain a copy of the License at     http://www.apache.org/licenses/LICENSE-2.0  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</string>
+    <string name="app_html">https://github.com/xcc3641/SeeWeather</string>
+    <string name="readme">https://github.com/xcc3641/SeeWeather/blob/master/README.md</string>
+    <string-array name="icons">
+        <item>图标一</item>
+        <item>图标二</item>
+    </string-array>
+
+    <string-array name="cache_time">
+        <item>禁止刷新</item>
+        <item>每1小时</item>
+        <item>每3小时</item>
+        <item>每6小时</item>
+    </string-array>
+
+</resources>

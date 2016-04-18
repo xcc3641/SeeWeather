@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="24dp">
+    <TextView
+        android:id="@+id/title"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="自动更新"/>
+    <SeekBar
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/title"
+        android:id="@+id/time_seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+    </SeekBar>
+    <TextView
+        android:id="@+id/tv_showhour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/time_seekbar"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="1小时"
+        android:textColor="@color/textHint"/>
+    <TextView
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/time_seekbar"
+        android:layout_marginTop="36dp"
+        android:text="确定"
+        android:textColor="?colorPrimary"
+        >
+    </TextView>
+</RelativeLayout>
