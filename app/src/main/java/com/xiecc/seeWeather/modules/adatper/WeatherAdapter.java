@@ -94,7 +94,6 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                  }
                 Glide.with(mContext)
                      .load(mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none))
-                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                      .into(((NowWeatherViewHolder) holder).weatherIcon);
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
@@ -157,7 +156,6 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     Glide.with(mContext)
                          .load(mSetting.getInt(mWeatherData.dailyForecast.get(i).cond.txtD, R.mipmap.none))
                          .crossFade()
-                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                          .into(((ForecastViewHolder) holder).forecastIcon[i]);
 
                     ((ForecastViewHolder) holder).forecastTemp[i].setText(
