@@ -1,9 +1,9 @@
 # 就看天气
 
-_ _ _
+---- 
 
 ### 前言
-最初上线是在2015年10月，是自己第一个较为成熟的应用，开发完之后刚好答了知乎这篇[如何自学Android编程](https://www.zhihu.com/question/26417244/answer/70193822)
+最初上线是在2015年10月，是自己第一个较为成熟的应用，开发完之后刚好答了知乎这篇[如何自学Android编程][1]
 
 但是因为代码确实写的很烂，所以决定全部重构代码全新风格的展示就看天气Ver2.0.
 
@@ -30,30 +30,30 @@ _ _ _
 - 彩蛋（自动夜间状态）
 
 
-_ _ _
+---- 
 
 权限说明
 
-```
-    <!--用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!--用于访问GPS定位-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!--获取运营商信息，用于支持提供运营商信息相关的接口-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!--用于访问网络，网络定位需要上网-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <!--用于读取手机当前的状态-->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <!--写入扩展存储，向扩展卡写入数据，用于写入缓存定位数据-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+\`\`\`
+	<!--用于进行网络定位-->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<!--用于访问GPS定位-->
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+	<!--获取运营商信息，用于支持提供运营商信息相关的接口-->
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+	<!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+	<!--用于访问网络，网络定位需要上网-->
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<!--用于读取手机当前的状态-->
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+	<!--写入扩展存储，向扩展卡写入数据，用于写入缓存定位数据-->
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-```
+\`\`\`
 
 ### 版本更新&&下载地址
 Fir.im: http://fir.im/seeWeather
@@ -64,6 +64,13 @@ Fir.im: http://fir.im/seeWeather
 
 魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
 
+v2.1
+- 修复 定位逻辑
+- 优化 SP的统一化
+- 优化 ERRO界面
+- 更新 新的天气 ICON
+- 更新 通知栏提醒（后台可能需要白名单，不然无法自动更新）
+- 设置 自动更新频率（0 为不自动更新）
 v2.0
 - 重构代码，全新UI，升级体验
 - 就看天气——是一款遵循**Material Design**风格的只看天气的APP。无流氓权限，无自启，xxx，用最少的权限做最优的体验。
@@ -92,12 +99,12 @@ v1.0
 - [ ] 通知栏提醒
 - [ ] 更好，更多的天气ICONS
 - [ ] 管理城市（多城市选择）
-- [x] ~~自动定位~~
+- [x] \~\~自动定位\~\~
 - [ ] 自由定制的Item界面
 
 
 
-_ _ _
+---- 
 
 ### 项目
 #### 公开 API
@@ -109,127 +116,127 @@ _ _ _
 地理定位服务： 高德地图
 
 #### 开源技术
-1. [Rxjava](https://github.com/ReactiveX/RxJava)
-2. [RxAndroid](https://github.com/ReactiveX/RxAndroid)
-3. [Retrofit](https://github.com/square/retrofit)
-4. [GLide](https://github.com/bumptech/glide)
-5. [ASimpleCache](https://github.com/yangfuhai/ASimpleCache)
+1. [Rxjava][2]
+2. [RxAndroid][3]
+3. [Retrofit][4]
+4. [GLide][5]
+5. [ASimpleCache][6]
 
 #### 简单介绍代码
 
 ##### 网络
 就看天气的网络部分的支持是用`RxJava+RxAndroid+Retrofit+Gson`再加上`ACache`缓存
-```
-   /**
-     * <p/>
-     * 首先从本地缓存获取数据
-     * if 有
-     * 更新UI
-     * else
-     * 直接进行网络请求，更新UI并保存在本地
-     */
-    private void fetchData() {
-        observer = new Observer<Weather>() {
-                        //节约篇幅，已省略
-                        ...
-        };
-
-        fetchDataByCache(observer);
-    }
-
-
-    /**
-     * 从本地获取
-     */
-    private void fetchDataByCache(Observer<Weather> observer) {
-        Weather weather = null;
-        try {
-            weather = (Weather) aCache.getAsObject("WeatherData");
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        }
-        if (weather != null) {
-        //distinct去重
-            Observable.just(weather).distinct().subscribe(observer);
-        } else {
-            fetchDataByNetWork(observer);
-        }
-    }
-
-
-    /**
-     * 从网络获取
-     */
-    private void fetchDataByNetWork(Observer<Weather> observer) {
-        String cityName = mSetting.getString(Setting.CITY_NAME, "重庆");
-        RetrofitSingleton.getApiService(this)
-                         .mWeatherAPI(cityName, key)
-                         .subscribeOn(Schedulers.io())
-                         .observeOn(AndroidSchedulers.mainThread())
-						////节约篇幅，已省略
-                        ...
-    }
-```
+\`\`\`
+   /\*\*
+	 * <p/>
+	 * 首先从本地缓存获取数据
+	 * if 有
+	 * 更新UI
+	 * else
+	 * 直接进行网络请求，更新UI并保存在本地
+	 */
+	private void fetchData() {
+	    observer = new Observer<Weather>() {
+	                    //节约篇幅，已省略
+	                    ...
+	    };
+	
+	    fetchDataByCache(observer);
+	}
+	
+	
+	/**
+	 * 从本地获取
+	 */
+	private void fetchDataByCache(Observer<Weather> observer) {
+	    Weather weather = null;
+	    try {
+	        weather = (Weather) aCache.getAsObject("WeatherData");
+	    } catch (Exception e) {
+	        Log.e(TAG, e.toString());
+	    }
+	    if (weather != null) {
+	    //distinct去重
+	        Observable.just(weather).distinct().subscribe(observer);
+	    } else {
+	        fetchDataByNetWork(observer);
+	    }
+	}
+	
+	
+	/**
+	 * 从网络获取
+	 */
+	private void fetchDataByNetWork(Observer<Weather> observer) {
+	    String cityName = mSetting.getString(Setting.CITY_NAME, "重庆");
+	    RetrofitSingleton.getApiService(this)
+	                     .mWeatherAPI(cityName, key)
+	                     .subscribeOn(Schedulers.io())
+	                     .observeOn(AndroidSchedulers.mainThread())
+	                    ////节约篇幅，已省略
+	                    ...
+	}
+\`\`\`
 ##### RecycerVIew展示
 就像洪洋说的一样
 > 整体上看RecyclerView架构，提供了一种插拔式的体验，高度的解耦，异常的灵活，通过设置它提供的不同LayoutManager，ItemDecoration , ItemAnimator实现令人瞠目的效果。
 
 该项目中用到RecyclerView中级的用法是根据itemType展示不同的布局，这就是主页核心的代码了。
-```
+\`\`\`
 @Override public int getItemViewType(int position) {
-        if (position == TYPE_ONE) {
-        //标识
-			...
-        }
-        return super.getItemViewType(position);
-    }
+	    if (position == TYPE_ONE) {
+	    //标识
+	        ...
+	    }
+	    return super.getItemViewType(position);
+	}
 
 @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ONE) {
-        //绑定
- 			...
-            }
-        }
+	    if (viewType == TYPE_ONE) {
+	    //绑定
+	        ...
+	        }
+	    }
    }
 
 @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        if (holder instanceof NowWeatherViewHolder) {
-        //更新布局
-        ....
-        }
+	    if (holder instanceof NowWeatherViewHolder) {
+	    //更新布局
+	    ....
+	    }
 }
 
-```
+\`\`\`
 
 
 
-_ _ _
+---- 
 
 
 ### 截图
-![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E9%97%AA%E5%B1%8F.png)
-![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E7%99%BD%E5%A4%A9%E6%A8%A1%E5%BC%8F.png)
-![](http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E5%A4%9C%E6%99%9A%E6%A8%A1%E5%BC%8F.png)
+![][image-1]
+![][image-2]
+![][image-3]
 
 ### 感谢
 感谢开源，学习到了前辈们优秀的代码
-- [@张鸿洋](https://github.com/hongyangAndroid)
-- [@扔物线](https://github.com/rengwuxian)
-- [@drakeet](https://github.com/drakeet)
-- [@代码家](https://github.com/daimajia)
-- [@程序亦非猿](https://github.com/AlanCheen)
-- [@小鄧子](https://github.com/SmartDengg)
-- [@Jude95](https://github.com/Jude95)
-- [@泡在网上编代码](http://weibo.com/u/2711441293?topnav=1&wvr=6&topsug=1&is_all=1)
+- [@张鸿洋][7]
+- [@扔物线][8]
+- [@drakeet][9]
+- [@代码家][10]
+- [@程序亦非猿][11]
+- [@小鄧子][12]
+- [@Jude95][13]
+- [@泡在网上编代码][14]
 
 特别感谢**简书猿圈**
 
 ### 关于作者
  
-![](http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg)
+![][image-4]
  
-简书：http://www.jianshu.com/users/3372b4a3b9e5/latest_articles
+简书：http://www.jianshu.com/users/3372b4a3b9e5/latest\_articles
  
 知乎：https://www.zhihu.com/people/xcc3641.github.io
  
@@ -240,16 +247,16 @@ _ _ _
 
 ### 请我喝杯咖啡
 
-_ _ _
+---- 
 
-![](http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg)
-_ _ _
+![][image-5]
+---- 
 
 ### LICENSE
 
 Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\")
-        you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-        Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+	    you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+	    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 图片来源于网络，版权属于原作者。
 
@@ -258,3 +265,23 @@ Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"Li
 
 
 
+[1]:	https://www.zhihu.com/question/26417244/answer/70193822
+[2]:	https://github.com/ReactiveX/RxJava
+[3]:	https://github.com/ReactiveX/RxAndroid
+[4]:	https://github.com/square/retrofit
+[5]:	https://github.com/bumptech/glide
+[6]:	https://github.com/yangfuhai/ASimpleCache
+[7]:	https://github.com/hongyangAndroid
+[8]:	https://github.com/rengwuxian
+[9]:	https://github.com/drakeet
+[10]:	https://github.com/daimajia
+[11]:	https://github.com/AlanCheen
+[12]:	https://github.com/SmartDengg
+[13]:	https://github.com/Jude95
+[14]:	http://weibo.com/u/2711441293?topnav=1&wvr=6&topsug=1&is_all=1
+
+[image-1]:	http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E9%97%AA%E5%B1%8F.png
+[image-2]:	http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E7%99%BD%E5%A4%A9%E6%A8%A1%E5%BC%8F.png
+[image-3]:	http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E5%A4%9C%E6%99%9A%E6%A8%A1%E5%BC%8F.png
+[image-4]:	http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg
+[image-5]:	http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg
