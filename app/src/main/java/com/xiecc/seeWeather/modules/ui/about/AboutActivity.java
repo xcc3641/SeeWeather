@@ -6,7 +6,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
 
 /**
  * Created by hugo on 2016/2/20 0020.
@@ -27,11 +26,10 @@ public class AboutActivity extends BaseActivity {
         });
 
         setStatusBarColor(R.color.colorPrimary);
-        if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
+        if (mSetting.getCurrentHour()< 6 || mSetting.getCurrentHour() > 18) {
             toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColor(R.color.colorSunset);
         }
-
         getFragmentManager().beginTransaction().replace(R.id.framelayout, new AboutFragment()).commit();
     }
 }

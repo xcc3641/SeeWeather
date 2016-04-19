@@ -9,6 +9,9 @@
             android:title="自动刷新频率"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="系统">
+        <SwitchPreference
+            android:key="notification_model"
+            android:title="通知栏常驻"/>
         <Preference
             android:key="clear_cache"
             android:title="清除缓存"/>

@@ -71,7 +71,7 @@ public class ChoiceCityActivity extends BaseActivity {
         ImageView bannner = (ImageView) findViewById(R.id.bannner);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
+        if (mSetting.getCurrentHour()< 6 || mSetting.getCurrentHour() > 18) {
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
             setStatusBarColorForKitkat(R.color.colorSunset);

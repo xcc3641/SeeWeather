@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.DialogPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
@@ -145,7 +144,7 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
             copyToClipboard(getView(), mEmail.getSummary().toString());
         }
         else if (mCheckVersion == preference) {
-            Snackbar.make(getView(), "正在检查(σﾟ∀ﾟ)σ", Snackbar.LENGTH_SHORT).show();
+            //Snackbar.make(getView(), "正在检查(σﾟ∀ﾟ)σ", Snackbar.LENGTH_SHORT).show();
             CheckVersion.checkVersion(getActivity(), getView());
         }
         return false;
@@ -158,5 +157,6 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         ClipData clipData = ClipData.newPlainText("msg", info);
         manager.setPrimaryClip(clipData);
         Snackbar.make(view, "已经复制到剪切板啦( •̀ .̫ •́ )✧", Snackbar.LENGTH_SHORT).show();
+
     }
 }

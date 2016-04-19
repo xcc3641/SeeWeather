@@ -18,6 +18,9 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:src="@mipmap/type_one_sunny"
             android:id="@+id/weather_icon"
             android:layout_width="80dp"
             android:layout_height="80dp"/>

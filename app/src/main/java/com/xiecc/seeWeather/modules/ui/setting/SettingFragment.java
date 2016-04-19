@@ -1,10 +1,13 @@
 package com.xiecc.seeWeather.modules.ui.setting;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -12,10 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import com.bumptech.glide.Glide;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.FileSizeUtil;
+import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 
 /**
  * Created by hugo on 2016/2/19 0019.
@@ -27,6 +33,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private Preference mChangeIcons;
     private Preference mChangeUpdate;
     private Preference mClearCache;
+    private SwitchPreference mNotificationType;
 
     private ACache mACache;
 
@@ -47,6 +54,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mChangeUpdate = findPreference(Setting.AUTO_UPDATE);
         mClearCache = findPreference(Setting.CLEAR_CACHE);
 
+        mNotificationType = (SwitchPreference) findPreference(Setting.NOTIFICATION_MODEL);
+        mNotificationType.setChecked(true);
+
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getInt(Setting.CHANGE_ICONS, 0)]);
 
         //mChangeUpdate.setSummary(
@@ -57,6 +67,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
         mClearCache.setOnPreferenceClickListener(this);
+        mNotificationType.setOnPreferenceClickListener(this);
     }
 
 
@@ -66,11 +77,27 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         }
         else if (mClearCache == preference) {
             mACache.clear();
+            Glide.get(getActivity().getApplicationContext()).clearMemory();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.get(getActivity().getApplicationContext()).clearDiskCache();
+                }
+            });
             mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
             Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
         }
         else if (mChangeUpdate == preference) {
             showUpdateDialog();
+        }else if (mNotificationType ==preference){
+                //if (mNotificationType.isChecked()){
+                //    mNotificationType.setChecked(false);
+                //}else {
+                //    mNotificationType.setChecked(true);
+                //}
+            mNotificationType.setChecked(mNotificationType.isChecked());
+            mSetting.setNotificationModel(mNotificationType.isChecked()? Notification.FLAG_ONGOING_EVENT:Notification.FLAG_AUTO_CANCEL);
+            PLog.i(TAG,mSetting.getAutoUpdate()+"");
         }
 
         return false;
@@ -138,6 +165,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             public void onClick(View v) {
                 mSetting.setAutoUpdate(mSeekBar.getProgress());
                 mChangeUpdate.setSummary(mSetting.getAutoUpdate()==0?"禁止刷新":"每"+mSetting.getAutoUpdate()+"小时更新");
+                //需要再调用一次才能生效设置 不会重复的执行onCreate()， 而是会调用onStart()和onStartCommand()。
+                getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
                 alertDialog.dismiss();
             }
         });

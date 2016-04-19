@@ -122,8 +122,8 @@
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
     <orderEntry type="library" exported="" name="systembartint-1.0.3" level="project" />
-    <orderEntry type="library" exported="" name="glide-3.7.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.1.1" level="project" />
+    <orderEntry type="library" exported="" name="glide-3.7.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="okhttp-integration-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="converter-gson-2.0.0-beta2" level="project" />

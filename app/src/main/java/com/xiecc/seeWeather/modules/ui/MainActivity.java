@@ -42,16 +42,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.CheckVersion;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.adatper.WeatherAdapter;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
 import com.xiecc.seeWeather.modules.domain.Weather;
 import com.xiecc.seeWeather.modules.domain.WeatherAPI;
 import com.xiecc.seeWeather.modules.listener.HidingScrollListener;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.ui.about.AboutActivity;
+import com.xiecc.seeWeather.modules.ui.setting.Setting;
 import com.xiecc.seeWeather.modules.ui.setting.SettingActivity;
 import java.util.Calendar;
 import rx.Observable;
@@ -73,6 +72,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private SwipeRefreshLayout mRefreshLayout;
     private ImageView bannner;
     private ProgressBar mProgressBar;
+    private ImageView mErroImageView;
     private RelativeLayout headerBackground;
 
     private RecyclerView mRecyclerView;
@@ -95,17 +95,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initView();
         initDrawer();
         initIcon();
-        //fetchData();
+        initDataObserver();
         if (Util.isNetworkConnected(this)) {
             CheckVersion.checkVersion(this, fab);
-            location();
-            if (isLoaction) {
-                onRefresh();
-            } else {
-                fetchData();
-            }
+            location(); //定位
+            //fetchData();
+            fetchDataByNetWork(observer);
+        } else {
+            fetchDataByCache(observer);
         }
-
         startService(new Intent(this, AutoUpdateService.class));
     }
 
@@ -118,6 +116,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         bannner = (ImageView) findViewById(R.id.bannner);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.VISIBLE);
+        mErroImageView = (ImageView) findViewById(R.id.iv_erro);
+        // Glide 加载本地 GIF 图的方法
+        //GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(mErroImageView);
+        //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiprefresh);
         mRefreshLayout.setOnRefreshListener(this);
@@ -128,9 +130,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //彩蛋-夜间模式
         Calendar calendar = Calendar.getInstance();
-        mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+
+        //mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+        mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
+
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
+        if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
             Glide.with(this).load(R.mipmap.sunset).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColorForKitkat(R.color.colorSunset);
@@ -146,6 +151,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
         final int fabBottomMargin = lp.bottomMargin;
+
         //recclerview
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -194,7 +200,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化Icon
      */
     private void initIcon() {
-        if (mSetting.getIconType()== 0) {
+        if (mSetting.getIconType() == 0) {
             mSetting.putInt("未知", R.mipmap.none);
             mSetting.putInt("晴", R.mipmap.type_one_sunny);
             mSetting.putInt("阴", R.mipmap.type_one_cloudy);
@@ -227,14 +233,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     * <p/>
-     * 首先从本地缓存获取数据
-     * if 有
-     * 更新UI
-     * else
-     * 直接进行网络请求，更新UI并保存在本地
+     * 初始化 observer (观察者)
+     * 拿到数据后的操作
      */
-    private void fetchData() {
+    private void initDataObserver() {
         observer = new Observer<Weather>() {
             @Override
             public void onCompleted() {
@@ -243,27 +245,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onError(Throwable e) {
-                RetrofitSingleton.disposeFailureInfo(e, MainActivity.this, fab);
+                //RetrofitSingleton.disposeFailureInfo(e, MainActivity.this, fab);
+                erroNetSnackbar(observer);
                 new RefreshHandler().sendEmptyMessage(2);
             }
 
             @Override
             public void onNext(Weather weather) {
-                mProgressBar.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.GONE);
+                mErroImageView.setVisibility(View.GONE);
+
                 new RefreshHandler().sendEmptyMessage(2);
                 collapsingToolbarLayout.setTitle(weather.basic.city);
                 mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 mRecyclerView.setAdapter(mAdapter);
-                //normalStyleNotification(weather);
+                normalStyleNotification(weather);
             }
         };
-        fetchDataByCache(observer);
+        //fetchDataByCache(observer);
+        //fetchDataByNetWork(observer);
     }
 
     /**
      * 从本地获取
      */
-    private void fetchDataByCache(Observer<Weather> observer) {
+    public void fetchDataByCache(final Observer<Weather> observer) {
 
         Weather weather = null;
         try {
@@ -275,14 +281,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (weather != null) {
             Observable.just(weather).distinct().subscribe(observer);
         } else {
-            fetchDataByNetWork(observer);
+            erroNetSnackbar(observer);
         }
+    }
+
+    private void erroNetSnackbar(final Observer<Weather> observer) {
+        mProgressBar.setVisibility(View.GONE);
+        mErroImageView.setVisibility(View.VISIBLE);
+        Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchDataByNetWork(observer);
+            }
+        }).show();
     }
 
     /**
      * 从网络获取
      */
-    private void fetchDataByNetWork(Observer<Weather> observer) {
+    public void fetchDataByNetWork(Observer<Weather> observer) {
         String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
         if (cityName != null) {
             cityName = cityName.replace("市", "")
@@ -369,7 +386,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             //super.onBackPressed();
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Snackbar.make(fab, "再按一次退出程序", Snackbar.LENGTH_SHORT).show();
+                //Snackbar.make(fab, "再按一次退出程序", Snackbar.LENGTH_SHORT).show();
+                showSnackbar(fab, "再按一次退出程序");
                 exitTime = System.currentTimeMillis();
             } else {
                 finish();
@@ -402,7 +420,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔 单位毫秒
-        mLocationOption.setInterval((mSetting.getInt(Setting.AUTO_UPDATE, 3) * Setting.ONE_HOUR * 1000));
+        mLocationOption.setInterval(mSetting.getAutoUpdate() * Setting.ONE_HOUR);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -430,14 +448,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //aMapLocation.getStreetNum();//街道门牌号信息
                 //aMapLocation.getCityCode();//城市编码
                 //aMapLocation.getAdCode();//地区编码
-                mSetting.putString(Setting.CITY_NAME, aMapLocation.getCity());
+                //mSetting.putString(Setting.CITY_NAME, aMapLocation.getCity());
+                mSetting.setCityName(aMapLocation.getCity());
                 isLoaction = true;
-                PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() +
-                    aMapLocation.getAdCode() + aMapLocation.getCityCode());
+                //PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() +
+                //    aMapLocation.getAdCode() + aMapLocation.getCityCode());
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                PLog.e("AmapError", "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" +
-                    aMapLocation.getErrorInfo());
+                //PLog.e("AmapError", "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" +
+                //    aMapLocation.getErrorInfo());
+                //Snackbar.make(fab, "定位失败,请尝试手动更新", Snackbar.LENGTH_LONG).show();
+                showSnackbar(fab, "定位失败,请尝试手动更新", true);
             }
         }
     }
@@ -477,23 +498,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    //默认样式的notification
     private void normalStyleNotification(Weather weather) {
         Intent intent = new Intent(MainActivity.this, MainActivity.class);
         //intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent =
+            PendingIntent.getActivity(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(MainActivity.this);
         Notification notification = builder.setContentIntent(pendingIntent)
             .setContentTitle(weather.basic.city)
-            .setContentText(weather.now.cond.txt+" 当前温度: "+weather.now.tmp+"℃")
+            .setContentText(weather.now.cond.txt + " 当前温度: " + weather.now.tmp + "℃")
             // 这里部分 ROM 无法成功
             .setSmallIcon(mSetting.getInt(weather.now.cond.txt, R.mipmap.none))
             .build();
-
-        //notification.flags = Notification.FLAG_ONGOING_EVENT; // 常驻
-        notification.flags = Notification.FLAG_AUTO_CANCEL; // 普通
-
+        notification.flags = mSetting.getNotificationModel();
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // tag和id都是可以拿来区分不同的通知的
         manager.notify(1, notification);
     }
 }

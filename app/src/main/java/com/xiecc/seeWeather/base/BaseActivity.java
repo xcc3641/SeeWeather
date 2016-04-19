@@ -2,7 +2,9 @@ package com.xiecc.seeWeather.base;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
@@ -72,5 +74,12 @@ public class BaseActivity extends AppCompatActivity {
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setStatusBarTintResource(color);
         }
+    }
+
+    public void showSnackbar(View view,String s){
+        Snackbar.make(view,s,Snackbar.LENGTH_SHORT).show();
+    }
+    public void showSnackbar(View view,String s,boolean ture){
+        Snackbar.make(view,s,Snackbar.LENGTH_LONG).show();
     }
 }
