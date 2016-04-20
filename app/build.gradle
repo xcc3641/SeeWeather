@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'me.tatarka.retrolambda' //加上这句加,入plugin声明
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -19,8 +19,16 @@ android {
             shrinkResources true
         }
     }
+    compileOptions {
+        //使用JAVA8语法解析
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
-
+retrolambda {
+    //指定将源码编译的级别，使用下列代码，会将代码编译到兼容1.6的字节码格式
+    javaVersion JavaVersion.VERSION_1_6
+}
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'

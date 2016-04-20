@@ -97,8 +97,7 @@ public class Setting {
     public void setNotificationModel(int t) {
         mPrefs.edit().putInt(NOTIFICATION_MODEL, t).apply();
     }
-
     public int getNotificationModel() {
-        return mPrefs.getInt(NOTIFICATION_MODEL, Notification.FLAG_ONGOING_EVENT);
+        return mPrefs.getInt(NOTIFICATION_MODEL, Notification.FLAG_AUTO_CANCEL);
     }
 }

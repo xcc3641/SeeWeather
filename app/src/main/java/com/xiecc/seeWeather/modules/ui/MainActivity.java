@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,7 +45,6 @@ import com.xiecc.seeWeather.common.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.adatper.WeatherAdapter;
 import com.xiecc.seeWeather.modules.domain.Weather;
-import com.xiecc.seeWeather.modules.domain.WeatherAPI;
 import com.xiecc.seeWeather.modules.listener.HidingScrollListener;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.ui.about.AboutActivity;
@@ -56,8 +54,6 @@ import java.util.Calendar;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -86,7 +82,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public AMapLocationClient mLocationClient = null;
     public AMapLocationClientOption mLocationOption = null;
 
-    private boolean isLoaction = false;
+    //private boolean isLoaction = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +96,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             CheckVersion.checkVersion(this, fab);
             location(); //定位
             //fetchData();
-            fetchDataByNetWork(observer);
         } else {
             fetchDataByCache(observer);
         }
@@ -170,6 +165,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
             }
         });
+
+
         //mAdapter = new WeatherAdapter(MainActivity.this, mWeatherData);
         //mRecyclerView.setAdapter(mAdapter);
 
@@ -288,11 +285,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void erroNetSnackbar(final Observer<Weather> observer) {
         mProgressBar.setVisibility(View.GONE);
         mErroImageView.setVisibility(View.VISIBLE);
-        Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fetchDataByNetWork(observer);
-            }
+        Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
+            fetchDataByNetWork(observer);
         }).show();
     }
 
@@ -313,24 +307,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             .mWeatherAPI(cityName, Setting.KEY)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .filter(new Func1<WeatherAPI, Boolean>() {
-                @Override
-                public Boolean call(WeatherAPI weatherAPI) {
-                    return weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok");
-                }
-            })
-            .map(new Func1<WeatherAPI, Weather>() {
-                @Override
-                public Weather call(WeatherAPI weatherAPI) {
-                    return weatherAPI.mHeWeatherDataService30s.get(0);
-                }
-            })
-            .doOnNext(new Action1<Weather>() {
-                @Override
-                public void call(Weather weather) {
-                    aCache.put("WeatherData", weather,
-                        (mSetting.getInt(Setting.AUTO_UPDATE, 0) + 1) * Setting.ONE_HOUR);//默认一小时后缓存失效
-                }
+            .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
+            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+            .doOnNext(weather -> {
+                aCache.put("WeatherData", weather,
+                    (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
             })
             .subscribe(observer);
     }
@@ -338,15 +319,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void showFabDialog() {
         new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
             .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-            .setPositiveButton("好叻", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);           //指定Action
-                    intent.setData(uri);                            //设置Uri
-                    MainActivity.this.startActivity(intent);        //启动Activity
-                }
+            .setPositiveButton("好叻", (dialog, which) -> {
+                Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);           //指定Action
+                intent.setData(uri);                            //设置Uri
+                MainActivity.this.startActivity(intent);        //启动Activity
             })
             .show();
     }
@@ -450,7 +428,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //aMapLocation.getAdCode();//地区编码
                 //mSetting.putString(Setting.CITY_NAME, aMapLocation.getCity());
                 mSetting.setCityName(aMapLocation.getCity());
-                isLoaction = true;
                 //PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() +
                 //    aMapLocation.getAdCode() + aMapLocation.getCityCode());
             } else {
@@ -458,8 +435,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //PLog.e("AmapError", "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" +
                 //    aMapLocation.getErrorInfo());
                 //Snackbar.make(fab, "定位失败,请尝试手动更新", Snackbar.LENGTH_LONG).show();
-                showSnackbar(fab, "定位失败,请尝试手动更新", true);
+                showSnackbar(fab, "定位失败,默认加载城市", true);
             }
+            fetchDataByNetWork(observer);
+
         }
     }
 

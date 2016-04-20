@@ -13,7 +13,6 @@ import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.domain.Weather;
-import com.xiecc.seeWeather.modules.domain.WeatherAPI;
 import com.xiecc.seeWeather.modules.ui.MainActivity;
 import com.xiecc.seeWeather.modules.ui.setting.Setting;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +20,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -116,18 +114,8 @@ public class AutoUpdateService extends Service {
             .mWeatherAPI(cityName, Setting.KEY)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .filter(new Func1<WeatherAPI, Boolean>() {
-                @Override
-                public Boolean call(WeatherAPI weatherAPI) {
-                    return weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok");
-                }
-            })
-            .map(new Func1<WeatherAPI, Weather>() {
-                @Override
-                public Weather call(WeatherAPI weatherAPI) {
-                    return weatherAPI.mHeWeatherDataService30s.get(0);
-                }
-            })
+            .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
+            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
             .subscribe(new Observer<Weather>() {
                 @Override
                 public void onCompleted() {

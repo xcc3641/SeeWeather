@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.modules.ui.about;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -96,21 +95,17 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
 
             new AlertDialog.Builder(getActivity()).setTitle("点赞")
                                                   .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-                                                  .setNegativeButton("复制", new DialogInterface.OnClickListener() {
-                                                      @Override public void onClick(DialogInterface dialog, int which) {
-                                                          copyToClipboard(getView(), getActivity().getResources()
-                                                                                                  .getString(
-                                                                                                          R.string.app_html));
-                                                      }
+                                                  .setNegativeButton("复制", (dialog, which) -> {
+                                                      copyToClipboard(getView(), getActivity().getResources()
+                                                                                              .getString(
+                                                                                                      R.string.app_html));
                                                   })
-                                                  .setPositiveButton("打开", new DialogInterface.OnClickListener() {
-                                                      @Override public void onClick(DialogInterface dialog, int which) {
-                                                          Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
-                                                          Intent intent = new Intent();
-                                                          intent.setAction(Intent.ACTION_VIEW);           //指定Action
-                                                          intent.setData(uri);                            //设置Uri
-                                                          getActivity().startActivity(intent);        //启动Activity
-                                                      }
+                                                  .setPositiveButton("打开", (dialog, which) -> {
+                                                      Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
+                                                      Intent intent = new Intent();
+                                                      intent.setAction(Intent.ACTION_VIEW);           //指定Action
+                                                      intent.setData(uri);                            //设置Uri
+                                                      getActivity().startActivity(intent);        //启动Activity
                                                   })
                                                   .show();
         }
@@ -124,12 +119,10 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         else if (mEncounrage == preference) {
             new AlertDialog.Builder(getActivity()).setTitle("请作者喝杯咖啡？(〃ω〃)")
                                                   .setMessage("点击按钮后，作者支付宝账号将会复制到剪切板，" + "你就可以使用支付宝转账给作者啦( •̀ .̫ •́ )✧")
-                                                  .setPositiveButton("好叻", new DialogInterface.OnClickListener() {
-                                                      @Override public void onClick(DialogInterface dialog, int which) {
-                                                          copyToClipboard(getView(), getActivity().getResources()
-                                                                                                  .getString(
-                                                                                                          R.string.alipay));
-                                                      }
+                                                  .setPositiveButton("好叻", (dialog, which) -> {
+                                                      copyToClipboard(getView(), getActivity().getResources()
+                                                                                              .getString(
+                                                                                                      R.string.alipay));
                                                   })
                                                   .show();
         }

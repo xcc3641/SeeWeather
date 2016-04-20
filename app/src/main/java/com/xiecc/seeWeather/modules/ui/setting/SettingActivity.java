@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.modules.ui.setting;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 
@@ -19,11 +18,7 @@ public class SettingActivity extends BaseActivity {
         toolbar.setTitle("设置");
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_32dpdp));
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         setStatusBarColor(R.color.colorPrimary);
         if (mSetting.getCurrentHour()< 6 || mSetting.getCurrentHour() > 18) {

@@ -25,7 +25,6 @@ import java.util.List;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 /**
@@ -88,21 +87,19 @@ public class ChoiceCityActivity extends BaseActivity {
         mAdapter = new CityAdapter(this, dataList);
         mRecyclerView.setAdapter(mAdapter);
 
-        mAdapter.setOnItemClickListener(new CityAdapter.OnRecyclerViewItemClickListener() {
-            @Override public void onItemClick(View view, final int pos) {
-                if (currentLevel == LEVEL_PROVINCE) {
-                    selectedProvince = provincesList.get(pos);
-                    mRecyclerView.scrollTo(0, 0);
-                    queryCities();
-                }
-                else if (currentLevel == LEVEL_CITY) {
-                    selectedCity = cityList.get(pos);
-                    Intent intent = new Intent();
-                    String cityName = selectedCity.CityName;
-                    intent.putExtra(Setting.CITY_NAME, cityName);
-                    setResult(2, intent);
-                    finish();
-                }
+        mAdapter.setOnItemClickListener((view, pos) -> {
+            if (currentLevel == LEVEL_PROVINCE) {
+                selectedProvince = provincesList.get(pos);
+                mRecyclerView.scrollTo(0, 0);
+                queryCities();
+            }
+            else if (currentLevel == LEVEL_CITY) {
+                selectedCity = cityList.get(pos);
+                Intent intent = new Intent();
+                String cityName = selectedCity.CityName;
+                intent.putExtra(Setting.CITY_NAME, cityName);
+                setResult(2, intent);
+                finish();
             }
         });
     }
@@ -131,12 +128,10 @@ public class ChoiceCityActivity extends BaseActivity {
             }
         };
 
-        Observable.defer(new Func0<Observable<Province>>() {
-            @Override public Observable<Province> call() {
-                provincesList = mWeatherDB.loadProvinces(mDBManager.getDatabase());
-                dataList.clear();
-                return Observable.from(provincesList);
-            }
+        Observable.defer(() -> {
+            provincesList = mWeatherDB.loadProvinces(mDBManager.getDatabase());
+            dataList.clear();
+            return Observable.from(provincesList);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
 
 
@@ -170,11 +165,9 @@ public class ChoiceCityActivity extends BaseActivity {
         };
 
 
-        Observable.defer(new Func0<Observable<City>>() {
-            @Override public Observable<City> call() {
-                cityList = mWeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
-                return Observable.from(cityList);
-            }
+        Observable.defer(() -> {
+            cityList = mWeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
+            return Observable.from(cityList);
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);

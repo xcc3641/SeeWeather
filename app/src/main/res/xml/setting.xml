@@ -11,6 +11,7 @@
     <PreferenceCategory android:title="系统">
         <SwitchPreference
             android:key="notification_model"
+            android:checked="true"
             android:title="通知栏常驻"/>
         <Preference
             android:key="clear_cache"

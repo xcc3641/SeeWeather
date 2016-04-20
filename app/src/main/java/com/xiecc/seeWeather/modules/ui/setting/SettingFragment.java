@@ -2,7 +2,6 @@ package com.xiecc.seeWeather.modules.ui.setting;
 
 import android.app.Notification;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -55,7 +54,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mClearCache = findPreference(Setting.CLEAR_CACHE);
 
         mNotificationType = (SwitchPreference) findPreference(Setting.NOTIFICATION_MODEL);
-        mNotificationType.setChecked(true);
+
 
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getInt(Setting.CHANGE_ICONS, 0)]);
 
@@ -78,11 +77,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         else if (mClearCache == preference) {
             mACache.clear();
             Glide.get(getActivity().getApplicationContext()).clearMemory();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Glide.get(getActivity().getApplicationContext()).clearDiskCache();
-                }
+            new Thread(() -> {
+                Glide.get(getActivity().getApplicationContext()).clearDiskCache();
             });
             mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
             Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
@@ -96,7 +92,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
                 //    mNotificationType.setChecked(true);
                 //}
             mNotificationType.setChecked(mNotificationType.isChecked());
-            mSetting.setNotificationModel(mNotificationType.isChecked()? Notification.FLAG_ONGOING_EVENT:Notification.FLAG_AUTO_CANCEL);
+            mSetting.setNotificationModel(mNotificationType.isChecked()? Notification.FLAG_AUTO_CANCEL:Notification.FLAG_ONGOING_EVENT);
             PLog.i(TAG,mSetting.getAutoUpdate()+"");
         }
 
@@ -108,19 +104,16 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         new AlertDialog.Builder(getActivity()).setTitle("更换图标")
                                               .setSingleChoiceItems(getResources().getStringArray(R.array.icons),
                                                       mSetting.getInt(Setting.CHANGE_ICONS, 0),
-                                                      new DialogInterface.OnClickListener() {
-                                                          @Override
-                                                          public void onClick(DialogInterface dialog, int which) {
-                                                              if (which != mSetting.getInt(Setting.CHANGE_ICONS, 0)) {
-                                                                  mSetting.setIconType(which);
-                                                              }
-                                                              dialog.dismiss();
-                                                              mChangeIcons.setSummary(getResources().getStringArray(
-                                                                      R.array.icons)[mSetting.getIconType()]);
-                                                              Snackbar.make(getView(), "切换成功,重启应用生效",
-                                                                      Snackbar.LENGTH_SHORT).show();
-                                                          }
-                                                      })
+                                                  (dialog, which) -> {
+                                                      if (which != mSetting.getInt(Setting.CHANGE_ICONS, 0)) {
+                                                          mSetting.setIconType(which);
+                                                      }
+                                                      dialog.dismiss();
+                                                      mChangeIcons.setSummary(getResources().getStringArray(
+                                                              R.array.icons)[mSetting.getIconType()]);
+                                                      Snackbar.make(getView(), "切换成功,重启应用生效",
+                                                              Snackbar.LENGTH_SHORT).show();
+                                                  })
                                               .show();
 
 
@@ -160,15 +153,12 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
             }
         });
-        tvDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSetting.setAutoUpdate(mSeekBar.getProgress());
-                mChangeUpdate.setSummary(mSetting.getAutoUpdate()==0?"禁止刷新":"每"+mSetting.getAutoUpdate()+"小时更新");
-                //需要再调用一次才能生效设置 不会重复的执行onCreate()， 而是会调用onStart()和onStartCommand()。
-                getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
-                alertDialog.dismiss();
-            }
+        tvDone.setOnClickListener(v -> {
+            mSetting.setAutoUpdate(mSeekBar.getProgress());
+            mChangeUpdate.setSummary(mSetting.getAutoUpdate()==0?"禁止刷新":"每"+mSetting.getAutoUpdate()+"小时更新");
+            //需要再调用一次才能生效设置 不会重复的执行onCreate()， 而是会调用onStart()和onStartCommand()。
+            getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
+            alertDialog.dismiss();
         });
     }
 }
