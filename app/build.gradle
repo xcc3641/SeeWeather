@@ -24,7 +24,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    packagingOptions {
+
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
 }
+
 retrolambda {
     //指定将源码编译的级别，使用下列代码，会将代码编译到兼容1.6的字节码格式
     javaVersion JavaVersion.VERSION_1_6
@@ -47,4 +55,6 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.github.bumptech.glide:okhttp-integration:1.4.0@aar'
+
+    compile 'com.jakewharton:butterknife:7.0.1'
 }

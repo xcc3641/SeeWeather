@@ -1,6 +1,5 @@
 package com.xiecc.seeWeather.modules.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -57,11 +54,11 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
-    SwipeRefreshLayout.OnRefreshListener,
     AMapLocationListener {
     private final String TAG = MainActivity.class.getSimpleName();
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    //@Bind(R.id.toolbar_layout) CollapsingToolbarLayout collapsingToolbarLayout;
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private FloatingActionButton fab;
@@ -88,6 +85,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //ButterKnife.bind(this);
         initView();
         initDrawer();
         initIcon();
@@ -117,7 +115,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiprefresh);
-        mRefreshLayout.setOnRefreshListener(this);
+        mRefreshLayout.setOnRefreshListener(() -> {
+            mRefreshLayout.postDelayed(() -> fetchDataByNetWork(observer), 1000);
+        });
 
         //标题
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
@@ -138,12 +138,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //fab
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFabDialog();
-            }
-        });
+        fab.setOnClickListener(v -> showFabDialog());
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
         final int fabBottomMargin = lp.bottomMargin;
 
@@ -165,7 +160,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
             }
         });
-
 
         //mAdapter = new WeatherAdapter(MainActivity.this, mWeatherData);
         //mRecyclerView.setAdapter(mAdapter);
@@ -237,26 +231,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         observer = new Observer<Weather>() {
             @Override
             public void onCompleted() {
-                new RefreshHandler().sendEmptyMessage(2);
+                mRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onError(Throwable e) {
-                //RetrofitSingleton.disposeFailureInfo(e, MainActivity.this, fab);
                 erroNetSnackbar(observer);
-                new RefreshHandler().sendEmptyMessage(2);
+                mRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onNext(Weather weather) {
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
-
-                new RefreshHandler().sendEmptyMessage(2);
+                mRecyclerView.setVisibility(View.VISIBLE);
+                
                 collapsingToolbarLayout.setTitle(weather.basic.city);
                 mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 mRecyclerView.setAdapter(mAdapter);
                 normalStyleNotification(weather);
+                showSnackbar(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,");
             }
         };
         //fetchDataByCache(observer);
@@ -285,6 +279,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void erroNetSnackbar(final Observer<Weather> observer) {
         mProgressBar.setVisibility(View.GONE);
         mErroImageView.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
         Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
             fetchDataByNetWork(observer);
         }).show();
@@ -373,11 +368,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    @Override
-    public void onRefresh() {
-        fetchDataByNetWork(observer);
-    }
-
     /**
      * 高德定位
      */
@@ -438,40 +428,39 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 showSnackbar(fab, "定位失败,默认加载城市", true);
             }
             fetchDataByNetWork(observer);
-
         }
     }
 
-    @SuppressLint("HandlerLeak")
-    class RefreshHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    mRefreshLayout.setRefreshing(true);
-                    break;
-                case 2:
-                    if (mRefreshLayout.isRefreshing()) {
-                        mRefreshLayout.setRefreshing(false);
-
-                        if (Util.isNetworkConnected(MainActivity.this)) {
-                            Snackbar.make(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺", Snackbar.LENGTH_SHORT).show();
-                        } else {
-                            Snackbar.make(fab, "网络出了些问题？( ´△｀)", Snackbar.LENGTH_SHORT).show();
-                        }
-                    }
-                    break;
-            }
-        }
-    }
+    //@SuppressLint("HandlerLeak")
+    //class RefreshHandler extends Handler {
+    //    @Override
+    //    public void handleMessage(Message msg) {
+    //        super.handleMessage(msg);
+    //        switch (msg.what) {
+    //            case 1:
+    //                mRefreshLayout.setRefreshing(true);
+    //                break;
+    //            case 2:
+    //                if (mRefreshLayout.isRefreshing()) {
+    //                    mRefreshLayout.setRefreshing(false);
+    //
+    //                    if (Util.isNetworkConnected(MainActivity.this)) {
+    //                        Snackbar.make(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺", Snackbar.LENGTH_SHORT).show();
+    //                    } else {
+    //                        Snackbar.make(fab, "网络出了些问题？( ´△｀)", Snackbar.LENGTH_SHORT).show();
+    //                    }
+    //                }
+    //                break;
+    //        }
+    //    }
+    //}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //requestCode标示请求的标示   resultCode表示有数据
         if (requestCode == 1 && resultCode == 2) {
-            new RefreshHandler().sendEmptyMessage(1);
+            mRefreshLayout.setRefreshing(true);
             mSetting.putString(Setting.CITY_NAME, data.getStringExtra(Setting.CITY_NAME));
             fetchDataByNetWork(observer);
         }

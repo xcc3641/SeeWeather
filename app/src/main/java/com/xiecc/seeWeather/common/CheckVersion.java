@@ -31,7 +31,7 @@ public class CheckVersion {
 
                 @Override
                 public void onError(Throwable e) {
-                    RetrofitSingleton.disposeFailureInfo(e, context, view);
+                    //RetrofitSingleton.disposeFailureInfo(e, context, view);
                 }
 
                 @Override
