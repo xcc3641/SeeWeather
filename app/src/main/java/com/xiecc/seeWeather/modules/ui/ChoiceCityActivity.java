@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.modules.adatper.CityAdapter;
 import com.xiecc.seeWeather.modules.db.DBManager;
 import com.xiecc.seeWeather.modules.db.WeatherDB;
@@ -22,6 +23,7 @@ import com.xiecc.seeWeather.modules.domain.Province;
 import com.xiecc.seeWeather.modules.ui.setting.Setting;
 import java.util.ArrayList;
 import java.util.List;
+import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -84,6 +86,7 @@ public class ChoiceCityActivity extends BaseActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mAdapter = new CityAdapter(this, dataList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -115,6 +118,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 currentLevel = LEVEL_PROVINCE;
                 mAdapter.notifyDataSetChanged();
                 mProgressBar.setVisibility(View.GONE);
+                PLog.i(TAG,"省份");
             }
 
 
@@ -124,13 +128,18 @@ public class ChoiceCityActivity extends BaseActivity {
 
 
             @Override public void onNext(Province province) {
+                //在这里做 RV 的动画效果 使用 Item 的更新
                 dataList.add(province.ProName);
+                //PLog.i(TAG,province.ProSort+"");
+                //mAdapter.notifyItemInserted(province.ProSort-1);
+
             }
         };
 
         Observable.defer(() -> {
             provincesList = mWeatherDB.loadProvinces(mDBManager.getDatabase());
             dataList.clear();
+            mAdapter.notifyDataSetChanged();
             return Observable.from(provincesList);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
 
@@ -144,6 +153,7 @@ public class ChoiceCityActivity extends BaseActivity {
      */
     private void queryCities() {
         dataList.clear();
+        mAdapter.notifyDataSetChanged();
         collapsingToolbarLayout.setTitle(selectedProvince.ProName);
         Observer<City> observer = new Observer<City>() {
             @Override public void onCompleted() {
@@ -151,6 +161,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item
                 mRecyclerView.smoothScrollToPosition(0);
+                PLog.i(TAG,"城市");
             }
 
 
@@ -161,6 +172,7 @@ public class ChoiceCityActivity extends BaseActivity {
 
             @Override public void onNext(City city) {
                 dataList.add(city.CityName);
+                //mAdapter.notifyItemInserted(city.CitySort);
             }
         };
 

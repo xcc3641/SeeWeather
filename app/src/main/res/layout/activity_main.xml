@@ -58,15 +58,17 @@
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/content_main"/>
-
+        <include
+            android:id="@+id/main_content"
+            layout="@layout/content_main"/>
+<!--23.3 后不能 anchor 到 Coordinator-->
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             app:borderWidth="0dp"
-            app:layout_anchor="@id/coord"
+            app:layout_anchor="@id/main_content"
             app:layout_anchorGravity="end|bottom"
             android:src="@drawable/ic_favorite_24dp"/>
 

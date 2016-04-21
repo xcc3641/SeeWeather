@@ -11,5 +11,4 @@ public class Province  implements Serializable{
     public int ProSort;
 
 
-
 }

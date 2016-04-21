@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.ui;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -35,6 +36,7 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.CheckVersion;
@@ -92,7 +94,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDataObserver();
         if (Util.isNetworkConnected(this)) {
             CheckVersion.checkVersion(this, fab);
-            location(); //定位
+            // https://github.com/tbruyelle/RxPermissions
+            RxPermissions.getInstance(this).request(Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribe(granted ->{
+                    if (granted){
+                        location();
+                    }else {
+                        fetchDataByCache(observer);
+                    }
+                });
             //fetchData();
         } else {
             fetchDataByCache(observer);
@@ -245,7 +255,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
-                
+
                 collapsingToolbarLayout.setTitle(weather.basic.city);
                 mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 mRecyclerView.setAdapter(mAdapter);
