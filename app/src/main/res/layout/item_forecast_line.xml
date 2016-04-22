@@ -3,8 +3,8 @@
     android:orientation="horizontal"
     android:paddingBottom="16dp"
     android:paddingTop="16dp"
-    android:paddingLeft="32dp"
-    android:paddingRight="16dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

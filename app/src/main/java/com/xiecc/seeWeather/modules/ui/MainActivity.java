@@ -92,14 +92,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDrawer();
         initIcon();
         initDataObserver();
+
         if (Util.isNetworkConnected(this)) {
             CheckVersion.checkVersion(this, fab);
             // https://github.com/tbruyelle/RxPermissions
             RxPermissions.getInstance(this).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(granted ->{
-                    if (granted){
+                .subscribe(granted -> {
+                    if (granted) {
                         location();
-                    }else {
+                    } else {
                         fetchDataByCache(observer);
                     }
                 });
@@ -118,20 +119,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setSupportActionBar(toolbar);
         bannner = (ImageView) findViewById(R.id.bannner);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mProgressBar.setVisibility(View.VISIBLE);
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
         mErroImageView = (ImageView) findViewById(R.id.iv_erro);
         // Glide 加载本地 GIF 图的方法
         //GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(mErroImageView);
         //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiprefresh);
-        mRefreshLayout.setOnRefreshListener(() -> {
-            mRefreshLayout.postDelayed(() -> fetchDataByNetWork(observer), 1000);
-        });
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setOnRefreshListener(() -> {
+                mRefreshLayout.postDelayed(() -> fetchDataByNetWork(observer), 1000);
+            });
+        }
 
         //标题
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        collapsingToolbarLayout.setTitle(" ");
+        if (collapsingToolbarLayout != null) {
+            collapsingToolbarLayout.setTitle(" ");
+        }
 
         //彩蛋-夜间模式
         Calendar calendar = Calendar.getInstance();
@@ -148,28 +155,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //fab
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(v -> showFabDialog());
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-        final int fabBottomMargin = lp.bottomMargin;
+        if (fab != null) {
+            fab.setOnClickListener(v -> showFabDialog());
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+            final int fabBottomMargin = lp.bottomMargin;
 
-        //recclerview
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addOnScrollListener(new HidingScrollListener() {
-            @Override
-            public void onHide() {
-                fab.animate()
-                    .translationY(fab.getHeight() + fabBottomMargin)
-                    .setInterpolator(new AccelerateInterpolator(2))
-                    .start();
-            }
+            //recclerview
+            mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.addOnScrollListener(new HidingScrollListener() {
+                @Override
+                public void onHide() {
+                    fab.animate()
+                        .translationY(fab.getHeight() + fabBottomMargin)
+                        .setInterpolator(new AccelerateInterpolator(2))
+                        .start();
+                }
 
-            @Override
-            public void onShow() {
-                fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
-            }
-        });
+                @Override
+                public void onShow() {
+                    fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                }
+            });
+        }
 
         //mAdapter = new WeatherAdapter(MainActivity.this, mWeatherData);
         //mRecyclerView.setAdapter(mAdapter);
@@ -182,19 +191,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initDrawer() {
         //https://segmentfault.com/a/1190000004151222
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        headerBackground = (RelativeLayout) headerLayout.findViewById(R.id.header_background);
-        if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
-            //headerBackground.setBackground(this.getResources().getDrawable(R.mipmap.header_back_night)); 过时
-            headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back_night));
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+            View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
+            headerBackground = (RelativeLayout) headerLayout.findViewById(R.id.header_background);
+            if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
+                //headerBackground.setBackground(this.getResources().getDrawable(R.mipmap.header_back_night)); 过时
+                headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back_night));
+            }
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
         }
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
     }
 
     /**

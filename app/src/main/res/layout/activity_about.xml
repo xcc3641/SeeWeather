@@ -8,24 +8,22 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     </android.support.design.widget.AppBarLayout>
-
-    <FrameLayout
-        android:fitsSystemWindows="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:id="@+id/framelayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <FrameLayout
+            android:id="@+id/framelayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.modules.adatper.CityAdapter;
 import com.xiecc.seeWeather.modules.db.DBManager;
 import com.xiecc.seeWeather.modules.db.WeatherDB;
@@ -56,12 +55,20 @@ public class ChoiceCityActivity extends BaseActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_city);
+
+        //RxPermissions.getInstance(this).requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)
+        //    .subscribe(permission ->{
+        //       if (permission.granted){
+        //
+        //       }
+        //    });
         mDBManager = new DBManager(this);
         mDBManager.openDatabase();
         mWeatherDB = new WeatherDB(this);
         initView();
         initRecyclerView();
         queryProvinces();
+
     }
 
 
@@ -78,7 +85,9 @@ public class ChoiceCityActivity extends BaseActivity {
             setStatusBarColorForKitkat(R.color.colorSunset);
         }
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mProgressBar.setVisibility(View.VISIBLE);
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -118,7 +127,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 currentLevel = LEVEL_PROVINCE;
                 mAdapter.notifyDataSetChanged();
                 mProgressBar.setVisibility(View.GONE);
-                PLog.i(TAG,"省份");
+                //PLog.i(TAG,"省份");
             }
 
 
@@ -161,7 +170,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item
                 mRecyclerView.smoothScrollToPosition(0);
-                PLog.i(TAG,"城市");
+                //PLog.i(TAG,"城市");
             }
 
 

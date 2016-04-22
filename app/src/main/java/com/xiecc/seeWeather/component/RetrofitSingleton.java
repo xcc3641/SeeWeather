@@ -10,9 +10,9 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by zk on 2015/12/16.

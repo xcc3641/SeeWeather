@@ -13,7 +13,7 @@
         <item name="android:textColor">#00000000</item>
     </style>
 
-    <style name="FirstTheme" parent="android:Theme">
+    <style name="FirstTheme" parent="Theme.AppCompat">
 
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@mipmap/first_backpng</item>
