@@ -1,29 +1,37 @@
 package com.xiecc.seeWeather.modules.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by hugo on 2015/10/25 0025.
  * 闪屏页
  */
 public class FirstActivity extends Activity {
-    private static final String TAG = "FirstActivity:";
+    private static final String TAG = FirstActivity.class.getSimpleName();
+    private SwitchHandler mHandler = new SwitchHandler(Looper.getMainLooper(), this);
 
-
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new switchHandler().sendEmptyMessageDelayed(1, 1000);
+        mHandler.sendEmptyMessageDelayed(1, 1000);
     }
 
+    class SwitchHandler extends Handler {
+        private WeakReference<FirstActivity> mWeakReference;
 
-    @SuppressLint("HandlerLeak") class switchHandler extends Handler {
-        @Override public void handleMessage(Message msg) {
+        public SwitchHandler(Looper mLooper, FirstActivity activity) {
+            super(mLooper);
+            mWeakReference = new WeakReference<FirstActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
             super.handleMessage(msg);
             Intent i = new Intent(FirstActivity.this, MainActivity.class);
             FirstActivity.this.startActivity(i);

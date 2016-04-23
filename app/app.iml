@@ -88,7 +88,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.bumptech.glide/okhttp-integration/1.4.0/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.bumptech.glide/okhttp3-integration/1.4.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.tbruyelle.rxpermissions/rxpermissions/0.7.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/jp.wasabeef/recyclerview-animators/2.2.3/jars" />
@@ -115,13 +115,12 @@
     <orderEntry type="library" exported="" name="butterknife-7.0.1" level="project" />
     <orderEntry type="library" exported="" name="gson-2.6.1" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
+    <orderEntry type="library" exported="" name="okhttp3-integration-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-animators-2.2.3" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="systembartint-1.0.3" level="project" />
     <orderEntry type="library" exported="" name="glide-3.7.0" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-integration-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="animated-vector-drawable-23.3.0" level="project" />
@@ -135,6 +134,7 @@
     <orderEntry type="library" exported="" name="design-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="AMap_Location_v2.3.0_20160112" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-23.3.0" level="project" />
+    <orderEntry type="library" exported="" name="logging-interceptor-3.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
     <orderEntry type="library" exported="" name="okhttp-3.2.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />

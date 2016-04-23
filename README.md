@@ -34,7 +34,7 @@
 
 权限说明
 
-\`\`\`
+```
 	<!--用于进行网络定位-->
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<!--用于访问GPS定位-->
@@ -53,7 +53,7 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-\`\`\`
+```
 
 ### 版本更新&&下载地址
 Fir.im: http://fir.im/seeWeather
@@ -98,8 +98,8 @@ v1.0
 ### TODO
 这学期有点忙，需要花时间巩固基础，准备面试，但是自己还是会抽空尽快做出这些功能的，谢谢大家理解和支持
 - [ ] 桌面小部件
-- [ ] 通知栏提醒
-- [ ] 更好，更多的天气ICONS
+- [x] 通知栏提醒
+- [x] 更好，更多的天气ICONS
 - [ ] 管理城市（多城市选择）
 - [x] \~\~自动定位\~\~
 - [ ] 自由定制的Item界面
