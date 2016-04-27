@@ -45,6 +45,7 @@ public class RetrofitSingleton {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
             .addInterceptor(interceptor)
+
             .retryOnConnectionFailure(true)
             .connectTimeout(15, TimeUnit.SECONDS)
             .build();

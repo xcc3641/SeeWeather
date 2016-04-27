@@ -12,6 +12,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
@@ -42,8 +44,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     //    mActivity = (SettingActivity) context;
     //}
 
-
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting);
         mSetting = Setting.getInstance();
@@ -55,12 +57,11 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         mNotificationType = (SwitchPreference) findPreference(Setting.NOTIFICATION_MODEL);
 
-
-        mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getInt(Setting.CHANGE_ICONS, 0)]);
+        mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getIconType()]);
 
         //mChangeUpdate.setSummary(
         //        getResources().getStringArray(R.array.cache_time)[mSetting.getInt(Setting.HOUR_SELECT, 0)]);
-        mChangeUpdate.setSummary(mSetting.getAutoUpdate()==0?"禁止刷新":"每"+mSetting.getAutoUpdate()+"小时更新");
+        mChangeUpdate.setSummary(mSetting.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSetting.getAutoUpdate() + "小时更新");
         mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
 
         mChangeIcons.setOnPreferenceClickListener(this);
@@ -69,12 +70,11 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mNotificationType.setOnPreferenceClickListener(this);
     }
 
-
-    @Override public boolean onPreferenceClick(Preference preference) {
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
         if (mChangeIcons == preference) {
             showIconDialog();
-        }
-        else if (mClearCache == preference) {
+        } else if (mClearCache == preference) {
             mACache.clear();
             Glide.get(getActivity().getApplicationContext()).clearMemory();
             new Thread(() -> {
@@ -82,47 +82,103 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             });
             mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
             Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
-        }
-        else if (mChangeUpdate == preference) {
+        } else if (mChangeUpdate == preference) {
             showUpdateDialog();
-        }else if (mNotificationType ==preference){
-                //if (mNotificationType.isChecked()){
-                //    mNotificationType.setChecked(false);
-                //}else {
-                //    mNotificationType.setChecked(true);
-                //}
+        } else if (mNotificationType == preference) {
+            //if (mNotificationType.isChecked()){
+            //    mNotificationType.setChecked(false);
+            //}else {
+            //    mNotificationType.setChecked(true);
+            //}
             mNotificationType.setChecked(mNotificationType.isChecked());
-            mSetting.setNotificationModel(mNotificationType.isChecked()? Notification.FLAG_AUTO_CANCEL:Notification.FLAG_ONGOING_EVENT);
-            PLog.i(TAG,mSetting.getAutoUpdate()+"");
+            mSetting.setNotificationModel(
+                mNotificationType.isChecked() ? Notification.FLAG_AUTO_CANCEL : Notification.FLAG_ONGOING_EVENT);
+            PLog.i(TAG, mSetting.getAutoUpdate() + "");
         }
 
         return false;
     }
 
-
     private void showIconDialog() {
-        new AlertDialog.Builder(getActivity()).setTitle("更换图标")
-                                              .setSingleChoiceItems(getResources().getStringArray(R.array.icons),
-                                                      mSetting.getInt(Setting.CHANGE_ICONS, 0),
-                                                  (dialog, which) -> {
-                                                      if (which != mSetting.getInt(Setting.CHANGE_ICONS, 0)) {
-                                                          mSetting.setIconType(which);
-                                                      }
-                                                      dialog.dismiss();
-                                                      mChangeIcons.setSummary(getResources().getStringArray(
-                                                              R.array.icons)[mSetting.getIconType()]);
-                                                      Snackbar.make(getView(), "切换成功,重启应用生效",
-                                                              Snackbar.LENGTH_SHORT).show();
-                                                  })
-                                              .show();
+        //new AlertDialog.Builder(getActivity()).setTitle("更换图标")
+        //    .setSingleChoiceItems(getResources().getStringArray(R.array.icons),
+        //        mSetting.getInt(Setting.CHANGE_ICONS, 0),
+        //        (dialog, which) -> {
+        //            if (which != mSetting.getInt(Setting.CHANGE_ICONS, 0)) {
+        //                mSetting.setIconType(which);
+        //            }
+        //            dialog.dismiss();
+        //            mChangeIcons.setSummary(getResources().getStringArray(
+        //                R.array.icons)[mSetting.getIconType()]);
+        //            Snackbar.make(getView(), "切换成功,重启应用生效",
+        //                Snackbar.LENGTH_INDEFINITE).setAction("重启",
+        //                v -> {
+        //                    Intent intent =
+        //                        getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName());
+        //                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //                    getActivity().startActivity(intent);
+        //                }).show();
+        //        })
+        //    .show();
 
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogLayout = inflater.inflate(R.layout.icon_dialog, (ViewGroup) getActivity().findViewById(R.id.dialog_root));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(dialogLayout);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
 
+        LinearLayout layoutTypeOne = (LinearLayout) dialogLayout.findViewById(R.id.layout_one);
+        layoutTypeOne.setClickable(true);
+        RadioButton radioTypeOne = (RadioButton) dialogLayout.findViewById(R.id.radio_one);
+        LinearLayout layoutTypeTwo = (LinearLayout) dialogLayout.findViewById(R.id.layout_two);
+        layoutTypeTwo.setClickable(true);
+        RadioButton radioTypeTwo = (RadioButton) dialogLayout.findViewById(R.id.radio_two);
+        TextView done = (TextView) dialogLayout.findViewById(R.id.done);
+        radioTypeOne.setClickable(false);
+        radioTypeTwo.setChecked(false);
+
+        switch (mSetting.getIconType()) {
+            case 0:
+                radioTypeOne.setChecked(true);
+                radioTypeTwo.setChecked(false);
+                break;
+            case 1:
+                radioTypeOne.setChecked(false);
+                radioTypeTwo.setChecked(true);
+                break;
+        }
+
+        layoutTypeOne.setOnClickListener(v -> {
+            radioTypeOne.setChecked(true);
+            radioTypeTwo.setChecked(false);
+        });
+
+        layoutTypeTwo.setOnClickListener(v -> {
+            radioTypeOne.setChecked(false);
+            radioTypeTwo.setChecked(true);
+        });
+
+        done.setOnClickListener(v -> {
+            mSetting.setIconType(radioTypeOne.isChecked() ? 0 : 1);
+            String[] iconsText = getResources().getStringArray(R.array.icons);
+            mChangeIcons.setSummary(radioTypeOne.isChecked() ? iconsText[0] :
+                iconsText[1]);
+            alertDialog.dismiss();
+            Snackbar.make(getView(), "切换成功,重启应用生效",
+                Snackbar.LENGTH_INDEFINITE).setAction("重启",
+                v1 -> {
+                    Intent intent =
+                        getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    getActivity().startActivity(intent);
+                }).show();
+
+        });
     }
-
 
     private void showUpdateDialog() {
         //将 SeekBar 放入 Dialog 的方案 http://stackoverflow.com/questions/7184104/how-do-i-put-a-seek-bar-in-an-alert-dialog
-        LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = inflater.inflate(R.layout.update_dialog, (ViewGroup) getActivity().findViewById(
             R.id.dialog_root));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
@@ -131,16 +187,16 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         alertDialog.show();
 
         final SeekBar mSeekBar = (SeekBar) dialogLayout.findViewById(R.id.time_seekbar);
-        final TextView   tvShowHour = (TextView) dialogLayout.findViewById(R.id.tv_showhour);
+        final TextView tvShowHour = (TextView) dialogLayout.findViewById(R.id.tv_showhour);
         TextView tvDone = (TextView) dialogLayout.findViewById(R.id.done);
 
         mSeekBar.setMax(24);
         mSeekBar.setProgress(mSetting.getAutoUpdate());
-        tvShowHour.setText("每"+mSeekBar.getProgress()+"小时");
+        tvShowHour.setText("每" + mSeekBar.getProgress() + "小时");
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    tvShowHour.setText("每"+progress+"小时");
+                tvShowHour.setText("每" + progress + "小时");
             }
 
             @Override
@@ -155,7 +211,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         });
         tvDone.setOnClickListener(v -> {
             mSetting.setAutoUpdate(mSeekBar.getProgress());
-            mChangeUpdate.setSummary(mSetting.getAutoUpdate()==0?"禁止刷新":"每"+mSetting.getAutoUpdate()+"小时更新");
+            mChangeUpdate.setSummary(mSetting.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSetting.getAutoUpdate() + "小时更新");
             //需要再调用一次才能生效设置 不会重复的执行onCreate()， 而是会调用onStart()和onStartCommand()。
             getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
             alertDialog.dismiss();

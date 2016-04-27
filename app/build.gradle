@@ -9,8 +9,13 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 3
-        versionName "2.1"
+        versionName "2.1.1"
         resConfigs "zh"
+
+        ndk {
+            //设置支持的SO库架构
+            abiFilters 'x86' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a' 'armeabi'
+        }
     }
     buildTypes {
         release {
@@ -58,4 +63,6 @@ dependencies {
     compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
+
+    compile 'com.tencent.bugly:crashreport:latest.release'
 }

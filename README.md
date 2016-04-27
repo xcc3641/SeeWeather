@@ -128,8 +128,8 @@ v1.0
 
 ##### 网络
 就看天气的网络部分的支持是用`RxJava+RxAndroid+Retrofit+Gson`再加上`ACache`缓存
-\`\`\`
-   /\*\*
+```
+   /**
 	 * <p/>
 	 * 首先从本地缓存获取数据
 	 * if 有
@@ -178,13 +178,13 @@ v1.0
 	                    ////节约篇幅，已省略
 	                    ...
 	}
-\`\`\`
+```
 ##### RecycerVIew展示
 就像洪洋说的一样
 > 整体上看RecyclerView架构，提供了一种插拔式的体验，高度的解耦，异常的灵活，通过设置它提供的不同LayoutManager，ItemDecoration , ItemAnimator实现令人瞠目的效果。
 
 该项目中用到RecyclerView中级的用法是根据itemType展示不同的布局，这就是主页核心的代码了。
-\`\`\`
+```
 @Override public int getItemViewType(int position) {
 	    if (position == TYPE_ONE) {
 	    //标识
@@ -209,7 +209,7 @@ v1.0
 	    }
 }
 
-\`\`\`
+```
 
 
 

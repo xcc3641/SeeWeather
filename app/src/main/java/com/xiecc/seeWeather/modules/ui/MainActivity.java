@@ -40,6 +40,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.CheckVersion;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.adatper.WeatherAdapter;
@@ -74,7 +75,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     //private Weather mWeatherData = new Weather();
     private WeatherAdapter mAdapter;
     private Observer<Weather> observer;
-
     private long exitTime = 0; ////记录第一次点击的时间
 
     //声明AMapLocationClient类对象
@@ -87,12 +87,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PLog.i(TAG,"onCreate");
         //ButterKnife.bind(this);
         initView();
         initDrawer();
-        initIcon();
-        initDataObserver();
 
+        initDataObserver();
+        startService(new Intent(this, AutoUpdateService.class));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //为了实现 Intent 重启使图标生效
+        initIcon();
         if (Util.isNetworkConnected(this)) {
             CheckVersion.checkVersion(this, fab);
             // https://github.com/tbruyelle/RxPermissions
@@ -108,7 +116,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             fetchDataByCache(observer);
         }
-        startService(new Intent(this, AutoUpdateService.class));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PLog.i(TAG,"onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        PLog.i(TAG,"onStop");
     }
 
     /**

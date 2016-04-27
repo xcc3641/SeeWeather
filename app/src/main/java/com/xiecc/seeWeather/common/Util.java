@@ -106,4 +106,13 @@ public class Util {
         }
         return week;
     }
+
+    public static void getTset(Util.listener listener){
+
+    }
+
+    public interface listener{
+
+       public void onSuccess();
+    }
 }

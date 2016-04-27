@@ -2,6 +2,7 @@ package com.xiecc.seeWeather.base;
 
 import android.app.Application;
 import android.content.Context;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.common.CrashHandler;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 
@@ -20,6 +21,8 @@ public class BaseApplication extends Application {
         // 初始化 retrofit
         RetrofitSingleton.init(getApplicationContext());
         CrashHandler.init(new CrashHandler(getApplicationContext()));
+        CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
+
         //Thread.setDefaultUncaughtExceptionHandler(new MyUnCaughtExceptionHandler());
 
         /**
