@@ -72,7 +72,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RelativeLayout headerBackground;
 
     private RecyclerView mRecyclerView;
-    //private Weather mWeatherData = new Weather();
+    private Weather mWeather;
     private WeatherAdapter mAdapter;
     private Observer<Weather> observer;
     private long exitTime = 0; ////记录第一次点击的时间
@@ -87,20 +87,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        PLog.i(TAG,"onCreate");
+        PLog.i(TAG, "onCreate");
         //ButterKnife.bind(this);
         initView();
         initDrawer();
-
         initDataObserver();
-        startService(new Intent(this, AutoUpdateService.class));
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //为了实现 Intent 重启使图标生效
         initIcon();
+        startService(new Intent(this, AutoUpdateService.class));
+
         if (Util.isNetworkConnected(this)) {
             CheckVersion.checkVersion(this, fab);
             // https://github.com/tbruyelle/RxPermissions
@@ -109,7 +103,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (granted) {
                         location();
                     } else {
-                        fetchDataByCache(observer);
+                        fetchDataByNetWork(observer);
                     }
                 });
             //fetchData();
@@ -119,15 +113,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //为了实现 Intent 重启使图标生效
+        initIcon();
+        // 修改 adapter 的初始化
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        PLog.i(TAG,"onPause");
+        PLog.i(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        PLog.i(TAG,"onStop");
+        PLog.i(TAG, "onStop");
     }
 
     /**
@@ -197,10 +199,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
                 }
             });
+            mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
+            mRecyclerView.setAdapter(mAdapter);
         }
 
-        //mAdapter = new WeatherAdapter(MainActivity.this, mWeatherData);
-        //mRecyclerView.setAdapter(mAdapter);
 
     }
 
@@ -285,15 +287,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
 
+                mWeather = weather;
                 collapsingToolbarLayout.setTitle(weather.basic.city);
-                mAdapter = new WeatherAdapter(MainActivity.this, weather);
-                mRecyclerView.setAdapter(mAdapter);
+                //mAdapter = new WeatherAdapter(MainActivity.this, weather);
+                //mRecyclerView.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
                 normalStyleNotification(weather);
                 showSnackbar(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,");
             }
         };
-        //fetchDataByCache(observer);
-        //fetchDataByNetWork(observer);
     }
 
     /**
@@ -440,22 +442,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (aMapLocation.getErrorCode() == 0) {
                 //定位成功回调信息，设置相关消息
                 aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                //aMapLocation.getLatitude();//获取纬度
-                //aMapLocation.getLongitude();//获取经度
-                //aMapLocation.getAccuracy();//获取精度信息
-                //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                //Date date = new Date(aMapLocation.getTime());
-                //df.format(date);//定位时间
-                //aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
-                //aMapLocation.getCountry();//国家信息
-                //aMapLocation.getProvince();//省信息
-                //aMapLocation.getCity();//城市信息
-                //aMapLocation.getDistrict();//城区信息
-                //aMapLocation.getStreet();//街道信息
-                //aMapLocation.getStreetNum();//街道门牌号信息
-                //aMapLocation.getCityCode();//城市编码
-                //aMapLocation.getAdCode();//地区编码
-                //mSetting.putString(Setting.CITY_NAME, aMapLocation.getCity());
                 mSetting.setCityName(aMapLocation.getCity());
                 //PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() +
                 //    aMapLocation.getAdCode() + aMapLocation.getCityCode());
@@ -469,30 +455,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             fetchDataByNetWork(observer);
         }
     }
-
-    //@SuppressLint("HandlerLeak")
-    //class RefreshHandler extends Handler {
-    //    @Override
-    //    public void handleMessage(Message msg) {
-    //        super.handleMessage(msg);
-    //        switch (msg.what) {
-    //            case 1:
-    //                mRefreshLayout.setRefreshing(true);
-    //                break;
-    //            case 2:
-    //                if (mRefreshLayout.isRefreshing()) {
-    //                    mRefreshLayout.setRefreshing(false);
-    //
-    //                    if (Util.isNetworkConnected(MainActivity.this)) {
-    //                        Snackbar.make(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺", Snackbar.LENGTH_SHORT).show();
-    //                    } else {
-    //                        Snackbar.make(fab, "网络出了些问题？( ´△｀)", Snackbar.LENGTH_SHORT).show();
-    //                    }
-    //                }
-    //                break;
-    //        }
-    //    }
-    //}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

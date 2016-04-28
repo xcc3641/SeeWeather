@@ -134,7 +134,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         layoutTypeTwo.setClickable(true);
         RadioButton radioTypeTwo = (RadioButton) dialogLayout.findViewById(R.id.radio_two);
         TextView done = (TextView) dialogLayout.findViewById(R.id.done);
-        
+
         radioTypeOne.setClickable(false);
         radioTypeTwo.setClickable(false);
 

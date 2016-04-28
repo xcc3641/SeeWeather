@@ -34,7 +34,6 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public WeatherAdapter(Context context, Weather weatherData) {
         mContext = context;
         this.mWeatherData = weatherData;
-
         mSetting = Setting.getInstance();
     }
 
@@ -78,7 +77,6 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
         if (holder instanceof NowWeatherViewHolder) {
             try {
                 ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.tmp + "℃");
@@ -179,10 +177,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return 4;
+        return mWeatherData != null ? 4 : 0;
     }
-
-
 
     /**
      * 当前天气情况
@@ -288,8 +284,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    private void  showWeatherDialog(){
-
+    private void showWeatherDialog() {
 
     }
 }
