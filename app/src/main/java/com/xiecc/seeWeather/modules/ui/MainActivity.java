@@ -285,6 +285,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
+                aCache.put("WeatherData", weather,
+                    (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
 
                 mWeather.status = weather.status;
                 mWeather.aqi = weather.aqi;
@@ -293,7 +295,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mWeather.now = weather.now;
                 mWeather.dailyForecast = weather.dailyForecast;
                 mWeather.hourlyForecast = weather.hourlyForecast;
-
                 collapsingToolbarLayout.setTitle(mWeather.basic.city);
                 //mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 //mRecyclerView.setAdapter(mAdapter);
@@ -351,10 +352,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             .observeOn(AndroidSchedulers.mainThread())
             .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
             .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-            .doOnNext(weather -> {
-                aCache.put("WeatherData", weather,
-                    (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
-            })
             .subscribe(observer);
     }
 
@@ -456,7 +453,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //PLog.e("AmapError", "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" +
                 //    aMapLocation.getErrorInfo());
                 //Snackbar.make(fab, "定位失败,请尝试手动更新", Snackbar.LENGTH_LONG).show();
-                showSnackbar(fab, "定位失败,默认加载城市", true);
+                showSnackbar(fab, "定位失败,加载默认城市", true);
             }
             fetchDataByNetWork(observer);
         }

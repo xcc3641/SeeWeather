@@ -26,6 +26,7 @@ public class DBManager {
     private Context context;
 
 
+
     public DBManager(Context context) {
         this.context = context;
     }
@@ -62,7 +63,6 @@ public class DBManager {
                 fos.close();
                 is.close();
             }
-
             return SQLiteDatabase.openOrCreateDatabase(dbfile, null);
         } catch (FileNotFoundException e) {
             Log.e("Database", "File not found");
@@ -71,6 +71,7 @@ public class DBManager {
             Log.e("Database", "IO exception");
             e.printStackTrace();
         }
+
         return null;
     }
 

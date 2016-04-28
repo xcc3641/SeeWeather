@@ -62,12 +62,19 @@ public class ChoiceCityActivity extends BaseActivity {
         //
         //       }
         //    });
-        mDBManager = new DBManager(this);
-        mDBManager.openDatabase();
-        mWeatherDB = new WeatherDB(this);
-        initView();
-        initRecyclerView();
-        queryProvinces();
+
+        Observable.defer(() -> {
+            mDBManager = new DBManager(ChoiceCityActivity.this);
+            mDBManager.openDatabase();
+            mWeatherDB = new WeatherDB(ChoiceCityActivity.this);
+            return Observable.just(1);
+        }).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(integer -> {
+                initView();
+                initRecyclerView();
+                queryProvinces();
+            });
 
     }
 

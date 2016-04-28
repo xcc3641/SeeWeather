@@ -10,14 +10,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.ACache;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.domain.Weather;
 import com.xiecc.seeWeather.modules.ui.MainActivity;
 import com.xiecc.seeWeather.modules.ui.setting.Setting;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
-import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -65,23 +63,10 @@ public class AutoUpdateService extends Service {
                 unSubscribed();
                 if (mSetting.getAutoUpdate() != 0) {
                     mNetSubcription = Observable.interval(mSetting.getAutoUpdate(), TimeUnit.HOURS)
-                        .subscribe(new Observer<Long>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                PLog.e(TAG, e.toString());
-                            }
-
-                            @Override
-                            public void onNext(Long aLong) {
-                                isUnsubscribed = false;
-                                //PLog.i(TAG, SystemClock.elapsedRealtime() + " 当前设置" + mSetting.getAutoUpdate());
-                                fetchDataByNetWork();
-                            }
+                        .subscribe(aLong -> {
+                            isUnsubscribed = false;
+                            //PLog.i(TAG, SystemClock.elapsedRealtime() + " 当前设置" + mSetting.getAutoUpdate());
+                            fetchDataByNetWork();
                         });
                     mCompositeSubscription.add(mNetSubcription);
                 }
@@ -116,22 +101,12 @@ public class AutoUpdateService extends Service {
             .observeOn(AndroidSchedulers.mainThread())
             .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
             .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-            .subscribe(new Observer<Weather>() {
-                @Override
-                public void onCompleted() {
+            .doOnNext(weather -> {
 
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onNext(Weather weather) {
-                    mAcache.put("WeatherData", weather);
-                    normalStyleNotification(weather);
-                }
+            })
+            .subscribe(weather -> {
+                mAcache.put("WeatherData", weather);
+                normalStyleNotification(weather);
             });
     }
 

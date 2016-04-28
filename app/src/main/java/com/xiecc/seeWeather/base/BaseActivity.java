@@ -19,8 +19,8 @@ public class BaseActivity extends AppCompatActivity {
     public ACache aCache;
     public Setting mSetting = null;
 
-
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         aCache = ACache.get(BaseActivity.this);
         mSetting = Setting.getInstance();
@@ -29,23 +29,21 @@ public class BaseActivity extends AppCompatActivity {
          * http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/1122/3712.html
          * 在BaseActivity.java里：我们通过判断当前sdk_int大于4.4(kitkat),则通过代码的形式设置status bar为透明
          * (这里其实可以通过values-v19 的sytle.xml里设置windowTranslucentStatus属性为true来进行设置，但是在某些手机会不起效，所以采用代码的形式进行设置)。
-         * 还需要注意的是我们这里的AppCompatAcitivity是android.support.v7.app.AppCompatActivity支持包中的AppCompatAcitivity,也是为了在低版本的android系统中兼容toolbar。
+         * 还需要注意的是我们这里的AppCompatAcitivity是android.support.v7.app.AppCompatActivity支持包中的AppCompatAcitivity,
+         * 也是为了在低版本的android系统中兼容toolbar。
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window window = getWindow();
             // Translucent status bar
             window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
-
-
     }
 
-
-    @Override public void setContentView(int layoutResID) {
+    @Override
+    public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
     }
-
 
     /**
      * 设置状态栏颜色
@@ -63,7 +61,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-
     public void setStatusBarColorForKitkat(int color) {
         /**
          * Android4.4
@@ -76,10 +73,11 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void showSnackbar(View view,String s){
-        Snackbar.make(view,s,Snackbar.LENGTH_SHORT).show();
+    public void showSnackbar(View view, String s) {
+        Snackbar.make(view, s, Snackbar.LENGTH_SHORT).show();
     }
-    public void showSnackbar(View view,String s,boolean ture){
-        Snackbar.make(view,s,Snackbar.LENGTH_LONG).show();
+
+    public void showSnackbar(View view, String s, boolean ture) {
+        Snackbar.make(view, s, Snackbar.LENGTH_LONG).show();
     }
 }

@@ -77,6 +77,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
         if (holder instanceof NowWeatherViewHolder) {
             try {
                 ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.tmp + "℃");
