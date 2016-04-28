@@ -177,7 +177,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return mWeatherData != null ? 4 : 0;
+        return mWeatherData.status != null ? 4 : 0;
     }
 
     /**

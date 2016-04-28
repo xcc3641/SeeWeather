@@ -142,6 +142,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 //PLog.i(TAG,province.ProSort+"");
                 //mAdapter.notifyItemInserted(province.ProSort-1);
 
+
             }
         };
 

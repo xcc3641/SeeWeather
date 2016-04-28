@@ -72,7 +72,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RelativeLayout headerBackground;
 
     private RecyclerView mRecyclerView;
-    private Weather mWeather;
+    private Weather mWeather = new Weather();
     private WeatherAdapter mAdapter;
     private Observer<Weather> observer;
     private long exitTime = 0; ////记录第一次点击的时间
@@ -118,6 +118,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //为了实现 Intent 重启使图标生效
         initIcon();
         // 修改 adapter 的初始化
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -202,8 +203,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
             mRecyclerView.setAdapter(mAdapter);
         }
-
-
     }
 
     /**
@@ -287,12 +286,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
 
-                mWeather = weather;
-                collapsingToolbarLayout.setTitle(weather.basic.city);
+                mWeather.status = weather.status;
+                mWeather.aqi = weather.aqi;
+                mWeather.basic = weather.basic;
+                mWeather.suggestion = weather.suggestion;
+                mWeather.now = weather.now;
+                mWeather.dailyForecast = weather.dailyForecast;
+                mWeather.hourlyForecast = weather.hourlyForecast;
+
+                collapsingToolbarLayout.setTitle(mWeather.basic.city);
                 //mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 //mRecyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
-                normalStyleNotification(weather);
+                normalStyleNotification(mWeather);
                 showSnackbar(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,");
             }
         };
