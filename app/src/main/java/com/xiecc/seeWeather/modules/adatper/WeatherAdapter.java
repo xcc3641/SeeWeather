@@ -3,12 +3,14 @@ package com.xiecc.seeWeather.modules.adatper;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.PLog;
@@ -58,21 +60,26 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_ONE) {
             return new NowWeatherViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.item_temperature, parent, false));
+                    LayoutInflater.from(mContext).inflate(R.layout.item_temperature, parent, false));
         }
         if (viewType == TYPE_TWO) {
             return new HoursWeatherViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.item_hour_info, parent, false));
+                    LayoutInflater.from(mContext).inflate(R.layout.item_hour_info, parent, false));
         }
         if (viewType == TYPE_THREE) {
             return new SuggestionViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.item_suggestion, parent, false));
+                    LayoutInflater.from(mContext).inflate(R.layout.item_suggestion, parent, false));
         }
         if (viewType == TYPE_FORE) {
             return new ForecastViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_forecast, parent, false));
         }
 
         return null;
+    }
+
+    private String safeText(String prefix, String obj) {
+        if (TextUtils.isEmpty(obj)) return "";
+        return TextUtils.concat(prefix, obj).toString();
     }
 
     @Override
@@ -84,12 +91,12 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((NowWeatherViewHolder) holder).tempMax.setText("↑ " + mWeatherData.dailyForecast.get(0).tmp.max + "°");
                 ((NowWeatherViewHolder) holder).tempMin.setText("↓ " + mWeatherData.dailyForecast.get(0).tmp.min + "°");
                 if (mWeatherData.aqi != null) {
-                    ((NowWeatherViewHolder) holder).tempPm.setText("PM25： " + mWeatherData.aqi.city.pm25);
-                    ((NowWeatherViewHolder) holder).tempQuality.setText("空气质量： " + mWeatherData.aqi.city.qlty);
+                    ((NowWeatherViewHolder) holder).tempPm.setText(safeText("PM25： ", mWeatherData.aqi.city.pm25));
+                    ((NowWeatherViewHolder) holder).tempQuality.setText(safeText("空气质量： ", mWeatherData.aqi.city.qlty));
                 }
                 Glide.with(mContext)
-                    .load(mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none))
-                    .into(((NowWeatherViewHolder) holder).weatherIcon);
+                        .load(mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none))
+                        .into(((NowWeatherViewHolder) holder).weatherIcon);
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
             }
@@ -101,12 +108,12 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     //第一个参数是开始截取的位置，第二个是结束位置。
                     String mDate = mWeatherData.hourlyForecast.get(i).date;
                     ((HoursWeatherViewHolder) holder).mClock[i].setText(
-                        mDate.substring(mDate.length() - 5, mDate.length()));
+                            mDate.substring(mDate.length() - 5, mDate.length()));
                     ((HoursWeatherViewHolder) holder).mTemp[i].setText(mWeatherData.hourlyForecast.get(i).tmp + "°");
                     ((HoursWeatherViewHolder) holder).mHumidity[i].setText(
-                        mWeatherData.hourlyForecast.get(i).hum + "%");
+                            mWeatherData.hourlyForecast.get(i).hum + "%");
                     ((HoursWeatherViewHolder) holder).mWind[i].setText(
-                        mWeatherData.hourlyForecast.get(i).wind.spd + "Km");
+                            mWeatherData.hourlyForecast.get(i).wind.spd + "Km");
                 }
             } catch (Exception e) {
                 //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
@@ -141,16 +148,16 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (i > 1) {
                         try {
                             ((ForecastViewHolder) holder).forecastDate[i].setText(
-                                Util.dayForWeek(mWeatherData.dailyForecast.get(i).date));
+                                    Util.dayForWeek(mWeatherData.dailyForecast.get(i).date));
                         } catch (Exception e) {
                             PLog.e(TAG, e.toString());
                         }
                     }
                     // 图片
                     Glide.with(mContext)
-                        .load(mSetting.getInt(mWeatherData.dailyForecast.get(i).cond.txtD, R.mipmap.none))
-                        .crossFade()
-                        .into(((ForecastViewHolder) holder).forecastIcon[i]);
+                            .load(mSetting.getInt(mWeatherData.dailyForecast.get(i).cond.txtD, R.mipmap.none))
+                            .crossFade()
+                            .into(((ForecastViewHolder) holder).forecastIcon[i]);
 
                     View view = (View) ((ForecastViewHolder) holder).forecastIcon[i].getParent();
                     view.setOnClickListener(v -> {
@@ -158,16 +165,17 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     });
 
                     ((ForecastViewHolder) holder).forecastTemp[i].setText(
-                        mWeatherData.dailyForecast.get(i).tmp.min + "° " +
-                            mWeatherData.dailyForecast.get(i).tmp.max + "°");
+                            String.format("%s° %s°",
+                                    mWeatherData.dailyForecast.get(i).tmp.min,
+                                    mWeatherData.dailyForecast.get(i).tmp.max));
                     ((ForecastViewHolder) holder).forecastTxt[i].setText(
-                        mWeatherData.dailyForecast.get(i).cond.txtD + "。 最高" +
-                            mWeatherData.dailyForecast.get(i).tmp.max + "℃。 " +
-                            mWeatherData.dailyForecast.get(i).wind.sc + " " +
-                            mWeatherData.dailyForecast.get(i).wind.dir + " " +
-                            mWeatherData.dailyForecast.get(i).wind.spd + " km/h。 " +
-                            "降水几率 " +
-                            "" + mWeatherData.dailyForecast.get(i).pop + "%。");
+                            String.format("%s。 最高%s℃。 %s %s %s km/h。 降水几率 %s%%。",
+                                    mWeatherData.dailyForecast.get(i).cond.txtD,
+                                    mWeatherData.dailyForecast.get(i).tmp.max,
+                                    mWeatherData.dailyForecast.get(i).wind.sc,
+                                    mWeatherData.dailyForecast.get(i).wind.dir,
+                                    mWeatherData.dailyForecast.get(i).wind.spd,
+                                    mWeatherData.dailyForecast.get(i).pop));
                 }
             } catch (Exception e) {
                 //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();

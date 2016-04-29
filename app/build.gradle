@@ -65,4 +65,10 @@ dependencies {
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
 
     compile 'com.tencent.bugly:crashreport:latest.release'
+
+    debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
+    releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 }

@@ -2,6 +2,9 @@ package com.xiecc.seeWeather.base;
 
 import android.app.Application;
 import android.content.Context;
+
+import com.github.moduth.blockcanary.BlockCanary;
+import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.common.CrashHandler;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -15,13 +18,16 @@ public class BaseApplication extends Application {
     public static Context mAppContext = null;
 
 
-    @Override public void onCreate() {
+    @Override
+    public void onCreate() {
         super.onCreate();
         mAppContext = getApplicationContext();
         // 初始化 retrofit
         RetrofitSingleton.init(getApplicationContext());
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
+        BlockCanary.install(this, new AppBlockCanaryContext()).start();
+        LeakCanary.install(this);
 
         //Thread.setDefaultUncaughtExceptionHandler(new MyUnCaughtExceptionHandler());
 
@@ -32,8 +38,7 @@ public class BaseApplication extends Application {
         if (getApplicationContext().getExternalCacheDir() != null && ExistSDCard()) {
             cacheDir = getApplicationContext().getExternalCacheDir().toString();
 
-        }
-        else {
+        } else {
             cacheDir = getApplicationContext().getCacheDir().toString();
         }
     }
@@ -41,8 +46,7 @@ public class BaseApplication extends Application {
     private boolean ExistSDCard() {
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
