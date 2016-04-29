@@ -51,12 +51,13 @@ public class ChoiceCityActivity extends BaseActivity {
     public static final int LEVEL_CITY = 2;
     private int currentLevel;
 
-
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_city);
 
-        //RxPermissions.getInstance(this).requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)
+        //RxPermissions.getInstance(this).requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission
+        // .READ_EXTERNAL_STORAGE)
         //    .subscribe(permission ->{
         //       if (permission.granted){
         //
@@ -75,9 +76,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 initRecyclerView();
                 queryProvinces();
             });
-
     }
-
 
     private void initView() {
         //toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -86,17 +85,19 @@ public class ChoiceCityActivity extends BaseActivity {
         ImageView banner = (ImageView) findViewById(R.id.banner);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        if (mSetting.getCurrentHour()< 6 || mSetting.getCurrentHour() > 18) {
-            collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-            Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(banner);
-            setStatusBarColorForKitkat(R.color.colorSunset);
+        if (banner != null) {
+            Glide.with(this).load(R.mipmap.city_day).diskCacheStrategy(DiskCacheStrategy.ALL).into(banner);
+            if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
+                collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
+                Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(banner);
+                setStatusBarColorForKitkat(R.color.colorSunset);
+            }
         }
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }
-
 
     private void initRecyclerView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -111,8 +112,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 selectedProvince = provincesList.get(pos);
                 mRecyclerView.scrollTo(0, 0);
                 queryCities();
-            }
-            else if (currentLevel == LEVEL_CITY) {
+            } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(pos);
                 Intent intent = new Intent();
                 String cityName = selectedCity.CityName;
@@ -123,32 +123,31 @@ public class ChoiceCityActivity extends BaseActivity {
         });
     }
 
-
     /**
      * 查询全国所有的省，从数据库查询
      */
     private void queryProvinces() {
         collapsingToolbarLayout.setTitle("选择省份");
         Observer<Province> observer = new Observer<Province>() {
-            @Override public void onCompleted() {
+            @Override
+            public void onCompleted() {
                 currentLevel = LEVEL_PROVINCE;
                 mAdapter.notifyDataSetChanged();
                 mProgressBar.setVisibility(View.GONE);
                 //PLog.i(TAG,"省份");
             }
 
-
-            @Override public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
 
             }
 
-
-            @Override public void onNext(Province province) {
+            @Override
+            public void onNext(Province province) {
                 //在这里做 RV 的动画效果 使用 Item 的更新
                 dataList.add(province.ProName);
                 //PLog.i(TAG,province.ProSort+"");
                 //mAdapter.notifyItemInserted(province.ProSort-1);
-
 
             }
         };
@@ -159,11 +158,7 @@ public class ChoiceCityActivity extends BaseActivity {
             mAdapter.notifyDataSetChanged();
             return Observable.from(provincesList);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
-
-
-
     }
-
 
     /**
      * 查询选中省份的所有城市，从数据库查询
@@ -173,7 +168,8 @@ public class ChoiceCityActivity extends BaseActivity {
         mAdapter.notifyDataSetChanged();
         collapsingToolbarLayout.setTitle(selectedProvince.ProName);
         Observer<City> observer = new Observer<City>() {
-            @Override public void onCompleted() {
+            @Override
+            public void onCompleted() {
                 currentLevel = LEVEL_CITY;
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item
@@ -181,34 +177,32 @@ public class ChoiceCityActivity extends BaseActivity {
                 //PLog.i(TAG,"城市");
             }
 
-
-            @Override public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
 
             }
 
-
-            @Override public void onNext(City city) {
+            @Override
+            public void onNext(City city) {
                 dataList.add(city.CityName);
                 //mAdapter.notifyItemInserted(city.CitySort);
             }
         };
 
-
         Observable.defer(() -> {
             cityList = mWeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
         }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer);
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(observer);
     }
 
-
-    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (currentLevel == LEVEL_PROVINCE) {
                 finish();
-            }
-            else {
+            } else {
                 queryProvinces();
                 mRecyclerView.smoothScrollToPosition(0);
             }
@@ -216,8 +210,8 @@ public class ChoiceCityActivity extends BaseActivity {
         return false;
     }
 
-
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         mDBManager.closeDatabase();
     }

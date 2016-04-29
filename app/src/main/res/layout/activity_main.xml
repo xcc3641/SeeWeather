@@ -38,7 +38,6 @@
 
                 <ImageView
                     android:id="@+id/banner"
-                    android:src="@mipmap/sunrise"
                     android:fitsSystemWindows="true"
                     app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
                     android:layout_width="match_parent"

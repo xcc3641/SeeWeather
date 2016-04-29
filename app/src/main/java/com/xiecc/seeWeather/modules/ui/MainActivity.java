@@ -167,8 +167,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
         mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-
         setStatusBarColorForKitkat(R.color.colorSunrise);
+        Glide.with(this).load(R.mipmap.sunrise).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
         if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
             Glide.with(this).load(R.mipmap.sunset).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));

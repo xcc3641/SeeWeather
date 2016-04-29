@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 import com.xiecc.seeWeather.R;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -107,12 +108,14 @@ public class Util {
         return week;
     }
 
-    public static void getTset(Util.listener listener){
-
-    }
-
-    public interface listener{
-
-       public void onSuccess();
+    /**
+     * 安全的 String 返回
+     * @param prefix 默认字段
+     * @param obj 获得字段
+     * @return
+     */
+    public static String safeText(String prefix, String obj) {
+        if (TextUtils.isEmpty(obj)) return "";
+        return TextUtils.concat(prefix, obj).toString();
     }
 }
