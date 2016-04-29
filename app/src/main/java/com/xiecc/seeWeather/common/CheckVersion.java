@@ -9,7 +9,6 @@ import android.view.View;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.ui.setting.Setting;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -24,30 +23,13 @@ public class CheckVersion {
             .mVersionAPI(Setting.API_TOKEN)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Observer<VersionAPI>() {
-                @Override
-                public void onCompleted() {
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    //RetrofitSingleton.disposeFailureInfo(e, context, view);
-                }
-
-                @Override
-                public void onNext(VersionAPI versionAPI) {
-                    //FIR上当前的versionCode
-                    int firVersionCode = Integer.parseInt(versionAPI.version);
-                    //FIR上当前的versionName
-                    String firVersionName = versionAPI.versionShort;
-                    int currentVersionCode = Util.getVersionCode(context);
-                    String currentVersionName = Util.getVersion(context);
-                    //PLog.i(TAG, "当前版本:" + currentVersionName + "FIR上版本：" + firVersionName);
-                    if (currentVersionName.compareTo(firVersionName) < 0) {
-                        showUpdateDialog(versionAPI, context);
-                    } else {
-                        Snackbar.make(view, "已经是最新版本(⌐■_■)", Snackbar.LENGTH_SHORT).show();
-                    }
+            .subscribe(versionAPI -> {
+                String firVersionName = versionAPI.versionShort;
+                String currentVersionName = Util.getVersion(context);
+                if (currentVersionName.compareTo(firVersionName) < 0) {
+                    showUpdateDialog(versionAPI, context);
+                } else {
+                    Snackbar.make(view, "已经是最新版本(⌐■_■)", Snackbar.LENGTH_SHORT).show();
                 }
             });
     }

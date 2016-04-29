@@ -9,7 +9,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 3
-        versionName "2.1.2"
+        versionName "2.1.3"
         resConfigs "zh"
 
         ndk {

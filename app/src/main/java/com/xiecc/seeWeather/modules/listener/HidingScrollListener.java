@@ -3,7 +3,7 @@ package com.xiecc.seeWeather.modules.listener;
 import android.support.v7.widget.RecyclerView;
 
 /**
- * Created by Administrator on 2016/2/17 0017.
+ * Created by hugo on 2016/2/17 0017.
  */
 public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
     private static final int HIDE_THRESHOLD = 20;

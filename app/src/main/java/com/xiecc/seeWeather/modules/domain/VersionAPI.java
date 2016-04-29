@@ -3,7 +3,7 @@ package com.xiecc.seeWeather.modules.domain;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by Administrator on 2016/2/21 0021.
+ * Created by hugo on 2016/2/21 0021.
  */
 public class VersionAPI {
 
