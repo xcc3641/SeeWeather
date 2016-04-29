@@ -9,11 +9,6 @@
 
 当然自己也在学习之中，如果发现有任何问题和建议，随时欢迎Email或者开Issues
 
-**注意:**
-
-**要pull下来运行需要自己申请和风天气的key，写在Setting里。**
-
-**如果遇到崩溃请将项目地址`/Android/data/com.xiecc.seeWeather/cache/Log`下的`log`文件邮件发给我**
 
 - **开源不易，希望能给个Star鼓励** 
 - 项目地址：https://github.com/xcc3641/SeeWeather
@@ -63,6 +58,12 @@ Fir.im: http://fir.im/seeWeather
 豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
 
 魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
+
+v2.1.3
+- 修复 城市列表卡顿
+- 更新 lambda
+- 新增 bugly
+- 修复 高德地图未注销监听器导致的内存泄露
 
 v2.1
 - 修复 定位逻辑
@@ -257,8 +258,10 @@ v1.0
 ### LICENSE
 
 Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\")
-	    you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-	    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 图片来源于网络，版权属于原作者。
 
