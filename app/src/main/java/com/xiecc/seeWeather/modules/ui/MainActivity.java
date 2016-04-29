@@ -139,7 +139,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initView() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        bannner = (ImageView) findViewById(R.id.bannner);
+        bannner = (ImageView) findViewById(R.id.banner);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -276,7 +276,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onError(Throwable e) {
-                erroNetSnackbar(observer);
+                errorNetSnackbar(observer);
                 mRefreshLayout.setRefreshing(false);
             }
 
@@ -320,11 +320,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (weather != null) {
             Observable.just(weather).distinct().subscribe(observer);
         } else {
-            erroNetSnackbar(observer);
+            errorNetSnackbar(observer);
         }
     }
 
-    private void erroNetSnackbar(final Observer<Weather> observer) {
+    private void errorNetSnackbar(final Observer<Weather> observer) {
         mProgressBar.setVisibility(View.GONE);
         mErroImageView.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
@@ -437,6 +437,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
         mLocationClient.startLocation();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mLocationClient != null) {
+            mLocationClient.unRegisterLocationListener(this);
+        }
     }
 
     @Override

@@ -37,7 +37,7 @@
                 <!-- contentScrim 这个属性是设置折叠后Toolbar的颜色-->
 
                 <ImageView
-                    android:id="@+id/bannner"
+                    android:id="@+id/banner"
                     android:src="@mipmap/sunrise"
                     android:fitsSystemWindows="true"
                     app:layout_scrollFlags="scroll|enterAlwaysCollapsed"

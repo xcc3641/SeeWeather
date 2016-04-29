@@ -43,3 +43,7 @@ build/
 # Signing files
 .signing/
 
+# iml files
+
+*.iml
+

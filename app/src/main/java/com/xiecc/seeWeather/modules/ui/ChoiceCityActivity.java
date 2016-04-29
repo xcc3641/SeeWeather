@@ -83,12 +83,12 @@ public class ChoiceCityActivity extends BaseActivity {
         //toolbar = (Toolbar) findViewById(R.id.toolbar);
         //toolbar.setTitle("选择城市");
         //setSupportActionBar(toolbar);
-        ImageView bannner = (ImageView) findViewById(R.id.bannner);
+        ImageView banner = (ImageView) findViewById(R.id.banner);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setStatusBarColorForKitkat(R.color.colorSunrise);
         if (mSetting.getCurrentHour()< 6 || mSetting.getCurrentHour() > 18) {
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-            Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
+            Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(banner);
             setStatusBarColorForKitkat(R.color.colorSunset);
         }
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
