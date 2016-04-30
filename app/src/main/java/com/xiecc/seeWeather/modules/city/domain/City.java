@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.domain;
+package com.xiecc.seeWeather.modules.city.domain;
 
 import java.io.Serializable;
 

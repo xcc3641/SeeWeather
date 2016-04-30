@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui;
+package com.xiecc.seeWeather.modules.main.ui;
 
 import android.Manifest;
 import android.app.Notification;
@@ -34,22 +34,22 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.CheckVersion;
+import com.xiecc.seeWeather.common.ImageLoader;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
-import com.xiecc.seeWeather.modules.adatper.WeatherAdapter;
-import com.xiecc.seeWeather.modules.domain.Weather;
-import com.xiecc.seeWeather.modules.listener.HidingScrollListener;
+import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
+import com.xiecc.seeWeather.modules.main.domain.Weather;
+import com.xiecc.seeWeather.modules.main.listener.HidingScrollListener;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
-import com.xiecc.seeWeather.modules.ui.about.AboutActivity;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
-import com.xiecc.seeWeather.modules.ui.setting.SettingActivity;
+import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
+import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
+import com.xiecc.seeWeather.modules.setting.Setting;
+import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import java.util.Calendar;
 import rx.Observable;
 import rx.Observer;
@@ -61,7 +61,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private final String TAG = MainActivity.class.getSimpleName();
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    //@Bind(R.id.toolbar_layout) CollapsingToolbarLayout collapsingToolbarLayout;
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private FloatingActionButton fab;
@@ -80,8 +79,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     public AMapLocationClientOption mLocationOption = null;
-
-    //private boolean isLoaction = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +103,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         fetchDataByNetWork(observer);
                     }
                 });
-            //fetchData();
         } else {
             fetchDataByCache(observer);
         }
@@ -168,9 +164,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
         mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        Glide.with(this).load(R.mipmap.sunrise).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
+        ImageLoader.loadAndDiskCache(this,R.mipmap.sunrise,bannner);
         if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-            Glide.with(this).load(R.mipmap.sunset).diskCacheStrategy(DiskCacheStrategy.ALL).into(bannner);
+            ImageLoader.loadAndDiskCache(this,R.mipmap.sunset,bannner);
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColorForKitkat(R.color.colorSunset);
         }
@@ -222,7 +218,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-            drawer.setDrawerListener(toggle);
+            drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
     }
@@ -302,6 +298,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mAdapter.notifyDataSetChanged();
                 normalStyleNotification(mWeather);
                 showSnackbar(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,");
+
+                mRecyclerView.smoothScrollToPosition(2);
             }
         };
     }
@@ -399,9 +397,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            //super.onBackPressed();
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                //Snackbar.make(fab, "再按一次退出程序", Snackbar.LENGTH_SHORT).show();
                 showSnackbar(fab, "再按一次退出程序");
                 exitTime = System.currentTimeMillis();
             } else {

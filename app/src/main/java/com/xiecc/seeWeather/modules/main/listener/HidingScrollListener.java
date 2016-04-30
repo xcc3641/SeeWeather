@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.listener;
+package com.xiecc.seeWeather.modules.main.listener;
 
 import android.support.v7.widget.RecyclerView;
 

@@ -1,7 +1,7 @@
 package com.xiecc.seeWeather.component;
 
-import com.xiecc.seeWeather.modules.domain.VersionAPI;
-import com.xiecc.seeWeather.modules.domain.WeatherAPI;
+import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
+import com.xiecc.seeWeather.modules.main.domain.WeatherAPI;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;

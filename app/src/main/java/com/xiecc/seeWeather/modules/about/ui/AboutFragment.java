@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui.about;
+package com.xiecc.seeWeather.modules.about.ui;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui.setting;
+package com.xiecc.seeWeather.modules.setting;
 
 import android.app.Notification;
 import android.content.Context;

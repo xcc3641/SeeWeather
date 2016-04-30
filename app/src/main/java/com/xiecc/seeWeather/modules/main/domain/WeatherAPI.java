@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.domain;
+package com.xiecc.seeWeather.modules.main.domain;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui;
+package com.xiecc.seeWeather.modules.launch;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import com.xiecc.seeWeather.modules.main.ui.MainActivity;
 import java.lang.ref.WeakReference;
 
 /**

@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui.about;
+package com.xiecc.seeWeather.modules.setting.ui;
 
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -7,16 +7,16 @@ import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 
 /**
- * Created by hugo on 2016/2/20 0020.
+ * Created by hugo on 2016/2/19 0019.
  */
-public class AboutActivity extends BaseActivity {
+public class SettingActivity extends BaseActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+        setContentView(R.layout.activity_setting);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("关于");
-        toolbar.setNavigationIcon(ContextCompat.getDrawable(this,R.drawable.ic_keyboard_arrow_left_32dpdp));
+        toolbar.setTitle("设置");
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_32dpdp));
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
@@ -25,6 +25,6 @@ public class AboutActivity extends BaseActivity {
             toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColor(R.color.colorSunset);
         }
-        getFragmentManager().beginTransaction().replace(R.id.framelayout, new AboutFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.framelayout, new SettingFragment()).commit();
     }
 }

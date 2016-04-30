@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.adatper;
+package com.xiecc.seeWeather.modules.main.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -9,17 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.bumptech.glide.Glide;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.common.ImageLoader;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.Util;
-import com.xiecc.seeWeather.modules.domain.Weather;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
+import com.xiecc.seeWeather.modules.main.domain.Weather;
+import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2016/1/31 0031.
  */
-public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHolder> {
     private static String TAG = WeatherAdapter.class.getSimpleName();
 
     private Context mContext;
@@ -85,12 +85,10 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     String.format("↑ %s °", mWeatherData.dailyForecast.get(0).tmp.max));
                 ((NowWeatherViewHolder) holder).tempMin.setText(
                     String.format("↓ %s °", mWeatherData.dailyForecast.get(0).tmp.min));
-
                 ((NowWeatherViewHolder) holder).tempPm.setText(Util.safeText("PM25： ", mWeatherData.aqi.city.pm25));
                 ((NowWeatherViewHolder) holder).tempQuality.setText(Util.safeText("空气质量： ", mWeatherData.aqi.city.qlty));
-                Glide.with(mContext)
-                    .load(mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none))
-                    .into(((NowWeatherViewHolder) holder).weatherIcon);
+                ImageLoader.load(mContext, mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none),
+                    ((NowWeatherViewHolder) holder).weatherIcon);
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
             }
@@ -148,12 +146,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             PLog.e(TAG, e.toString());
                         }
                     }
-                    // 图片
-                    Glide.with(mContext)
-                        .load(mSetting.getInt(mWeatherData.dailyForecast.get(i).cond.txtD, R.mipmap.none))
-                        .crossFade()
-                        .into(((ForecastViewHolder) holder).forecastIcon[i]);
-
+                    ImageLoader.load(mContext, mSetting.getInt(mWeatherData.dailyForecast.get(i).cond.txtD, R.mipmap.none),
+                        ((ForecastViewHolder) holder).forecastIcon[i]);
                     ((ForecastViewHolder) holder).forecastTemp[i].setText(
                         String.format("%s° %s°",
                             mWeatherData.dailyForecast.get(i).tmp.min,
@@ -172,6 +166,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 PLog.e(TAG, e.toString());
             }
         }
+
+        showItemAnim(holder.itemView, position);
     }
 
     @Override

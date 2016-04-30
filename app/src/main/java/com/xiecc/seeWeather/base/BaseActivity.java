@@ -9,7 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.xiecc.seeWeather.common.ACache;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
+import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2015/12/16.

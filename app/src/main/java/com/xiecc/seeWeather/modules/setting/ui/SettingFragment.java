@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui.setting;
+package com.xiecc.seeWeather.modules.setting.ui;
 
 import android.app.Notification;
 import android.content.Context;
@@ -23,6 +23,7 @@ import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.FileSizeUtil;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
+import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2016/2/19 0019.

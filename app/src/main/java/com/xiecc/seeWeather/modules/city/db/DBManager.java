@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.db;
+package com.xiecc.seeWeather.modules.city.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -7,8 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
-import com.xiecc.seeWeather.modules.domain.VersionAPI;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
+import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
+import com.xiecc.seeWeather.modules.setting.Setting;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 

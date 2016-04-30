@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.ui;
+package com.xiecc.seeWeather.modules.city.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,16 +10,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.modules.adatper.CityAdapter;
-import com.xiecc.seeWeather.modules.db.DBManager;
-import com.xiecc.seeWeather.modules.db.WeatherDB;
-import com.xiecc.seeWeather.modules.domain.City;
-import com.xiecc.seeWeather.modules.domain.Province;
-import com.xiecc.seeWeather.modules.ui.setting.Setting;
+import com.xiecc.seeWeather.common.ImageLoader;
+import com.xiecc.seeWeather.modules.city.adapter.CityAdapter;
+import com.xiecc.seeWeather.modules.city.db.DBManager;
+import com.xiecc.seeWeather.modules.city.db.WeatherDB;
+import com.xiecc.seeWeather.modules.city.domain.City;
+import com.xiecc.seeWeather.modules.city.domain.Province;
+import com.xiecc.seeWeather.modules.setting.Setting;
 import java.util.ArrayList;
 import java.util.List;
 import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
@@ -86,10 +85,10 @@ public class ChoiceCityActivity extends BaseActivity {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setStatusBarColorForKitkat(R.color.colorSunrise);
         if (banner != null) {
-            Glide.with(this).load(R.mipmap.city_day).diskCacheStrategy(DiskCacheStrategy.ALL).into(banner);
+            ImageLoader.loadAndDiskCache(this,R.mipmap.city_day,banner);
             if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
                 collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-                Glide.with(this).load(R.mipmap.city_night).diskCacheStrategy(DiskCacheStrategy.ALL).into(banner);
+                ImageLoader.loadAndDiskCache(this,R.mipmap.city_night,banner);
                 setStatusBarColorForKitkat(R.color.colorSunset);
             }
         }

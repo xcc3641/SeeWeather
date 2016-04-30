@@ -1,11 +1,11 @@
-package com.xiecc.seeWeather.modules.db;
+package com.xiecc.seeWeather.modules.city.db;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.xiecc.seeWeather.modules.domain.City;
-import com.xiecc.seeWeather.modules.domain.Province;
+import com.xiecc.seeWeather.modules.city.domain.City;
+import com.xiecc.seeWeather.modules.city.domain.Province;
 import java.util.ArrayList;
 import java.util.List;
 
