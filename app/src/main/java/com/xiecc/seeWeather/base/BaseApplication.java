@@ -44,10 +44,6 @@ public class BaseApplication extends Application {
     }
 
     private boolean ExistSDCard() {
-        if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-            return true;
-        } else {
-            return false;
-        }
+        return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
     }
 }

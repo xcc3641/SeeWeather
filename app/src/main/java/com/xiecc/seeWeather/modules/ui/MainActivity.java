@@ -285,6 +285,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
+
                 aCache.put("WeatherData", weather,
                     (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
 
@@ -387,9 +388,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_city:
                 startActivityForResult(new Intent(this, ChoiceCityActivity.class), 1);
-                //Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                //intentCity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //startActivityForResult(intentCity, 1);
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);
@@ -409,6 +407,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 finish();
             }
+
+
         }
     }
 

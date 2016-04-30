@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda' //加上这句加,入plugin声明
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -23,6 +28,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             shrinkResources true
         }
+
+
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile
+                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                    // 输出apk名称为Meizhi_v1.0_2015-01-15.apk
+                    def fileName = "SeeWeather_${releaseTime()}.apk"
+                    output.outputFile = new File(outputFile.parent, fileName)
+                }
+            }
+        }
     }
     compileOptions {
         //使用JAVA8语法解析
@@ -30,7 +47,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
-        disable 'InvalidPackage'
+        disable 'InvalidPackage' ,'MissingTranslation', 'ExtraTranslation'
+    }
+    lintOptions {
+        abortOnError false
     }
     packagingOptions {
 
@@ -67,8 +87,8 @@ dependencies {
     compile 'com.tencent.bugly:crashreport:latest.release'
 
     debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
-//    releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
+    releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-//    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 }

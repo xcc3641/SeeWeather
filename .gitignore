@@ -14,8 +14,7 @@
 # generated files
 bin/
 gen/
-SeeWeather.iml
-app/app.iml
+
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -45,6 +44,5 @@ build/
 .signing/
 
 # iml files
-
 *.iml
 
