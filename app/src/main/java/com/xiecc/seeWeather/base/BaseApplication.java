@@ -2,7 +2,6 @@ package com.xiecc.seeWeather.base;
 
 import android.app.Application;
 import android.content.Context;
-
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -24,6 +23,7 @@ public class BaseApplication extends Application {
         mAppContext = getApplicationContext();
         // 初始化 retrofit
         RetrofitSingleton.init(getApplicationContext());
+
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
         BlockCanary.install(this, new AppBlockCanaryContext()).start();

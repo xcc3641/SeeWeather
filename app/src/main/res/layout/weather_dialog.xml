@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/weather_dialog_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/dialog_bg_rainy"
+    android:padding="8dp"
+    >
+
+    <!--<TextView-->
+    <!--android:id="@+id/dialog_date"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="23:08"-->
+    <!--android:textColor="@android:color/white"-->
+    <!--android:textSize="12sp"-->
+    <!--/>-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:baselineAligned="true"
+        android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@mipmap/dialog_icon_city"/>
+        <TextView
+            android:id="@+id/dialog_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="重庆"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:typeface="serif"
+            />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/dialog_icon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="28dp"
+        />
+
+    <TextView
+        android:id="@+id/dialog_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_icon"
+        android:layout_marginStart="16dp"
+        android:text="33"
+        android:textColor="@android:color/white"
+        android:textSize="58sp"
+        android:typeface="monospace"
+        style="@style/text_shadow"
+        />
+
+
+
+
+</RelativeLayout>

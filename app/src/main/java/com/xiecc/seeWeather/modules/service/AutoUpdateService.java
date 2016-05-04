@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -39,7 +38,6 @@ public class AutoUpdateService extends Service {
 
     private boolean isUnsubscribed = true;
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -48,7 +46,6 @@ public class AutoUpdateService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //PLog.i(TAG, "服务创建了");
         mSetting = Setting.getInstance();
         mAcache = ACache.get(this);
         mCompositeSubscription = new CompositeSubscription();
@@ -56,7 +53,7 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //PLog.i(TAG, "服务开始了");
+
         synchronized (this) {
             unSubscribed();
             if (isUnsubscribed) {
@@ -86,7 +83,7 @@ public class AutoUpdateService extends Service {
     }
 
     private void fetchDataByNetWork() {
-        String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
+        String cityName = mSetting.getCityName();
         if (cityName != null) {
             cityName = cityName.replace("市", "")
                 .replace("省", "")

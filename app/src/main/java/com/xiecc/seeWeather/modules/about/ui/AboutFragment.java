@@ -12,8 +12,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.common.CheckVersion;
-import com.xiecc.seeWeather.common.Util;
+import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.Util;
 
 /**
  * Created by hugo on 2016/2/20 0020.

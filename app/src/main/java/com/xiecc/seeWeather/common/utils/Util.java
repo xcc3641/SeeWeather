@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.common;
+package com.xiecc.seeWeather.common.utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -25,18 +25,14 @@ public class Util {
         try {
             PackageManager manager = context.getPackageManager();
             PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            String version = info.versionName;
-            return version;
+            return info.versionName;
         } catch (Exception e) {
             e.printStackTrace();
             return context.getString(R.string.can_not_find_version_name);
         }
     }
 
-
     /**
-     *
-     * @param context
      * @return 版本号
      */
     public static int getVersionCode(Context context) {
@@ -51,15 +47,13 @@ public class Util {
         }
     }
 
-
     /**
      * 只关注是否联网
-     * @param context
-     * @return
      */
     public static boolean isNetworkConnected(Context context) {
         if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager mConnectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
             if (mNetworkInfo != null) {
                 return mNetworkInfo.isAvailable();
@@ -110,12 +104,31 @@ public class Util {
 
     /**
      * 安全的 String 返回
+     *
      * @param prefix 默认字段
      * @param obj 获得字段
-     * @return
      */
     public static String safeText(String prefix, String obj) {
         if (TextUtils.isEmpty(obj)) return "";
         return TextUtils.concat(prefix, obj).toString();
+    }
+
+    /**
+     * 天气代码 100 为晴 101-213 500-901 为阴 300-406为雨
+     *
+     * @param code 天气代码
+     * @return 天气情况
+     */
+    public static String getWeatherType(int code) {
+        if (code == 100) {
+            return "晴";
+        }
+        if ((code >= 101 && code <= 213) || (code >= 500 && code <= 901)) {
+            return "阴";
+        }
+        if (code >= 300 && code <= 406) {
+            return "雨";
+        }
+        return "错误";
     }
 }

@@ -20,13 +20,14 @@ import com.bumptech.glide.Glide;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.common.ACache;
-import com.xiecc.seeWeather.common.FileSizeUtil;
+import com.xiecc.seeWeather.common.utils.FileSizeUtil;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2016/2/19 0019.
+ * todo 设置 点击是否展示 dialog
  */
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
     private static String TAG = SettingFragment.class.getSimpleName();
@@ -39,11 +40,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
     private ACache mACache;
 
-    //public SettingFragment() {}
-    //@Override public void onAttach(Context context) {
-    //    super.onAttach(context);
-    //    mActivity = (SettingActivity) context;
-    //}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,11 +82,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         } else if (mChangeUpdate == preference) {
             showUpdateDialog();
         } else if (mNotificationType == preference) {
-            //if (mNotificationType.isChecked()){
-            //    mNotificationType.setChecked(false);
-            //}else {
-            //    mNotificationType.setChecked(true);
-            //}
             mNotificationType.setChecked(mNotificationType.isChecked());
             mSetting.setNotificationModel(
                 mNotificationType.isChecked() ? Notification.FLAG_AUTO_CANCEL : Notification.FLAG_ONGOING_EVENT);
@@ -101,32 +92,10 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     }
 
     private void showIconDialog() {
-        //new AlertDialog.Builder(getActivity()).setTitle("更换图标")
-        //    .setSingleChoiceItems(getResources().getStringArray(R.array.icons),
-        //        mSetting.getInt(Setting.CHANGE_ICONS, 0),
-        //        (dialog, which) -> {
-        //            if (which != mSetting.getInt(Setting.CHANGE_ICONS, 0)) {
-        //                mSetting.setIconType(which);
-        //            }
-        //            dialog.dismiss();
-        //            mChangeIcons.setSummary(getResources().getStringArray(
-        //                R.array.icons)[mSetting.getIconType()]);
-        //            Snackbar.make(getView(), "切换成功,重启应用生效",
-        //                Snackbar.LENGTH_INDEFINITE).setAction("重启",
-        //                v -> {
-        //                    Intent intent =
-        //                        getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName());
-        //                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //                    getActivity().startActivity(intent);
-        //                }).show();
-        //        })
-        //    .show();
-
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = inflater.inflate(R.layout.icon_dialog, (ViewGroup) getActivity().findViewById(R.id.dialog_root));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(dialogLayout);
         final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
 
         LinearLayout layoutTypeOne = (LinearLayout) dialogLayout.findViewById(R.id.layout_one);
         layoutTypeOne.setClickable(true);
@@ -138,6 +107,10 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         radioTypeOne.setClickable(false);
         radioTypeTwo.setClickable(false);
+
+        alertDialog.show();
+
+
 
         switch (mSetting.getIconType()) {
             case 0:
@@ -186,7 +159,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
             .setView(dialogLayout);
         final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
 
         final SeekBar mSeekBar = (SeekBar) dialogLayout.findViewById(R.id.time_seekbar);
         final TextView tvShowHour = (TextView) dialogLayout.findViewById(R.id.tv_showhour);
@@ -194,11 +166,14 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         mSeekBar.setMax(24);
         mSeekBar.setProgress(mSetting.getAutoUpdate());
-        tvShowHour.setText("每" + mSeekBar.getProgress() + "小时");
+        tvShowHour.setText(String.format("每%s小时",mSeekBar.getProgress()));
+        alertDialog.show();
+
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvShowHour.setText("每" + progress + "小时");
+                tvShowHour.setText(String.format("每%s小时",mSeekBar.getProgress()));
             }
 
             @Override

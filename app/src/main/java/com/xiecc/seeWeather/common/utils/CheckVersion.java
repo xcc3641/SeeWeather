@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.common;
+package com.xiecc.seeWeather.common.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.setting.Setting;
@@ -31,6 +32,8 @@ public class CheckVersion {
                 } else {
                     Snackbar.make(view, "已经是最新版本(⌐■_■)", Snackbar.LENGTH_SHORT).show();
                 }
+            }, throwable -> {
+                PLog.e(TAG,throwable.toString());
             });
     }
 

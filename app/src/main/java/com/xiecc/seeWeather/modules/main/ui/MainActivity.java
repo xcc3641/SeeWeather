@@ -6,8 +6,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -23,31 +26,37 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.common.CheckVersion;
-import com.xiecc.seeWeather.common.ImageLoader;
 import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.Util;
+import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
+import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
+import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.main.listener.HidingScrollListener;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
-import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
-import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.setting.Setting;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import java.util.Calendar;
@@ -111,6 +120,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onStart() {
         super.onStart();
+        showEggs();
         //为了实现 Intent 重启使图标生效
         initIcon();
         // 修改 adapter 的初始化
@@ -133,6 +143,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化基础View
      */
     private void initView() {
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        if (appBarLayout != null) {
+            //控制是否展开
+            appBarLayout.setExpanded(false);
+        }
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         bannner = (ImageView) findViewById(R.id.banner);
@@ -156,19 +171,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         if (collapsingToolbarLayout != null) {
             collapsingToolbarLayout.setTitle(" ");
-        }
-
-        //彩蛋-夜间模式
-        Calendar calendar = Calendar.getInstance();
-
-        //mSetting.putInt(Setting.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
-        mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-        setStatusBarColorForKitkat(R.color.colorSunrise);
-        ImageLoader.loadAndDiskCache(this,R.mipmap.sunrise,bannner);
-        if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-            ImageLoader.loadAndDiskCache(this,R.mipmap.sunset,bannner);
-            collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-            setStatusBarColorForKitkat(R.color.colorSunset);
         }
 
         //fab
@@ -198,6 +200,62 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             });
             mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
             mRecyclerView.setAdapter(mAdapter);
+
+            mAdapter.setOnItemClickListener(mWeather1 -> {
+                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) this.findViewById(
+                    R.id.weather_dialog_root));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                    .setView(dialogLayout);
+                final AlertDialog alertDialog = builder.create();
+
+                RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
+                switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
+                    case "晴":
+                        root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
+                        break;
+                    case "阴":
+                        root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
+                        break;
+                    case "雨":
+                        root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
+                        break;
+                    default:
+                        break;
+                }
+
+                TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
+                city.setText(mWeather1.basic.city);
+                TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
+                temp.setText(String.format("%s°", mWeather1.now.tmp));
+                ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
+
+                Glide.with(this)
+                    .load(mSetting.getInt(mWeather1.now.cond.txt, R.mipmap.none))
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            icon.setImageBitmap(resource);
+                            icon.setColorFilter(Color.WHITE);
+                        }
+                    });
+
+                alertDialog.show();
+            });
+        }
+    }
+
+    private void showEggs() {
+        //彩蛋-夜间模式
+        Calendar calendar = Calendar.getInstance();
+        mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
+        setStatusBarColorForKitkat(R.color.colorSunrise);
+        ImageLoader.loadAndDiskCache(this, R.mipmap.sunrise, bannner);
+        if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
+            ImageLoader.loadAndDiskCache(this, R.mipmap.sunset, bannner);
+            collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
+            setStatusBarColorForKitkat(R.color.colorSunset);
         }
     }
 
@@ -284,7 +342,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                 aCache.put("WeatherData", weather,
                     (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
-
                 mWeather.status = weather.status;
                 mWeather.aqi = weather.aqi;
                 mWeather.basic = weather.basic;
@@ -298,8 +355,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mAdapter.notifyDataSetChanged();
                 normalStyleNotification(mWeather);
                 showSnackbar(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,");
-
-                mRecyclerView.smoothScrollToPosition(2);
             }
         };
     }
@@ -336,7 +391,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 从网络获取
      */
     public void fetchDataByNetWork(Observer<Weather> observer) {
-        String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
+        //String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
+        String cityName = mSetting.getCityName();
         if (cityName != null) {
             cityName = cityName.replace("市", "")
                 .replace("省", "")
@@ -403,8 +459,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 finish();
             }
-
-
         }
     }
 

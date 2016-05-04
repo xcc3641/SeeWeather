@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.common;
+package com.xiecc.seeWeather.component;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;

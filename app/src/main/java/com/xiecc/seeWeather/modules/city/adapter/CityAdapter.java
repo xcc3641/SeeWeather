@@ -8,12 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
 import java.util.ArrayList;
 
 /**
  * Created by hugo on 2016/2/19 0019.
  */
-public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder> {
+public class CityAdapter extends AnimRecyclerViewAdapter<CityAdapter.CityViewHolder> {
     private Context mContext;
     private ArrayList<String> dataList;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
@@ -32,11 +33,8 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
 
     @Override public void onBindViewHolder(final CityViewHolder holder, final int position) {
         holder.itemCity.setText(dataList.get(position));
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                mOnItemClickListener.onItemClick(v, position);
-            }
-        });
+        holder.cardView.setOnClickListener(v -> mOnItemClickListener.onItemClick(v, position));
+        //showItemAnim(holder.itemView,position);
     }
 
 

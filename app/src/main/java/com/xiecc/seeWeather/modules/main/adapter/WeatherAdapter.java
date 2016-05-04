@@ -10,26 +10,30 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.common.ImageLoader;
 import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.Util;
+import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
+import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2016/1/31 0031.
+ * todo 点击后显示 dialog 说明当前天气情况 图片信息在 Dialog_bg_xx
  */
 public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHolder> {
     private static String TAG = WeatherAdapter.class.getSimpleName();
 
     private Context mContext;
     private final int TYPE_ONE = 0;
+
     private final int TYPE_TWO = 1;
     private final int TYPE_THREE = 2;
     private final int TYPE_FORE = 3;
 
     private Weather mWeatherData;
     private Setting mSetting;
+
 
     public WeatherAdapter(Context context, Weather weatherData) {
         mContext = context;
@@ -80,7 +84,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
         if (holder instanceof NowWeatherViewHolder) {
             try {
-                ((NowWeatherViewHolder) holder).tempFlu.setText(mWeatherData.now.tmp + "℃");
+                ((NowWeatherViewHolder) holder).tempFlu.setText(String.format("%s℃", mWeatherData.now.tmp));
                 ((NowWeatherViewHolder) holder).tempMax.setText(
                     String.format("↑ %s °", mWeatherData.dailyForecast.get(0).tmp.max));
                 ((NowWeatherViewHolder) holder).tempMin.setText(
@@ -92,6 +96,13 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
             }
+
+            holder.itemView.setOnClickListener(v -> {
+                if (listener!=null){
+                    listener.onItemClick(mWeatherData);
+                }
+            });
+
         }
         if (holder instanceof HoursWeatherViewHolder) {
             try {
@@ -101,11 +112,14 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     String mDate = mWeatherData.hourlyForecast.get(i).date;
                     ((HoursWeatherViewHolder) holder).mClock[i].setText(
                         mDate.substring(mDate.length() - 5, mDate.length()));
-                    ((HoursWeatherViewHolder) holder).mTemp[i].setText(mWeatherData.hourlyForecast.get(i).tmp + "°");
+                    ((HoursWeatherViewHolder) holder).mTemp[i].setText(
+                        String.format("%s°", mWeatherData.hourlyForecast.get(i).tmp));
                     ((HoursWeatherViewHolder) holder).mHumidity[i].setText(
-                        mWeatherData.hourlyForecast.get(i).hum + "%");
+                        String.format("%s%%", mWeatherData.hourlyForecast.get(i).hum)
+                    );
                     ((HoursWeatherViewHolder) holder).mWind[i].setText(
-                        mWeatherData.hourlyForecast.get(i).wind.spd + "Km");
+                        String.format("%sKm", mWeatherData.hourlyForecast.get(i).wind.spd)
+                    );
                 }
             } catch (Exception e) {
                 //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
@@ -279,7 +293,14 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         }
     }
 
-    private void showWeatherDialog() {
 
+    public interface OnItemClickListener {
+        void onItemClick(Weather mWeather);
+    }
+
+    private OnItemClickListener listener;
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

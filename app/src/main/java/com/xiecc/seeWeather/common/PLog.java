@@ -2,6 +2,7 @@ package com.xiecc.seeWeather.common;
 
 import android.util.Log;
 import com.xiecc.seeWeather.base.BaseApplication;
+import com.xiecc.seeWeather.common.utils.Time;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,7 +30,7 @@ public class PLog {
      * @param TAG
      * @param msg
      */
-    public final static void e(String TAG, String msg) {
+    public static void e(String TAG, String msg) {
         Log.e(TAG, msg);
         if (PLOG_WRITE_TO_FILE)
             writeLogtoFile("e", TAG, msg);
@@ -41,7 +42,7 @@ public class PLog {
      * @param TAG
      * @param msg
      */
-    public final static void w(String TAG, String msg) {
+    public static void w(String TAG, String msg) {
         Log.w(TAG, msg);
         if (PLOG_WRITE_TO_FILE)
             writeLogtoFile("w", TAG, msg);
@@ -53,7 +54,7 @@ public class PLog {
      * @param TAG
      * @param msg
      */
-    public final static void d(String TAG, String msg) {
+    public static void d(String TAG, String msg) {
         Log.d(TAG, msg);
         if (PLOG_WRITE_TO_FILE)
             writeLogtoFile("d", TAG, msg);
@@ -65,7 +66,7 @@ public class PLog {
      * @param TAG
      * @param msg
      */
-    public final static void i(String TAG, String msg) {
+    public static void i(String TAG, String msg) {
         Log.i(TAG, msg);
         if (PLOG_WRITE_TO_FILE)
             writeLogtoFile("i", TAG, msg);

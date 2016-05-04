@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.common;
+package com.xiecc.seeWeather.common.utils;
 
 import android.util.Log;
 import java.io.File;
