@@ -1,8 +1,7 @@
 package com.xiecc.seeWeather.common;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import com.xiecc.seeWeather.common.utils.Util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -64,7 +63,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     public String collectCrashDeviceInfo() {
 
-        String versionName = getVersionName();
+        String versionName = Util.getVersion(context);
         String model = android.os.Build.MODEL;
         String androidVersion = android.os.Build.VERSION.RELEASE;
         String manufacturer = android.os.Build.MANUFACTURER;
@@ -73,26 +72,5 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     }
 
-    /**
-     * 获取当前应用版本号
-     *
-     * @return
-     */
-    public String getVersionName() {
-
-        PackageManager packageManager = context.getPackageManager();
-        PackageInfo packInfo = null;
-        try {
-            packInfo = packageManager.getPackageInfo(context.getPackageName(),
-                    0);
-        } catch (PackageManager.NameNotFoundException e) {
-
-            e.printStackTrace();
-            return "0.0.0";
-        }
-        String version = packInfo.versionName;
-
-        return version;
-    }
 
 }

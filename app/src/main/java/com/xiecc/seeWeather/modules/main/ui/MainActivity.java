@@ -111,6 +111,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     } else {
                         fetchDataByNetWork(observer);
                     }
+
                 });
         } else {
             fetchDataByCache(observer);
@@ -144,6 +145,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private void initView() {
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        // http://stackoverflow.com/questions/30655939/programmatically-collapse-or-expand-collapsingtoolbarlayout
         if (appBarLayout != null) {
             //控制是否展开
             appBarLayout.setExpanded(false);
@@ -339,7 +341,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
-
                 aCache.put("WeatherData", weather,
                     (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
                 mWeather.status = weather.status;
@@ -504,13 +505,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //定位成功回调信息，设置相关消息
                 aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                 mSetting.setCityName(aMapLocation.getCity());
-                //PLog.i(TAG, aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() +
-                //    aMapLocation.getAdCode() + aMapLocation.getCityCode());
             } else {
-                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                //PLog.e("AmapError", "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" +
-                //    aMapLocation.getErrorInfo());
-                //Snackbar.make(fab, "定位失败,请尝试手动更新", Snackbar.LENGTH_LONG).show();
                 showSnackbar(fab, "定位失败,加载默认城市", true);
             }
             fetchDataByNetWork(observer);

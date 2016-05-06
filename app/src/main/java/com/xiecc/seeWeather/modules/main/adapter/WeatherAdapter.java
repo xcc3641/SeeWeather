@@ -19,7 +19,6 @@ import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2016/1/31 0031.
- * todo 点击后显示 dialog 说明当前天气情况 图片信息在 Dialog_bg_xx
  */
 public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHolder> {
     private static String TAG = WeatherAdapter.class.getSimpleName();
@@ -33,7 +32,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
     private Weather mWeatherData;
     private Setting mSetting;
-
 
     public WeatherAdapter(Context context, Weather weatherData) {
         mContext = context;
@@ -98,11 +96,10 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
 
             holder.itemView.setOnClickListener(v -> {
-                if (listener!=null){
+                if (listener != null) {
                     listener.onItemClick(mWeatherData);
                 }
             });
-
         }
         if (holder instanceof HoursWeatherViewHolder) {
             try {
@@ -123,7 +120,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             } catch (Exception e) {
                 //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
-                PLog.e(TAG, e.toString());
+                PLog.e(e.toString());
             }
         }
         if (holder instanceof SuggestionViewHolder) {
@@ -142,7 +139,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
                 ((SuggestionViewHolder) holder).fluTxt.setText(mWeatherData.suggestion.flu.txt);
             } catch (Exception e) {
-                PLog.e(TAG, e.toString());
+                PLog.e(e.toString());
             }
         }
 
@@ -176,8 +173,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                             mWeatherData.dailyForecast.get(i).pop));
                 }
             } catch (Exception e) {
-                //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
-                PLog.e(TAG, e.toString());
+                PLog.e(e.toString());
             }
         }
 
@@ -292,7 +288,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
     }
-
 
     public interface OnItemClickListener {
         void onItemClick(Weather mWeather);

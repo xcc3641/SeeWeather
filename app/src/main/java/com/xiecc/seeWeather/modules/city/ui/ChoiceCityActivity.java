@@ -55,14 +55,6 @@ public class ChoiceCityActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_city);
 
-        //RxPermissions.getInstance(this).requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission
-        // .READ_EXTERNAL_STORAGE)
-        //    .subscribe(permission ->{
-        //       if (permission.granted){
-        //
-        //       }
-        //    });
-
         Observable.defer(() -> {
             mDBManager = new DBManager(ChoiceCityActivity.this);
             mDBManager.openDatabase();
@@ -78,9 +70,6 @@ public class ChoiceCityActivity extends BaseActivity {
     }
 
     private void initView() {
-        //toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle("选择城市");
-        //setSupportActionBar(toolbar);
         ImageView banner = (ImageView) findViewById(R.id.banner);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setStatusBarColorForKitkat(R.color.colorSunrise);
