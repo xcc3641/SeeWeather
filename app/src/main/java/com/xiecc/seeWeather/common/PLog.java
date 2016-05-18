@@ -163,7 +163,6 @@ public class PLog {
         className = className.substring(className.lastIndexOf('.') + 1) + ".java";
         int lineNumber = targetElement.getLineNumber();
         if (lineNumber < 0) lineNumber = 0;
-
         return "(" + className + ":" + lineNumber + ") " + message;
     }
 }

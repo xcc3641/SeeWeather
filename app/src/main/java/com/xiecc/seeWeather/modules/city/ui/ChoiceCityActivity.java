@@ -2,14 +2,19 @@ package com.xiecc.seeWeather.modules.city.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.PLog;
@@ -31,13 +36,24 @@ import rx.schedulers.Schedulers;
  * Created by hugo on 2016/2/19 0019.
  */
 public class ChoiceCityActivity extends BaseActivity {
-    private static String TAG = ChoiceCityActivity.class.getSimpleName();
+    @Bind(R.id.banner)
+    ImageView banner;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.toolbar_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+    @Bind(R.id.app_bar)
+    AppBarLayout appBar;
+    @Bind(R.id.recyclerview)
+    RecyclerView mRecyclerView;
+    @Bind(R.id.progressBar)
+    ProgressBar mProgressBar;
+    @Bind(R.id.iv_erro)
+    ImageView ivErro;
+    @Bind(R.id.coord)
+    CoordinatorLayout coord;
 
-    private RecyclerView mRecyclerView;
-    private ProgressBar mProgressBar;
     private DBManager mDBManager;
-    private WeatherDB mWeatherDB;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
 
     private ArrayList<String> dataList = new ArrayList<>();
     private Province selectedProvince;
@@ -54,11 +70,12 @@ public class ChoiceCityActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_city);
+        ButterKnife.bind(this);
 
         Observable.defer(() -> {
             mDBManager = new DBManager(ChoiceCityActivity.this);
             mDBManager.openDatabase();
-            mWeatherDB = new WeatherDB(ChoiceCityActivity.this);
+            //mWeatherDB = new WeatherDB(ChoiceCityActivity.this);
             return Observable.just(1);
         }).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -70,8 +87,6 @@ public class ChoiceCityActivity extends BaseActivity {
     }
 
     private void initView() {
-        ImageView banner = (ImageView) findViewById(R.id.banner);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setStatusBarColorForKitkat(R.color.colorSunrise);
         if (banner != null) {
             ImageLoader.loadAndDiskCache(this, R.mipmap.city_day, banner);
@@ -81,14 +96,12 @@ public class ChoiceCityActivity extends BaseActivity {
                 setStatusBarColorForKitkat(R.color.colorSunset);
             }
         }
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }
 
     private void initRecyclerView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new FadeInUpAnimator());
@@ -117,16 +130,15 @@ public class ChoiceCityActivity extends BaseActivity {
     private void queryProvinces() {
         collapsingToolbarLayout.setTitle("选择省份");
         Observable.defer(() -> {
-            provincesList = mWeatherDB.loadProvinces(mDBManager.getDatabase());
+            provincesList = WeatherDB.loadProvinces(mDBManager.getDatabase());
             dataList.clear();
             return Observable.from(provincesList);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-            province -> dataList.add(province.ProName), throwable -> PLog.e(TAG, throwable.toString()), () -> {
+            province -> dataList.add(province.ProName), throwable -> PLog.e(throwable.toString()), () -> {
                 currentLevel = LEVEL_PROVINCE;
                 mAdapter.notifyDataSetChanged();
                 mProgressBar.setVisibility(View.GONE);
             }
-
         );
     }
 
@@ -138,11 +150,11 @@ public class ChoiceCityActivity extends BaseActivity {
         mAdapter.notifyDataSetChanged();
         collapsingToolbarLayout.setTitle(selectedProvince.ProName);
         Observable.defer(() -> {
-            cityList = mWeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
+            cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
         }).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(city -> dataList.add(city.CityName), throwable -> PLog.e(TAG, throwable.toString()), () -> {
+            .subscribe(city -> dataList.add(city.CityName), throwable -> PLog.e(throwable.toString()), () -> {
                 currentLevel = LEVEL_CITY;
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item

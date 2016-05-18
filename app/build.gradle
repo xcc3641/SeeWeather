@@ -1,22 +1,24 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda' //加上这句加,入plugin声明
 
-
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    def app = rootProject.ext.android
+
+
+    compileSdkVersion app.compileSdkVersion
+    buildToolsVersion app.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.xiecc.seeWeather"
-        minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 3
-        versionName "2.1.4"
+        applicationId app.applicationId
+        minSdkVersion app.minSdkVersion
+        targetSdkVersion app.targetSdkVersion
+        versionCode app.versionCode
+        versionName app.versionName
         resConfigs "zh"
 
         ndk {
             //设置支持的SO库架构
-            abiFilters  'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+            abiFilters 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
     }
     buildTypes {
@@ -25,8 +27,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             shrinkResources true
         }
-
-
     }
     compileOptions {
         //使用JAVA8语法解析
@@ -34,7 +34,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
-        disable 'InvalidPackage' ,'MissingTranslation', 'ExtraTranslation'
+        disable 'InvalidPackage', 'MissingTranslation', 'ExtraTranslation'
     }
     lintOptions {
         abortOnError false
@@ -50,6 +50,7 @@ retrolambda {
     javaVersion JavaVersion.VERSION_1_6
 }
 dependencies {
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'

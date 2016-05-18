@@ -65,6 +65,7 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+// TODO: 16/5/18  config.gradle 未提示 整合 retrofit 的使用
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
     AMapLocationListener {
     private final String TAG = MainActivity.class.getSimpleName();
@@ -93,7 +94,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        PLog.i(TAG, "onCreate");
+        PLog.i("onCreate");
         //ButterKnife.bind(this);
         initView();
         initDrawer();
@@ -111,7 +112,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     } else {
                         fetchDataByNetWork(observer);
                     }
-
                 });
         } else {
             fetchDataByCache(observer);
@@ -131,13 +131,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onPause() {
         super.onPause();
-        PLog.i(TAG, "onPause");
+        PLog.i("onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        PLog.i(TAG, "onStop");
+        PLog.i("onStop");
     }
 
     /**
@@ -341,8 +341,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
-                aCache.put("WeatherData", weather,
-                    (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认一小时后缓存失效
+
+                int updateTime = mSetting.getAutoUpdate();
+
+                if (updateTime == 0) {
+                    aCache.put("WeatherData", weather);
+                } else {
+                    aCache.put("WeatherData", weather,
+                        (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认3小时后缓存失效
+                }
                 mWeather.status = weather.status;
                 mWeather.aqi = weather.aqi;
                 mWeather.basic = weather.basic;
@@ -483,7 +490,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔 单位毫秒
-        mLocationOption.setInterval(mSetting.getAutoUpdate() * Setting.ONE_HOUR);
+        int tempTime = mSetting.getAutoUpdate();
+        if (tempTime == 0) {
+            tempTime = 100;
+        }
+        mLocationOption.setInterval(tempTime * Setting.ONE_HOUR);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -518,7 +529,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //requestCode标示请求的标示   resultCode表示有数据
         if (requestCode == 1 && resultCode == 2) {
             mRefreshLayout.setRefreshing(true);
-            mSetting.putString(Setting.CITY_NAME, data.getStringExtra(Setting.CITY_NAME));
+            mSetting.setCityName(data.getStringExtra(Setting.CITY_NAME));
             fetchDataByNetWork(observer);
         }
     }

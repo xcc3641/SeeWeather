@@ -1,0 +1,71 @@
+ext {
+    // thanks for brucezz
+    android = [
+        compileSdkVersion: 23,
+        buildToolsVersion: "23.0.3",
+        applicationId    : "com.xiecc.seeWeather",
+        minSdkVersion    : 19, // Android 4.4 Kitkat
+        targetSdkVersion : 23,
+        versionCode      : 5,
+        versionName      : "2.1.5",
+        resConfigs       : "zh"
+    ]
+
+
+    def supportVersion = "23.3.0"
+    def butterKnifeVersion = "7.0.0"
+    def glideVersion = "3.7.0"
+    def glideOkhttpVer = "1.4.0@aar"
+
+    def retrofitVersion = "2.0.2"
+    def gsonVersion = "2.4"
+    def okHttpVersion = '3.2.0'
+    def okioVersion = "1.6.0"
+
+    def rxJavaVersion = "1.1.3"
+    def rxAndroidVersion = "1.1.0"
+    def rxPermission = "0.7.0@aar"
+    def rxBinding = "0.4.0"
+    def rxLifecycle = "0.6.0"
+
+    def rvAnimatorsVer = "2.2.3"
+
+    dependencies = [
+
+        // Android support library
+        SupportAppcompatV7      : "com.android.support:appcompat-v7:$supportVersion",
+        SupportDesign           : "com.android.support:design:$supportVersion",
+        //SupportRecyclerViewV7   : "com.android.support:recyclerview-v7:$supportVersion",
+        SupportCardViewV7       : "com.android.support:cardview-v7:$supportVersion",
+        SupportAppcompatV4      : "com.android.support:support-v4:$supportVersion",
+
+        // Nice utils
+        Butterknife             : "com.jakewharton:butterknife:$butterKnifeVersion",
+        Glide                   : "com.github.bumptech.glide:glide:$glideVersion",
+        GlideOkHttp             : "com.github.bumptech.glide:okhttp3-integration:$glideOkhttpVer",
+
+        // Rx ..
+        RxJava                  : "io.reactivex:rxjava:$rxJavaVersion",
+        RxAndroid               : "io.reactivex:rxandroid:$rxAndroidVersion",
+        RxPermission            : "com.tbruyelle.rxpermissions:rxpermissions:$rxPermission",
+        //        RxBinding               : "com.jakewharton.rxbinding:rxbinding:$rxBinding",
+        //        RxBindingSupportV4      : "com.jakewharton.rxbinding:rxbinding-support-v4:$rxBinding",
+        //        RxBindingSupportV7      : "com.jakewharton.rxbinding:rxbinding-appcompat-v7:$rxBinding",
+        //        RxBindingDesign         : "com.jakewharton.rxbinding:rxbinding-design:$rxBinding",
+        //        RxBindingRecyclerView   : "com.jakewharton.rxbinding:rxbinding-recyclerview-v7:$rxBinding",
+        //        RxLifecycle             : "com.trello:rxlifecycle:$rxLifecycle",
+
+        // Network
+        Okttp                   : "com.squareup.okhttp3:okhttp:$okHttpVersion",
+        Okio                    : "com.squareup.okio:okio:$okioVersion",
+        Retrofit                : "com.squareup.retrofit2:retrofit:$retrofitVersion",
+        RetrofitConverterGson   : "com.squareup.retrofit2:converter-gson:$retrofitVersion",
+        RetrofitAdapterRxJava   : "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion",
+        OkHttpLoggingInterceptor: "com.squareup.okhttp3:logging-interceptor:$okHttpVersion",
+        Gson                    : "com.google.code.gson:gson:$gsonVersion",
+
+        // widget
+        RVanimators             : "jp.wasabeef:recyclerview-animators:$rvAnimatorsVer",
+
+    ]
+}

@@ -16,12 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import com.bumptech.glide.Glide;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.common.ACache;
-import com.xiecc.seeWeather.common.utils.FileSizeUtil;
 import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.common.utils.FileSizeUtil;
+import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.Setting;
 
@@ -56,8 +56,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getIconType()]);
 
-        //mChangeUpdate.setSummary(
-        //        getResources().getStringArray(R.array.cache_time)[mSetting.getInt(Setting.HOUR_SELECT, 0)]);
         mChangeUpdate.setSummary(mSetting.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSetting.getAutoUpdate() + "小时更新");
         mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
 
@@ -73,10 +71,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             showIconDialog();
         } else if (mClearCache == preference) {
             mACache.clear();
-            Glide.get(getActivity().getApplicationContext()).clearMemory();
-            new Thread(() -> {
-                Glide.get(getActivity().getApplicationContext()).clearDiskCache();
-            });
+            ImageLoader.clear(getActivity());
             mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
             Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
         } else if (mChangeUpdate == preference) {
@@ -85,9 +80,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             mNotificationType.setChecked(mNotificationType.isChecked());
             mSetting.setNotificationModel(
                 mNotificationType.isChecked() ? Notification.FLAG_AUTO_CANCEL : Notification.FLAG_ONGOING_EVENT);
-            PLog.i(TAG, mSetting.getAutoUpdate() + "");
+            PLog.i(mSetting.getAutoUpdate() + "");
         }
-
         return false;
     }
 

@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.Util;
@@ -58,125 +60,41 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ONE) {
-            return new NowWeatherViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.item_temperature, parent, false));
+        switch (viewType) {
+            case TYPE_ONE:
+                return new NowWeatherViewHolder(
+                    LayoutInflater.from(mContext).inflate(R.layout.item_temperature, parent, false));
+            case TYPE_TWO:
+                return new HoursWeatherViewHolder(
+                    LayoutInflater.from(mContext).inflate(R.layout.item_hour_info, parent, false));
+            case TYPE_THREE:
+                return new SuggestionViewHolder(
+                    LayoutInflater.from(mContext).inflate(R.layout.item_suggestion, parent, false));
+            case TYPE_FORE:
+                return new ForecastViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_forecast, parent, false));
         }
-        if (viewType == TYPE_TWO) {
-            return new HoursWeatherViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.item_hour_info, parent, false));
-        }
-        if (viewType == TYPE_THREE) {
-            return new SuggestionViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.item_suggestion, parent, false));
-        }
-        if (viewType == TYPE_FORE) {
-            return new ForecastViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_forecast, parent, false));
-        }
-
         return null;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-        if (holder instanceof NowWeatherViewHolder) {
-            try {
-                ((NowWeatherViewHolder) holder).tempFlu.setText(String.format("%s℃", mWeatherData.now.tmp));
-                ((NowWeatherViewHolder) holder).tempMax.setText(
-                    String.format("↑ %s °", mWeatherData.dailyForecast.get(0).tmp.max));
-                ((NowWeatherViewHolder) holder).tempMin.setText(
-                    String.format("↓ %s °", mWeatherData.dailyForecast.get(0).tmp.min));
-                ((NowWeatherViewHolder) holder).tempPm.setText(Util.safeText("PM25： ", mWeatherData.aqi.city.pm25));
-                ((NowWeatherViewHolder) holder).tempQuality.setText(Util.safeText("空气质量： ", mWeatherData.aqi.city.qlty));
-                ImageLoader.load(mContext, mSetting.getInt(mWeatherData.now.cond.txt, R.mipmap.none),
-                    ((NowWeatherViewHolder) holder).weatherIcon);
-            } catch (Exception e) {
-                PLog.e(TAG, e.toString());
-            }
-
-            holder.itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onItemClick(mWeatherData);
-                }
-            });
+        int itemType = getItemViewType(position);
+        switch (itemType) {
+            case TYPE_ONE:
+                ((NowWeatherViewHolder) holder).bind(mContext, mWeatherData);
+                break;
+            case TYPE_TWO:
+                ((HoursWeatherViewHolder) holder).bind(mContext, mWeatherData);
+                break;
+            case TYPE_THREE:
+                ((SuggestionViewHolder) holder).bind(mContext, mWeatherData);
+                break;
+            case TYPE_FORE:
+                ((ForecastViewHolder) holder).bind(mContext, mWeatherData);
+                break;
+            default:
+                break;
         }
-        if (holder instanceof HoursWeatherViewHolder) {
-            try {
-                for (int i = 0; i < mWeatherData.hourlyForecast.size(); i++) {
-                    //s.subString(s.length-3,s.length);
-                    //第一个参数是开始截取的位置，第二个是结束位置。
-                    String mDate = mWeatherData.hourlyForecast.get(i).date;
-                    ((HoursWeatherViewHolder) holder).mClock[i].setText(
-                        mDate.substring(mDate.length() - 5, mDate.length()));
-                    ((HoursWeatherViewHolder) holder).mTemp[i].setText(
-                        String.format("%s°", mWeatherData.hourlyForecast.get(i).tmp));
-                    ((HoursWeatherViewHolder) holder).mHumidity[i].setText(
-                        String.format("%s%%", mWeatherData.hourlyForecast.get(i).hum)
-                    );
-                    ((HoursWeatherViewHolder) holder).mWind[i].setText(
-                        String.format("%sKm", mWeatherData.hourlyForecast.get(i).wind.spd)
-                    );
-                }
-            } catch (Exception e) {
-                //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
-                PLog.e(e.toString());
-            }
-        }
-        if (holder instanceof SuggestionViewHolder) {
-            try {
-
-                ((SuggestionViewHolder) holder).clothBrief.setText(String.format("穿衣指数---%s", mWeatherData.suggestion.drsg.brf));
-                ((SuggestionViewHolder) holder).clothTxt.setText(mWeatherData.suggestion.drsg.txt);
-
-                ((SuggestionViewHolder) holder).sportBrief.setText(String.format("运动指数---%s", mWeatherData.suggestion.sport.brf));
-                ((SuggestionViewHolder) holder).sportTxt.setText(mWeatherData.suggestion.sport.txt);
-
-                ((SuggestionViewHolder) holder).travelBrief.setText(String.format("旅游指数---%s", mWeatherData.suggestion.trav.brf));
-                ((SuggestionViewHolder) holder).travelTxt.setText(mWeatherData.suggestion.trav.txt);
-
-                ((SuggestionViewHolder) holder).fluBrief.setText(String.format("感冒指数---%s", mWeatherData.suggestion.flu.brf));
-
-                ((SuggestionViewHolder) holder).fluTxt.setText(mWeatherData.suggestion.flu.txt);
-            } catch (Exception e) {
-                PLog.e(e.toString());
-            }
-        }
-
-        if (holder instanceof ForecastViewHolder) {
-            try {
-                //今日 明日
-                ((ForecastViewHolder) holder).forecastDate[0].setText("今日");
-                ((ForecastViewHolder) holder).forecastDate[1].setText("明日");
-                for (int i = 0; i < mWeatherData.dailyForecast.size(); i++) {
-                    if (i > 1) {
-                        try {
-                            ((ForecastViewHolder) holder).forecastDate[i].setText(
-                                Util.dayForWeek(mWeatherData.dailyForecast.get(i).date));
-                        } catch (Exception e) {
-                            PLog.e(TAG, e.toString());
-                        }
-                    }
-                    ImageLoader.load(mContext, mSetting.getInt(mWeatherData.dailyForecast.get(i).cond.txtD, R.mipmap.none),
-                        ((ForecastViewHolder) holder).forecastIcon[i]);
-                    ((ForecastViewHolder) holder).forecastTemp[i].setText(
-                        String.format("%s° %s°",
-                            mWeatherData.dailyForecast.get(i).tmp.min,
-                            mWeatherData.dailyForecast.get(i).tmp.max));
-                    ((ForecastViewHolder) holder).forecastTxt[i].setText(
-                        String.format("%s。 最高%s℃。 %s %s %s km/h。 降水几率 %s%%。",
-                            mWeatherData.dailyForecast.get(i).cond.txtD,
-                            mWeatherData.dailyForecast.get(i).tmp.max,
-                            mWeatherData.dailyForecast.get(i).wind.sc,
-                            mWeatherData.dailyForecast.get(i).wind.dir,
-                            mWeatherData.dailyForecast.get(i).wind.spd,
-                            mWeatherData.dailyForecast.get(i).pop));
-                }
-            } catch (Exception e) {
-                PLog.e(e.toString());
-            }
-        }
-
         showItemAnim(holder.itemView, position);
     }
 
@@ -189,25 +107,47 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
      * 当前天气情况
      */
     class NowWeatherViewHolder extends RecyclerView.ViewHolder {
-        private CardView cardView;
-        private ImageView weatherIcon;
-        private TextView tempFlu;
-        private TextView tempMax;
-        private TextView tempMin;
 
-        private TextView tempPm;
-        private TextView tempQuality;
+        @Bind(R.id.weather_icon)
+        ImageView weatherIcon;
+        @Bind(R.id.temp_flu)
+        TextView tempFlu;
+        @Bind(R.id.temp_max)
+        TextView tempMax;
+        @Bind(R.id.temp_min)
+        TextView tempMin;
+        @Bind(R.id.temp_pm)
+        TextView tempPm;
+        @Bind(R.id.temp_quality)
+        TextView tempQuality;
+        @Bind(R.id.cardView)
+        CardView cardView;
 
         public NowWeatherViewHolder(View itemView) {
             super(itemView);
-            cardView = (CardView) itemView.findViewById(R.id.cardView);
-            weatherIcon = (ImageView) itemView.findViewById(R.id.weather_icon);
-            tempFlu = (TextView) itemView.findViewById(R.id.temp_flu);
-            tempMax = (TextView) itemView.findViewById(R.id.temp_max);
-            tempMin = (TextView) itemView.findViewById(R.id.temp_min);
+            ButterKnife.bind(this, itemView);
+        }
 
-            tempPm = (TextView) itemView.findViewById(R.id.temp_pm);
-            tempQuality = (TextView) itemView.findViewById(R.id.temp_quality);
+        public void bind(Context context, Weather weather) {
+            try {
+                tempFlu.setText(String.format("%s℃", weather.now.tmp));
+                tempMax.setText(
+                    String.format("↑ %s °", weather.dailyForecast.get(0).tmp.max));
+                tempMin.setText(
+                    String.format("↓ %s °", weather.dailyForecast.get(0).tmp.min));
+                tempPm.setText(Util.safeText("PM25： ", weather.aqi.city.pm25));
+                tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
+                ImageLoader.load(context, mSetting.getInt(weather.now.cond.txt, R.mipmap.none),
+                    weatherIcon);
+            } catch (Exception e) {
+                PLog.e(TAG, e.toString());
+            }
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemClick(mWeatherData);
+                }
+            });
         }
     }
 
@@ -234,34 +174,75 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                 itemHourInfoLinearlayout.addView(view);
             }
         }
+
+        public void bind(Context context, Weather weather) {
+
+            try {
+                for (int i = 0; i < weather.hourlyForecast.size(); i++) {
+                    //s.subString(s.length-3,s.length);
+                    //第一个参数是开始截取的位置，第二个是结束位置。
+                    String mDate = weather.hourlyForecast.get(i).date;
+                    mClock[i].setText(
+                        mDate.substring(mDate.length() - 5, mDate.length()));
+                    mTemp[i].setText(
+                        String.format("%s°", weather.hourlyForecast.get(i).tmp));
+                    mHumidity[i].setText(
+                        String.format("%s%%", weather.hourlyForecast.get(i).hum)
+                    );
+                    mWind[i].setText(
+                        String.format("%sKm", weather.hourlyForecast.get(i).wind.spd)
+                    );
+                }
+            } catch (Exception e) {
+                //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
+                PLog.e(e.toString());
+            }
+        }
     }
 
     /**
      * 当日建议
      */
     class SuggestionViewHolder extends RecyclerView.ViewHolder {
-        private CardView cardView;
-        private TextView clothBrief;
-        private TextView clothTxt;
-        private TextView sportBrief;
-        private TextView sportTxt;
-        private TextView travelBrief;
-        private TextView travelTxt;
-        private TextView fluBrief;
-        private TextView fluTxt;
+        @Bind(R.id.cloth_brief)
+        TextView clothBrief;
+        @Bind(R.id.cloth_txt)
+        TextView clothTxt;
+        @Bind(R.id.sport_brief)
+        TextView sportBrief;
+        @Bind(R.id.sport_txt)
+        TextView sportTxt;
+        @Bind(R.id.travel_brief)
+        TextView travelBrief;
+        @Bind(R.id.travel_txt)
+        TextView travelTxt;
+        @Bind(R.id.flu_brief)
+        TextView fluBrief;
+        @Bind(R.id.flu_txt)
+        TextView fluTxt;
 
         public SuggestionViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
 
-            cardView = (CardView) itemView.findViewById(R.id.cardView);
-            clothBrief = (TextView) itemView.findViewById(R.id.cloth_brief);
-            clothTxt = (TextView) itemView.findViewById(R.id.cloth_txt);
-            sportBrief = (TextView) itemView.findViewById(R.id.sport_brief);
-            sportTxt = (TextView) itemView.findViewById(R.id.sport_txt);
-            travelBrief = (TextView) itemView.findViewById(R.id.travel_brief);
-            travelTxt = (TextView) itemView.findViewById(R.id.travel_txt);
-            fluBrief = (TextView) itemView.findViewById(R.id.flu_brief);
-            fluTxt = (TextView) itemView.findViewById(R.id.flu_txt);
+        public void bind(Context context, Weather weather) {
+            try {
+
+                clothBrief.setText(String.format("穿衣指数---%s", weather.suggestion.drsg.brf));
+                clothTxt.setText(weather.suggestion.drsg.txt);
+
+                sportBrief.setText(String.format("运动指数---%s", weather.suggestion.sport.brf));
+                sportTxt.setText(weather.suggestion.sport.txt);
+
+                travelBrief.setText(String.format("旅游指数---%s", weather.suggestion.trav.brf));
+                travelTxt.setText(weather.suggestion.trav.txt);
+
+                fluBrief.setText(String.format("感冒指数---%s", weather.suggestion.flu.brf));
+                fluTxt.setText(weather.suggestion.flu.txt);
+            } catch (Exception e) {
+                PLog.e(e.toString());
+            }
         }
     }
 
@@ -285,6 +266,40 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                 forecastTxt[i] = (TextView) view.findViewById(R.id.forecast_txt);
                 forecastIcon[i] = (ImageView) view.findViewById(R.id.forecast_icon);
                 forecastLinear.addView(view);
+            }
+        }
+
+        public void bind(Context context, Weather weather) {
+            try {
+                //今日 明日
+                forecastDate[0].setText("今日");
+                forecastDate[1].setText("明日");
+                for (int i = 0; i < weather.dailyForecast.size(); i++) {
+                    if (i > 1) {
+                        try {
+                            forecastDate[i].setText(
+                                Util.dayForWeek(weather.dailyForecast.get(i).date));
+                        } catch (Exception e) {
+                            PLog.e(e.toString());
+                        }
+                    }
+                    ImageLoader.load(mContext, mSetting.getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
+                        forecastIcon[i]);
+                    forecastTemp[i].setText(
+                        String.format("%s° %s°",
+                            weather.dailyForecast.get(i).tmp.min,
+                            weather.dailyForecast.get(i).tmp.max));
+                    forecastTxt[i].setText(
+                        String.format("%s。 最高%s℃。 %s %s %s km/h。 降水几率 %s%%。",
+                            weather.dailyForecast.get(i).cond.txtD,
+                            weather.dailyForecast.get(i).tmp.max,
+                            weather.dailyForecast.get(i).wind.sc,
+                            weather.dailyForecast.get(i).wind.dir,
+                            weather.dailyForecast.get(i).wind.spd,
+                            weather.dailyForecast.get(i).pop));
+                }
+            } catch (Exception e) {
+                PLog.e(e.toString());
             }
         }
     }

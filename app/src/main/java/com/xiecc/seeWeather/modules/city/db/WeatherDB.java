@@ -1,9 +1,7 @@
 package com.xiecc.seeWeather.modules.city.db;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.xiecc.seeWeather.modules.city.domain.City;
 import com.xiecc.seeWeather.modules.city.domain.Province;
 import java.util.ArrayList;
@@ -15,13 +13,12 @@ import java.util.List;
  */
 public class WeatherDB {
 
-    private Context context;
 
-    public WeatherDB(Context context) {
-        this.context = context;
+    public WeatherDB() {
+
     }
 
-    public List<Province> loadProvinces(SQLiteDatabase db) {
+    public static List<Province> loadProvinces(SQLiteDatabase db) {
 
         List<Province> list = new ArrayList<>();
 
@@ -40,7 +37,7 @@ public class WeatherDB {
         return list;
     }
 
-    public List<City> loadCities(SQLiteDatabase db, int ProID) {
+    public static List<City> loadCities(SQLiteDatabase db, int ProID) {
         List<City> list = new ArrayList<>();
         Cursor cursor = db.query("T_City", null, "ProID = ?", new String[] { String.valueOf(ProID) }, null, null, null);
         if (cursor.moveToFirst()) {
@@ -50,9 +47,6 @@ public class WeatherDB {
                 city.ProID = ProID;
                 city.CitySort = cursor.getInt(cursor.getColumnIndex("CitySort"));
                 list.add(city);
-                //city.setCityName(cursor.getString(cursor.getColumnIndex("CityName")));
-                //city.setProID(ProID);
-                //list.add(city);
             } while (cursor.moveToNext());
         }
         cursor.close();
