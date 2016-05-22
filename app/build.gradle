@@ -79,4 +79,8 @@ dependencies {
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+
+    compile 'com.google.firebase:firebase-core:9.0.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

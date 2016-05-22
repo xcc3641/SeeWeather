@@ -4,9 +4,6 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import rx.Observable;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by HugoXie on 16/4/30.
@@ -21,16 +18,9 @@ public class ImageLoader {
         Glide.with(context).load(imageRes).crossFade().into(view);
     }
 
-    public static void loadAndDiskCache(Context context, @DrawableRes int imageRes, ImageView view) {
-        Glide.with(context).load(imageRes).diskCacheStrategy(DiskCacheStrategy.ALL).crossFade().into(view);
-    }
 
-    public static void clear(Context context){
-        Observable.just(1)
-            .observeOn(Schedulers.io())
-            .subscribe(integer -> {
-                Glide.get(context).clearMemory();
-                Glide.get(context).clearDiskCache();
-            });
+
+    public static void clear(Context context) {
+        Glide.get(context).clearMemory();
     }
 }

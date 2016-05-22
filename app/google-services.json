@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1049478372464",
+    "firebase_url": "https://project-4327957269886013363.firebaseio.com",
+    "project_id": "project-4327957269886013363",
+    "storage_bucket": "project-4327957269886013363.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049478372464:android:4efc94ee100efa12",
+        "android_client_info": {
+          "package_name": "com.xiecc.seeWeather"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049478372464-9sh9372m5q8c2vkj0lf6g7ff58364v81.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvXEeNa0qHlMMFWDbCq3xc02pwM3d4IZY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

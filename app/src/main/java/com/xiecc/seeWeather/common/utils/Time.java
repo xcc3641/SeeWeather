@@ -13,8 +13,7 @@ public class Time {
     public static String getNowYMDHMSTime() {
         SimpleDateFormat mDateFormat = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
-        String date = mDateFormat.format(new Date());
-        return date;
+        return mDateFormat.format(new Date());
     }
 
     /**
@@ -24,8 +23,7 @@ public class Time {
     public static String getNowMDHMSTime() {
         SimpleDateFormat mDateFormat = new SimpleDateFormat(
             "MM-dd HH:mm:ss");
-        String date = mDateFormat.format(new Date());
-        return date;
+        return mDateFormat.format(new Date());
     }
 
     /**
@@ -36,8 +34,7 @@ public class Time {
 
         SimpleDateFormat mDateFormat = new SimpleDateFormat(
             "yyyy-MM-dd");
-        String date = mDateFormat.format(new Date());
-        return date;
+        return mDateFormat.format(new Date());
     }
 
     /**
@@ -48,8 +45,7 @@ public class Time {
 
         SimpleDateFormat mDateFormat = new SimpleDateFormat(
             "yyyy-MM-dd");
-        String dateS = mDateFormat.format(date);
-        return dateS;
+        return mDateFormat.format(date);
     }
 
     @SuppressLint("SimpleDateFormat")

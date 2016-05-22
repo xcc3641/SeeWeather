@@ -131,4 +131,12 @@ public class Util {
         }
         return "错误";
     }
+
+    /**
+     * 正则匹配掉错误信息
+     */
+    public static String replaceCity(String city) {
+        city = city.replaceAll("(?:省|市|自治区|特别行政区|地区|盟)", "");
+        return city;
+    }
 }

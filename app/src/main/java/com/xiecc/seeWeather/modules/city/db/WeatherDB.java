@@ -25,7 +25,6 @@ public class WeatherDB {
         Cursor cursor = db.query("T_Province", null, null, null, null, null, null);
 
         if (cursor.moveToFirst()) {
-
             do {
                 Province province = new Province();
                 province.ProSort = cursor.getInt(cursor.getColumnIndex("ProSort"));

@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,6 +17,7 @@ import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.city.adapter.CityAdapter;
 import com.xiecc.seeWeather.modules.city.db.DBManager;
@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by hugo on 2016/2/19 0019.
@@ -58,7 +56,7 @@ public class ChoiceCityActivity extends BaseActivity {
     private ArrayList<String> dataList = new ArrayList<>();
     private Province selectedProvince;
     private City selectedCity;
-    private List<Province> provincesList;
+    private List<Province> provincesList = new ArrayList<>();
     private List<City> cityList;
     private CityAdapter mAdapter;
 
@@ -71,16 +69,13 @@ public class ChoiceCityActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_city);
         ButterKnife.bind(this);
-
+        initView();
         Observable.defer(() -> {
             mDBManager = new DBManager(ChoiceCityActivity.this);
             mDBManager.openDatabase();
-            //mWeatherDB = new WeatherDB(ChoiceCityActivity.this);
             return Observable.just(1);
-        }).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        }).compose(RxUtils.rxSchedulerHelper())
             .subscribe(integer -> {
-                initView();
                 initRecyclerView();
                 queryProvinces();
             });
@@ -89,10 +84,10 @@ public class ChoiceCityActivity extends BaseActivity {
     private void initView() {
         setStatusBarColorForKitkat(R.color.colorSunrise);
         if (banner != null) {
-            ImageLoader.loadAndDiskCache(this, R.mipmap.city_day, banner);
+            ImageLoader.load(this, R.mipmap.city_day, banner);
             if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
                 collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-                ImageLoader.loadAndDiskCache(this, R.mipmap.city_night, banner);
+                ImageLoader.load(this, R.mipmap.city_night, banner);
                 setStatusBarColorForKitkat(R.color.colorSunset);
             }
         }
@@ -130,16 +125,25 @@ public class ChoiceCityActivity extends BaseActivity {
     private void queryProvinces() {
         collapsingToolbarLayout.setTitle("选择省份");
         Observable.defer(() -> {
-            provincesList = WeatherDB.loadProvinces(mDBManager.getDatabase());
+            if (provincesList.isEmpty()) {
+                provincesList.addAll(WeatherDB.loadProvinces(mDBManager.getDatabase()));
+            }
             dataList.clear();
             return Observable.from(provincesList);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-            province -> dataList.add(province.ProName), throwable -> PLog.e(throwable.toString()), () -> {
-                currentLevel = LEVEL_PROVINCE;
-                mAdapter.notifyDataSetChanged();
-                mProgressBar.setVisibility(View.GONE);
-            }
-        );
+        })
+            .map(province -> province.ProName)
+            //.delay(60, TimeUnit.MILLISECONDS, Schedulers.immediate())
+            //.onBackpressureBuffer() // 会缓存所有当前无法消费的数据，直到 Observer 可以处理为止
+            .toList()
+            .compose(RxUtils.rxSchedulerHelper())
+            .doOnTerminate(() -> mProgressBar.setVisibility(View.GONE))
+            .subscribe(
+                province -> dataList.addAll(province)
+                , throwable -> PLog.e(throwable.toString()), () -> {
+                    currentLevel = LEVEL_PROVINCE;
+                    mAdapter.notifyDataSetChanged();
+                }
+            );
     }
 
     /**
@@ -152,9 +156,12 @@ public class ChoiceCityActivity extends BaseActivity {
         Observable.defer(() -> {
             cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
-        }).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(city -> dataList.add(city.CityName), throwable -> PLog.e(throwable.toString()), () -> {
+        })
+            .map(city -> city.CityName)
+            .toList()
+            .compose(RxUtils.rxSchedulerHelper())
+            .subscribe(city -> dataList.addAll(city), throwable -> {
+            }, () -> {
                 currentLevel = LEVEL_CITY;
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item
@@ -163,21 +170,20 @@ public class ChoiceCityActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (currentLevel == LEVEL_PROVINCE) {
-                finish();
-            } else {
-                queryProvinces();
-                mRecyclerView.smoothScrollToPosition(0);
-            }
+    public void onBackPressed() {
+        //super.onBackPressed();  http://www.eoeandroid.com/thread-275312-1-1.html 这里的坑
+        if (currentLevel == LEVEL_PROVINCE) {
+            finish();
+        } else {
+            queryProvinces();
+            mRecyclerView.smoothScrollToPosition(0);
         }
-        return false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mDBManager.closeDatabase();
+        ButterKnife.unbind(this);
     }
 }

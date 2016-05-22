@@ -62,8 +62,6 @@ import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import java.util.Calendar;
 import rx.Observable;
 import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 // TODO: 16/5/18  config.gradle 未提示 整合 retrofit 的使用
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -253,11 +251,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Calendar calendar = Calendar.getInstance();
         mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        ImageLoader.loadAndDiskCache(this, R.mipmap.sunrise, bannner);
+        ImageLoader.load(this, R.mipmap.sunrise, bannner);
         if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-            ImageLoader.loadAndDiskCache(this, R.mipmap.sunset, bannner);
+            ImageLoader.load(this, R.mipmap.sunset, bannner);
             collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColorForKitkat(R.color.colorSunset);
+            headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back_night));
         }
     }
 
@@ -271,10 +270,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             navigationView.setNavigationItemSelectedListener(this);
             View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
             headerBackground = (RelativeLayout) headerLayout.findViewById(R.id.header_background);
-            if (mSetting.getInt(Setting.HOUR, 0) < 6 || mSetting.getInt(Setting.HOUR, 0) > 18) {
-                //headerBackground.setBackground(this.getResources().getDrawable(R.mipmap.header_back_night)); 过时
-                headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back_night));
-            }
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
@@ -402,19 +397,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
         String cityName = mSetting.getCityName();
         if (cityName != null) {
-            cityName = cityName.replace("市", "")
-                .replace("省", "")
-                .replace("自治区", "")
-                .replace("特别行政区", "")
-                .replace("地区", "")
-                .replace("盟", "");
+            cityName = Util.replaceCity(cityName);
         }
-        RetrofitSingleton.getApiService(this)
-            .mWeatherAPI(cityName, Setting.KEY)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
-            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+        RetrofitSingleton.getInstance()
+            .fetchWeather(cityName, Setting.KEY)
             .subscribe(observer);
     }
 

@@ -3,8 +3,9 @@ package com.xiecc.seeWeather.modules.city.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.util.Log;
+import android.support.annotation.Nullable;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.common.PLog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,11 +44,12 @@ public class DBManager {
 
 
     public void openDatabase() {
-        Log.e(TAG, DB_PATH + "/" + DB_NAME);
+        PLog.e(TAG, DB_PATH + "/" + DB_NAME);
         this.database = this.openDatabase(DB_PATH + "/" + DB_NAME);
     }
 
 
+    @Nullable
     private SQLiteDatabase openDatabase(String dbfile) {
 
         try {
@@ -65,10 +67,10 @@ public class DBManager {
             }
             return SQLiteDatabase.openOrCreateDatabase(dbfile, null);
         } catch (FileNotFoundException e) {
-            Log.e("Database", "File not found");
+            PLog.e("File not found");
             e.printStackTrace();
         } catch (IOException e) {
-            Log.e("Database", "IO exception");
+            PLog.e("IO exception");
             e.printStackTrace();
         }
 

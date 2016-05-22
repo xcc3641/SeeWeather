@@ -1,6 +1,9 @@
 package com.xiecc.seeWeather.common.utils;
 
+import android.text.format.Formatter;
 import android.util.Log;
+import com.xiecc.seeWeather.base.BaseApplication;
+import com.xiecc.seeWeather.common.PLog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.DecimalFormat;
@@ -13,7 +16,6 @@ public class FileSizeUtil {
     public static final int SIZETYPE_KB = 2;//获取文件大小单位为KB的double值
     public static final int SIZETYPE_MB = 3;//获取文件大小单位为MB的double值
     public static final int SIZETYPE_GB = 4;//获取文件大小单位为GB的double值
-
 
     /**
      * 获取文件指定文件的指定单位的大小
@@ -37,6 +39,7 @@ public class FileSizeUtil {
             Log.e("获取文件大小", "获取失败!");
         }
         return FormetFileSize(blockSize, sizeType);
+
     }
 
 
@@ -58,9 +61,9 @@ public class FileSizeUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("获取文件大小", "获取失败!");
+            PLog.e("获取文件大小失败!");
         }
-        return FormetFileSize(blockSize);
+        return Formatter.formatFileSize(BaseApplication.getmAppContext(),blockSize);
     }
 
 
@@ -104,30 +107,7 @@ public class FileSizeUtil {
     }
 
 
-    /**
-     * 转换文件大小
-     */
-    private static String FormetFileSize(long fileS) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        String fileSizeString = "";
-        String wrongSize = "0B";
-        if (fileS == 0) {
-            return wrongSize;
-        }
-        if (fileS < 1024) {
-            fileSizeString = df.format((double) fileS) + "B";
-        }
-        else if (fileS < 1048576) {
-            fileSizeString = df.format((double) fileS / 1024) + "KB";
-        }
-        else if (fileS < 1073741824) {
-            fileSizeString = df.format((double) fileS / 1048576) + "MB";
-        }
-        else {
-            fileSizeString = df.format((double) fileS / 1073741824) + "GB";
-        }
-        return fileSizeString;
-    }
+
 
 
     /**

@@ -22,7 +22,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        aCache = ACache.get(BaseActivity.this);
+        aCache = ACache.get(getApplication());
         mSetting = Setting.getInstance();
 
         /**

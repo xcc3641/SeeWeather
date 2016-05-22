@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.ACache;
+import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.main.ui.MainActivity;
@@ -16,8 +17,6 @@ import com.xiecc.seeWeather.modules.setting.Setting;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -47,13 +46,12 @@ public class AutoUpdateService extends Service {
     public void onCreate() {
         super.onCreate();
         mSetting = Setting.getInstance();
-        mAcache = ACache.get(this);
+        mAcache = ACache.get(getApplication());
         mCompositeSubscription = new CompositeSubscription();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         synchronized (this) {
             unSubscribed();
             if (isUnsubscribed) {
@@ -85,22 +83,9 @@ public class AutoUpdateService extends Service {
     private void fetchDataByNetWork() {
         String cityName = mSetting.getCityName();
         if (cityName != null) {
-            cityName = cityName.replace("市", "")
-                .replace("省", "")
-                .replace("自治区", "")
-                .replace("特别行政区", "")
-                .replace("地区", "")
-                .replace("盟", "");
+            cityName = Util.replaceCity(cityName);
         }
-        RetrofitSingleton.getApiService(this)
-            .mWeatherAPI(cityName, Setting.KEY)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
-            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-            .doOnNext(weather -> {
-
-            })
+        RetrofitSingleton.getInstance().fetchWeather(cityName, Setting.KEY)
             .subscribe(weather -> {
                 mAcache.put("WeatherData", weather);
                 normalStyleNotification(weather);

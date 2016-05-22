@@ -7,7 +7,7 @@ ext {
         minSdkVersion    : 19, // Android 4.4 Kitkat
         targetSdkVersion : 23,
         versionCode      : 5,
-        versionName      : "2.1.5",
+        versionName      : "2.1.6",
         resConfigs       : "zh"
     ]
 

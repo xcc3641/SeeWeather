@@ -9,9 +9,6 @@ import android.view.View;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
-import com.xiecc.seeWeather.modules.setting.Setting;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by hugo on 2016/2/21 0021.
@@ -20,10 +17,7 @@ public class CheckVersion {
     private static String TAG = CheckVersion.class.getSimpleName();
 
     public static void checkVersion(final Context context, final View view) {
-        RetrofitSingleton.getApiService(context)
-            .mVersionAPI(Setting.API_TOKEN)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        RetrofitSingleton.getInstance().fetchVersion()
             .subscribe(versionAPI -> {
                 String firVersionName = versionAPI.versionShort;
                 String currentVersionName = Util.getVersion(context);
@@ -33,7 +27,7 @@ public class CheckVersion {
                     Snackbar.make(view, "已经是最新版本(⌐■_■)", Snackbar.LENGTH_SHORT).show();
                 }
             }, throwable -> {
-                PLog.e(TAG,throwable.toString());
+                PLog.e(TAG, throwable.toString());
             });
     }
 
