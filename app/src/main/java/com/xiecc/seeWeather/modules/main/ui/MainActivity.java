@@ -357,9 +357,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 优先网络
      */
     private void load() {
-        Observable.concat(fetchDataByNetWork(), fetchDataByCache()).first(weather -> weather != null)
+        Observable.concat(fetchDataByNetWork(), fetchDataByCache())
+            .first(weather -> weather != null)
             .doOnError(throwable -> {
-                mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
                 Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
@@ -367,11 +367,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }).show();
             })
             .doOnNext(weather -> {
-                mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
             })
-            .doOnTerminate(() -> mRefreshLayout.setRefreshing(false))
+            .doOnTerminate(() -> {
+                mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
+            })
             .subscribe(observer);
     }
 
@@ -390,10 +392,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 从网络获取
      */
     private Observable<Weather> fetchDataByNetWork() {
-        String cityName = mSetting.getCityName();
-        if (cityName != null) {
-            cityName = Util.replaceCity(cityName);
-        }
+        String cityName = Util.replaceCity(mSetting.getCityName());
         return RetrofitSingleton.getInstance()
             .fetchWeather(cityName);
     }

@@ -1,6 +1,6 @@
 # 就看天气
 
----- 
+----
 
 ### 前言
 最初上线是在2015年10月，是自己第一个较为成熟的应用，开发完之后刚好答了知乎这篇[如何自学Android编程][1]
@@ -10,7 +10,7 @@
 当然自己也在学习之中，如果发现有任何问题和建议，随时欢迎Email或者开Issues
 
 
-- **开源不易，希望能给个Star鼓励** 
+- **开源不易，希望能给个Star鼓励**
 - 项目地址：https://github.com/xcc3641/SeeWeather
 - 项目主页发布issue: https://github.com/xcc3641/SeeWeather/issues
 - 本项目为开源项目,技术交流可以通过邮箱联系: Hugo3641@gmail.com
@@ -25,7 +25,7 @@
 - 彩蛋（自动夜间状态）
 
 
----- 
+----
 
 权限说明
 
@@ -59,6 +59,11 @@ Fir.im: http://fir.im/seeWeather
 
 魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
 
+v2.1.6
+- 更新 RxUtil
+- 优化 网络和缓存逻辑
+- 更多的封装
+
 v2.1.3
 - 修复 城市列表卡顿
 - 更新 lambda
@@ -83,12 +88,6 @@ v2.0
 - 缓存数据，减少网络请求，保证离线查看
 - 内置两套图标（设置里更改）
 
-
-v1.1
-- 加固
-- 兼容更多系统版本
-
-
 v1.0
 - 就看天气V1.0
 - @图片和信息来源于网络，侵权删
@@ -98,16 +97,17 @@ v1.0
 
 ### TODO
 这学期有点忙，需要花时间巩固基础，准备面试，但是自己还是会抽空尽快做出这些功能的，谢谢大家理解和支持
+
 - [ ] 桌面小部件
 - [x] 通知栏提醒
 - [x] 更好，更多的天气ICONS
 - [ ] 管理城市（多城市选择）
-- [x] \~\~自动定位\~\~
+- [x] 自动定位
 - [ ] 自由定制的Item界面
 
 
 
----- 
+----
 
 ### 项目
 #### 公开 API
@@ -125,66 +125,88 @@ v1.0
 4. [GLide][5]
 5. [ASimpleCache][6]
 
-#### 简单介绍代码
+#### 代码
 
 ##### 网络
 就看天气的网络部分的支持是用`RxJava+RxAndroid+Retrofit+Gson`再加上`ACache`缓存
+
+网络部分：
+配合 RetrofitSingleton 中封装的方法：
+```java
+public Observable<Weather> fetchWeather(String city) {
+		return apiService.mWeatherAPI(city, C.KEY)
+				.filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
+				.map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+				.compose(RxUtils.rxSchedulerHelper());
+}
 ```
-   /**
-	 * <p/>
-	 * 首先从本地缓存获取数据
-	 * if 有
-	 * 更新UI
-	 * else
-	 * 直接进行网络请求，更新UI并保存在本地
-	 */
-	private void fetchData() {
-	    observer = new Observer<Weather>() {
-	                    //节约篇幅，已省略
-	                    ...
-	    };
-	
-	    fetchDataByCache(observer);
-	}
-	
-	
-	/**
-	 * 从本地获取
-	 */
-	private void fetchDataByCache(Observer<Weather> observer) {
-	    Weather weather = null;
-	    try {
-	        weather = (Weather) aCache.getAsObject("WeatherData");
-	    } catch (Exception e) {
-	        Log.e(TAG, e.toString());
-	    }
-	    if (weather != null) {
-	    //distinct去重
-	        Observable.just(weather).distinct().subscribe(observer);
-	    } else {
-	        fetchDataByNetWork(observer);
-	    }
-	}
-	
-	
-	/**
-	 * 从网络获取
-	 */
-	private void fetchDataByNetWork(Observer<Weather> observer) {
-	    String cityName = mSetting.getString(Setting.CITY_NAME, "重庆");
-	    RetrofitSingleton.getApiService(this)
-	                     .mWeatherAPI(cityName, key)
-	                     .subscribeOn(Schedulers.io())
-	                     .observeOn(AndroidSchedulers.mainThread())
-	                    ////节约篇幅，已省略
-	                    ...
-	}
+
+RxUtils 工具类中封装了线程调度：
+
+```java
+public static <T> Observable.Transformer<T, T> rxSchedulerHelper() {
+		return tObservable -> tObservable.subscribeOn(Schedulers.io())
+				.unsubscribeOn(AndroidSchedulers.mainThread())
+				.observeOn(AndroidSchedulers.mainThread());
+}
 ```
-##### RecycerVIew展示
+
+感受下实际操作
+
+```java
+private Observable<Weather> fetchDataByNetWork() {
+		String cityName = Util.replaceCity(mSetting.getCityName());
+		return RetrofitSingleton.getInstance()
+				.fetchWeather(cityName);
+}
+```
+因为和风天气 API 有些城市/省份的末尾的特殊符号需要过滤掉，比如 `省|市|自治区|特别行政区|地区|盟`,所以在我的方法类中写了一个安全的替换方法。
+
+缓存部分：
+```java
+private Observable<Weather> fetchDataByCache() {
+		return Observable.defer(() -> {
+						Weather weather = (Weather) aCache.getAsObject(C.WEATHER_CACHE);
+						return Observable.just(weather);
+				}
+		).compose(RxUtils.rxSchedulerHelper());
+}
+```
+
+使用 concat 连接：
+优先网络数据
+
+```java
+private void load() {
+        Observable.concat(fetchDataByNetWork(), fetchDataByCache())
+            .first(weather -> weather != null)
+            .doOnError(throwable -> {
+                mErroImageView.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+                Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
+                    load();
+                }).show();
+            })
+            .doOnNext(weather -> {
+                mErroImageView.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+            })
+            .doOnTerminate(() -> {
+                mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
+            })
+            .subscribe(observer);
+    }
+```
+
+##### RecyclerView 展示
+
 就像洪洋说的一样
+
 > 整体上看RecyclerView架构，提供了一种插拔式的体验，高度的解耦，异常的灵活，通过设置它提供的不同LayoutManager，ItemDecoration , ItemAnimator实现令人瞠目的效果。
 
-该项目中用到RecyclerView中级的用法是根据itemType展示不同的布局，这就是主页核心的代码了。
+该项目中用到 RecyclerView 中的用法是根据 itemType 展示不同的布局，这就是主页 UI 核心的代码了。
+
 ```
 @Override public int getItemViewType(int position) {
 	    if (position == TYPE_ONE) {
@@ -203,18 +225,16 @@ v1.0
    }
 
 @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-	    if (holder instanceof NowWeatherViewHolder) {
 	    //更新布局
 	    ....
-	    }
+
 }
 
 ```
 
 
 
----- 
+----
 
 
 ### 截图
@@ -236,24 +256,24 @@ v1.0
 特别感谢**简书猿圈**
 
 ### 关于作者
- 
+
 ![][image-4]
- 
+
 简书：http://www.jianshu.com/users/3372b4a3b9e5/latest\_articles
- 
+
 知乎：https://www.zhihu.com/people/xcc3641.github.io
- 
+
 微博：http://weibo.com/xcc3641
- 
+
 个人博客： http://IMXIE.CC
 
 
 ### 请我喝杯咖啡
 
----- 
+----
 
 ![][image-5]
----- 
+----
 
 ### LICENSE
 
