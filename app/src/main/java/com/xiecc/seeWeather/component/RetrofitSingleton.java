@@ -2,9 +2,9 @@ package com.xiecc.seeWeather.component;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
@@ -72,18 +72,17 @@ public class RetrofitSingleton {
         } else {
             Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
         }
-        Log.w(TAG, t.toString());
+        PLog.w(t.toString());
     }
-
-
 
     public Observable<Weather> fetchWeather(String city, String key) {
         return apiService.mWeatherAPI(city, key)
-            .compose(RxUtils.rxSchedulerHelper())
             .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
-            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0));
+            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+            .compose(RxUtils.rxSchedulerHelper());
     }
-    public Observable<VersionAPI> fetchVersion(){
+
+    public Observable<VersionAPI> fetchVersion() {
         return apiService.mVersionAPI(Setting.API_TOKEN).compose(RxUtils.rxSchedulerHelper());
     }
 }

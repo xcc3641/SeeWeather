@@ -327,15 +327,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onError(Throwable e) {
-                errorNetSnackbar(observer);
-                mRefreshLayout.setRefreshing(false);
+
             }
 
             @Override
             public void onNext(Weather weather) {
-                mProgressBar.setVisibility(View.GONE);
-                mErroImageView.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
 
                 int updateTime = mSetting.getAutoUpdate();
 
@@ -376,18 +372,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (weather != null) {
             Observable.just(weather).distinct().subscribe(observer);
-        } else {
-            errorNetSnackbar(observer);
         }
-    }
-
-    private void errorNetSnackbar(final Observer<Weather> observer) {
-        mProgressBar.setVisibility(View.GONE);
-        mErroImageView.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.GONE);
-        Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
-            fetchDataByNetWork(observer);
-        }).show();
     }
 
     /**
@@ -401,6 +386,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
         RetrofitSingleton.getInstance()
             .fetchWeather(cityName, Setting.KEY)
+            .doOnError(throwable -> {
+                mProgressBar.setVisibility(View.GONE);
+                mErroImageView.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+                Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
+                    fetchDataByNetWork(observer);
+                }).show();
+            })
+            .doOnNext(weather -> {
+                mProgressBar.setVisibility(View.GONE);
+                mErroImageView.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+            })
+            .doOnTerminate(() -> mRefreshLayout.setRefreshing(false))
             .subscribe(observer);
     }
 

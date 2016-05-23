@@ -3,6 +3,7 @@ package com.xiecc.seeWeather.common.utils;
 import com.xiecc.seeWeather.common.PLog;
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
@@ -25,9 +26,6 @@ public class RxUtils {
 
     /**
      * 可自定义线程
-     * @param scheduler
-     * @param <T>
-     * @return
      */
     public static <T> Observable.Transformer<T, T> rxSchedulerHelper(Scheduler scheduler) {
         return tObservable -> tObservable.subscribeOn(scheduler)
@@ -35,6 +33,9 @@ public class RxUtils {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 自定义处理 Rx 错误线程
+     */
     public static void unifiedErrorHandler() {
         RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
             @Override
@@ -42,5 +43,11 @@ public class RxUtils {
                 PLog.e(e.toString());
             }
         });
+    }
+
+    public static void unsubscribe(Subscription subscription) {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
     }
 }

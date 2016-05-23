@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.common.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import com.xiecc.seeWeather.common.PLog;
@@ -14,7 +13,6 @@ import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
  * Created by hugo on 2016/2/21 0021.
  */
 public class CheckVersion {
-    private static String TAG = CheckVersion.class.getSimpleName();
 
     public static void checkVersion(final Context context, final View view) {
         RetrofitSingleton.getInstance().fetchVersion()
@@ -24,10 +22,10 @@ public class CheckVersion {
                 if (currentVersionName.compareTo(firVersionName) < 0) {
                     showUpdateDialog(versionAPI, context);
                 } else {
-                    Snackbar.make(view, "已经是最新版本(⌐■_■)", Snackbar.LENGTH_SHORT).show();
+                    ToastUtil.showShort("已经是最新版本(⌐■_■)");
                 }
             }, throwable -> {
-                PLog.e(TAG, throwable.toString());
+                PLog.e(throwable.toString());
             });
     }
 
