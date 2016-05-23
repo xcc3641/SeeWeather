@@ -25,7 +25,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,8 +45,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -99,21 +100,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDataObserver();
         initIcon();
         startService(new Intent(this, AutoUpdateService.class));
-
-        if (Util.isNetworkConnected(this)) {
-            CheckVersion.checkVersion(this, fab);
-            // https://github.com/tbruyelle/RxPermissions
-            RxPermissions.getInstance(this).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(granted -> {
-                    if (granted) {
-                        location();
-                    } else {
-                        fetchDataByNetWork(observer);
-                    }
-                });
-        } else {
-            fetchDataByCache(observer);
-        }
+        CheckVersion.checkVersion(this, fab);
+        // https://github.com/tbruyelle/RxPermissions
+        RxPermissions.getInstance(this).request(Manifest.permission.ACCESS_COARSE_LOCATION)
+            .subscribe(granted -> {
+                if (granted) {
+                    location();
+                } else {
+                    load();
+                }
+            });
     }
 
     @Override
@@ -162,9 +158,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiprefresh);
         if (mRefreshLayout != null) {
-            mRefreshLayout.setOnRefreshListener(() -> {
-                mRefreshLayout.postDelayed(() -> fetchDataByNetWork(observer), 1000);
-            });
+            mRefreshLayout.setOnRefreshListener(
+                () -> mRefreshLayout.postDelayed(this::load, 1000));
         }
 
         //标题
@@ -319,10 +314,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 拿到数据后的操作
      */
     private void initDataObserver() {
+
         observer = new Observer<Weather>() {
+
             @Override
             public void onCompleted() {
-                mRefreshLayout.setRefreshing(false);
+
             }
 
             @Override
@@ -332,13 +329,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onNext(Weather weather) {
-
-                int updateTime = mSetting.getAutoUpdate();
-
-                if (updateTime == 0) {
-                    aCache.put("WeatherData", weather);
+                if (mSetting.getAutoUpdate() == 0) {
+                    aCache.put(C.WEATHER_CACHE, weather);
                 } else {
-                    aCache.put("WeatherData", weather,
+                    aCache.put(C.WEATHER_CACHE, weather,
                         (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认3小时后缓存失效
                 }
                 mWeather.status = weather.status;
@@ -359,39 +353,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     * 从本地获取
+     * 优化网络+缓存逻辑
+     * 优先网络
      */
-    public void fetchDataByCache(final Observer<Weather> observer) {
-
-        Weather weather = null;
-        try {
-            weather = (Weather) aCache.getAsObject("WeatherData");
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        }
-
-        if (weather != null) {
-            Observable.just(weather).distinct().subscribe(observer);
-        }
-    }
-
-    /**
-     * 从网络获取
-     */
-    public void fetchDataByNetWork(Observer<Weather> observer) {
-        //String cityName = mSetting.getString(Setting.CITY_NAME, "北京");
-        String cityName = mSetting.getCityName();
-        if (cityName != null) {
-            cityName = Util.replaceCity(cityName);
-        }
-        RetrofitSingleton.getInstance()
-            .fetchWeather(cityName, Setting.KEY)
+    private void load() {
+        Observable.concat(fetchDataByNetWork(), fetchDataByCache()).first(weather -> weather != null)
             .doOnError(throwable -> {
                 mProgressBar.setVisibility(View.GONE);
                 mErroImageView.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
                 Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
-                    fetchDataByNetWork(observer);
+                    load();
                 }).show();
             })
             .doOnNext(weather -> {
@@ -401,6 +373,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             })
             .doOnTerminate(() -> mRefreshLayout.setRefreshing(false))
             .subscribe(observer);
+    }
+
+    /**
+     * 从本地获取
+     */
+    private Observable<Weather> fetchDataByCache() {
+        return Observable.defer(() -> {
+                Weather weather = (Weather) aCache.getAsObject(C.WEATHER_CACHE);
+                return Observable.just(weather);
+            }
+        ).compose(RxUtils.rxSchedulerHelper());
+    }
+
+    /**
+     * 从网络获取
+     */
+    private Observable<Weather> fetchDataByNetWork() {
+        String cityName = mSetting.getCityName();
+        if (cityName != null) {
+            cityName = Util.replaceCity(cityName);
+        }
+        return RetrofitSingleton.getInstance()
+            .fetchWeather(cityName);
     }
 
     private void showFabDialog() {
@@ -504,7 +499,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 showSnackbar(fab, "定位失败,加载默认城市", true);
             }
-            fetchDataByNetWork(observer);
+            load();
         }
     }
 
@@ -515,7 +510,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == 1 && resultCode == 2) {
             mRefreshLayout.setRefreshing(true);
             mSetting.setCityName(data.getStringExtra(Setting.CITY_NAME));
-            fetchDataByNetWork(observer);
+            load();
         }
     }
 
@@ -527,7 +522,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Notification.Builder builder = new Notification.Builder(MainActivity.this);
         Notification notification = builder.setContentIntent(pendingIntent)
             .setContentTitle(weather.basic.city)
-            .setContentText(weather.now.cond.txt + " 当前温度: " + weather.now.tmp + "℃")
+            .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
             // 这里部分 ROM 无法成功
             .setSmallIcon(mSetting.getInt(weather.now.cond.txt, R.mipmap.none))
             .build();

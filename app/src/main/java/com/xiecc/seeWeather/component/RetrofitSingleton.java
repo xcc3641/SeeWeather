@@ -4,11 +4,11 @@ import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Toast;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import com.xiecc.seeWeather.modules.setting.Setting;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -75,14 +75,14 @@ public class RetrofitSingleton {
         PLog.w(t.toString());
     }
 
-    public Observable<Weather> fetchWeather(String city, String key) {
-        return apiService.mWeatherAPI(city, key)
+    public Observable<Weather> fetchWeather(String city) {
+        return apiService.mWeatherAPI(city, C.KEY)
             .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
             .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
             .compose(RxUtils.rxSchedulerHelper());
     }
 
     public Observable<VersionAPI> fetchVersion() {
-        return apiService.mVersionAPI(Setting.API_TOKEN).compose(RxUtils.rxSchedulerHelper());
+        return apiService.mVersionAPI(C.API_TOKEN).compose(RxUtils.rxSchedulerHelper());
     }
 }

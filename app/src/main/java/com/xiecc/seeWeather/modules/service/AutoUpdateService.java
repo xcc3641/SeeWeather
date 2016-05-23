@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -85,9 +86,9 @@ public class AutoUpdateService extends Service {
         if (cityName != null) {
             cityName = Util.replaceCity(cityName);
         }
-        RetrofitSingleton.getInstance().fetchWeather(cityName, Setting.KEY)
+        RetrofitSingleton.getInstance().fetchWeather(cityName)
             .subscribe(weather -> {
-                mAcache.put("WeatherData", weather);
+                mAcache.put(C.WEATHER_CACHE, weather);
                 normalStyleNotification(weather);
             });
     }
@@ -100,7 +101,7 @@ public class AutoUpdateService extends Service {
         Notification.Builder builder = new Notification.Builder(AutoUpdateService.this);
         Notification notification = builder.setContentIntent(pendingIntent)
             .setContentTitle(weather.basic.city)
-            .setContentText(weather.now.cond.txt + " 当前温度: " + weather.now.tmp + "℃")
+            .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
             // 这里部分 ROM 无法成功
             .setSmallIcon(mSetting.getInt(weather.now.cond.txt, R.mipmap.none))
             .build();
