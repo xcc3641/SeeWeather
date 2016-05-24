@@ -48,7 +48,6 @@ import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
-import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -324,7 +323,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onError(Throwable e) {
-
+                PLog.e(e.toString());
             }
 
             @Override
@@ -382,10 +381,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private Observable<Weather> fetchDataByCache() {
         return Observable.defer(() -> {
-                Weather weather = (Weather) aCache.getAsObject(C.WEATHER_CACHE);
-                return Observable.just(weather);
-            }
-        ).compose(RxUtils.rxSchedulerHelper());
+            Weather weather = (Weather) aCache.getAsObject(C.WEATHER_CACHE);
+            return Observable.just(weather);
+        });
     }
 
     /**
@@ -394,7 +392,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Observable<Weather> fetchDataByNetWork() {
         String cityName = Util.replaceCity(mSetting.getCityName());
         return RetrofitSingleton.getInstance()
-            .fetchWeather(cityName);
+            .fetchWeather(cityName)
+            .onErrorReturn(throwable -> {
+                PLog.e(throwable.getMessage());
+                throwable.printStackTrace();
+                return null;
+            });
     }
 
     private void showFabDialog() {
