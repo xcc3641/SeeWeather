@@ -324,6 +324,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onError(Throwable e) {
                 PLog.e(e.toString());
+                Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
+                    load();
+                }).show();
             }
 
             @Override
@@ -361,9 +364,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             .doOnError(throwable -> {
                 mErroImageView.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
-                Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
-                    load();
-                }).show();
             })
             .doOnNext(weather -> {
                 mErroImageView.setVisibility(View.GONE);
@@ -395,7 +395,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             .fetchWeather(cityName)
             .onErrorReturn(throwable -> {
                 PLog.e(throwable.getMessage());
-                throwable.printStackTrace();
                 return null;
             });
     }

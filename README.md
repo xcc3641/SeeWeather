@@ -154,12 +154,19 @@ public static <T> Observable.Transformer<T, T> rxSchedulerHelper() {
 感受下实际操作
 
 ```java
-private Observable<Weather> fetchDataByNetWork() {
-		String cityName = Util.replaceCity(mSetting.getCityName());
-		return RetrofitSingleton.getInstance()
-				.fetchWeather(cityName);
-}
+    private Observable<Weather> fetchDataByNetWork() {
+        String cityName = Util.replaceCity(mSetting.getCityName());
+        return RetrofitSingleton.getInstance()
+            .fetchWeather(cityName)
+            .onErrorReturn(throwable -> {
+                PLog.e(throwable.getMessage());
+                return null;
+            });
+    }
 ```
+
+一定要写 onErrorRrturn ，不然是不会执行到缓存的流。
+
 因为和风天气 API 有些城市/省份的末尾的特殊符号需要过滤掉，比如 `省|市|自治区|特别行政区|地区|盟`,所以在我的方法类中写了一个安全的替换方法。
 
 缓存部分：
