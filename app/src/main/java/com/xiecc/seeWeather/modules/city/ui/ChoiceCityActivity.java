@@ -70,15 +70,17 @@ public class ChoiceCityActivity extends BaseActivity {
         setContentView(R.layout.activity_choice_city);
         ButterKnife.bind(this);
         initView();
-        Observable.defer(() -> {
-            mDBManager = new DBManager(ChoiceCityActivity.this);
-            mDBManager.openDatabase();
-            return Observable.just(1);
-        }).compose(RxUtils.rxSchedulerHelper())
-            .subscribe(integer -> {
-                initRecyclerView();
-                queryProvinces();
-            });
+
+        compositeSubscription.add(
+            Observable.defer(() -> {
+                mDBManager = new DBManager(ChoiceCityActivity.this);
+                mDBManager.openDatabase();
+                return Observable.just(1);
+            }).compose(RxUtils.rxSchedulerHelper())
+                .subscribe(integer -> {
+                    initRecyclerView();
+                    queryProvinces();
+                }));
     }
 
     private void initView() {
@@ -122,7 +124,7 @@ public class ChoiceCityActivity extends BaseActivity {
      */
     private void queryProvinces() {
         collapsingToolbarLayout.setTitle("选择省份");
-        Observable.defer(() -> {
+        compositeSubscription.add(Observable.defer(() -> {
             if (provincesList.isEmpty()) {
                 provincesList.addAll(WeatherDB.loadProvinces(mDBManager.getDatabase()));
             }
@@ -141,7 +143,7 @@ public class ChoiceCityActivity extends BaseActivity {
                     currentLevel = LEVEL_PROVINCE;
                     mAdapter.notifyDataSetChanged();
                 }
-            );
+            ));
     }
 
     /**
@@ -151,7 +153,7 @@ public class ChoiceCityActivity extends BaseActivity {
         dataList.clear();
         mAdapter.notifyDataSetChanged();
         collapsingToolbarLayout.setTitle(selectedProvince.ProName);
-        Observable.defer(() -> {
+        compositeSubscription.add(Observable.defer(() -> {
             cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
         })
@@ -164,7 +166,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item
                 mRecyclerView.smoothScrollToPosition(0);
-            });
+            }));
     }
 
     @Override

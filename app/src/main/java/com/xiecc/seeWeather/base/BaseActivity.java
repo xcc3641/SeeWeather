@@ -87,7 +87,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //compositeSubscription.clear();
     }
 
     @Override

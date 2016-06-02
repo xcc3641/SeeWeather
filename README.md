@@ -206,6 +206,13 @@ private void load() {
     }
 ```
 
+
+##### RxBus 
+
+具体的逻辑分析在这里[RxBus 的简单实现](http://brucezz.github.io/articles/2016/06/02/a-simple-rxbus-implementation/)
+
+感谢 Brucezz
+
 ##### RecyclerView 展示
 
 就像洪洋说的一样

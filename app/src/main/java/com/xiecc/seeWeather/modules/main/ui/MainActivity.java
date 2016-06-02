@@ -386,7 +386,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 优先网络
      */
     private void load() {
-        Observable.concat(fetchDataByNetWork(), fetchDataByCache())
+        compositeSubscription.add(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
             .first(weather -> weather != null)
             .doOnError(throwable -> {
                 mErroImageView.setVisibility(View.VISIBLE);
@@ -400,7 +400,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mRefreshLayout.setRefreshing(false);
                 mProgressBar.setVisibility(View.GONE);
             })
-            .subscribe(observer);
+            .subscribe(observer));
     }
 
     /**
