@@ -13,7 +13,7 @@ public class RxBus {
 
     private static volatile RxBus instance;
     // 主题
-    private final Subject bus;
+    private final Subject<Object, Object> bus;
 
     // PublishSubject只会把在订阅发生的时间点之后来自原始Observable的数据发射给观察者
     public RxBus() {

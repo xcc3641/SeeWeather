@@ -113,13 +113,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     load();
                 }
             });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        PLog.i("onStart");
-        showEggs();
+        // bus
         compositeSubscription.add(
             RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 changeCityEvent -> {
@@ -129,6 +123,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     PLog.e(throwable.getMessage())
                     ;
                 }));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        PLog.i("onStart");
+        showEggs();
     }
 
     @Override
@@ -157,7 +158,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onStop() {
         super.onStop();
         PLog.i("onStop");
-
     }
 
     /**
@@ -418,7 +418,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private Observable<Weather> fetchDataByNetWork() {
         String cityName = Util.replaceCity(mSetting.getCityName());
-        PLog.i("网络请求");
         return RetrofitSingleton.getInstance()
             .fetchWeather(cityName)
             .onErrorReturn(throwable -> {
@@ -532,17 +531,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             load();
         }
     }
-
-    //@Override
-    //protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    //    super.onActivityResult(requestCode, resultCode, data);
-    //    //requestCode标示请求的标示   resultCode表示有数据
-    //    if (requestCode == 1 && resultCode == 2) {
-    //        mRefreshLayout.setRefreshing(true);
-    //        mSetting.setCityName(data.getStringExtra(Setting.CITY_NAME));
-    //        load();
-    //    }
-    //}
 
     private void normalStyleNotification(Weather weather) {
         Intent intent = new Intent(MainActivity.this, MainActivity.class);

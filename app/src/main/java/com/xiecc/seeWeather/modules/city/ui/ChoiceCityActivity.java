@@ -1,6 +1,5 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -111,13 +110,8 @@ public class ChoiceCityActivity extends BaseActivity {
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(pos);
-                Intent intent = new Intent();
-                String cityName = selectedCity.CityName;
-                //intent.putExtra(Setting.CITY_NAME, cityName);
-                //setResult(2, intent);
-                mSetting.setCityName(cityName);
+                mSetting.setCityName(selectedCity.CityName);
                 RxBus.getDefault().post(new ChangeCityEvent());
-
                 finish();
             }
         });
