@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.modules.setting.Setting;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by hugo on 2015/12/16.
@@ -18,6 +19,8 @@ public class BaseActivity extends AppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
     public ACache aCache;
     public Setting mSetting = null;
+
+    protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,5 +82,17 @@ public class BaseActivity extends AppCompatActivity {
 
     public void showSnackbar(View view, String s, boolean ture) {
         Snackbar.make(view, s, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //compositeSubscription.clear();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.clear();
     }
 }

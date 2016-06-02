@@ -2,6 +2,7 @@ package com.xiecc.seeWeather.common;
 
 import android.content.Context;
 import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.modules.setting.Setting;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -36,16 +37,15 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         PLog.e(TAG, ex.toString());
         PLog.e(TAG, collectCrashDeviceInfo());
         PLog.e(TAG, getCrashInfo(ex));
+
+        Setting mSetting = Setting.getInstance();
+        mSetting.setCityName("北京");
         // 调用系统错误机制
         defaultHandler.uncaughtException(thread, ex);
     }
 
-
     /**
      * 得到程序崩溃的详细信息
-     *
-     * @param ex
-     * @return
      */
     public String getCrashInfo(Throwable ex) {
         Writer result = new StringWriter();
@@ -55,11 +55,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         return result.toString();
     }
 
-
     /**
      * 收集程序崩溃的设备信息
-     *
-     * @return
      */
     public String collectCrashDeviceInfo() {
 
@@ -69,8 +66,5 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         String manufacturer = android.os.Build.MANUFACTURER;
 
         return versionName + "  " + model + "  " + androidVersion + "  " + manufacturer;
-
     }
-
-
 }

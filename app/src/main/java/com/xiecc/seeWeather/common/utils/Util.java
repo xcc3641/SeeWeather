@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
 import com.xiecc.seeWeather.R;
+import java.io.Closeable;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -106,7 +108,7 @@ public class Util {
      * 安全的 String 返回
      *
      * @param prefix 默认字段
-     * @param obj 拼接字段
+     * @param obj 拼接字段 (需检查)
      */
     public static String safeText(String prefix, String obj) {
         if (TextUtils.isEmpty(obj)) return "";
@@ -114,7 +116,7 @@ public class Util {
     }
 
     public static String safeText(String msg) {
-        return safeText(msg, "");
+        return safeText("", msg);
     }
 
     /**
@@ -142,5 +144,18 @@ public class Util {
     public static String replaceCity(String city) {
         city = safeText(city).replaceAll("(?:省|市|自治区|特别行政区|地区|盟)", "");
         return city;
+    }
+
+    /**
+     * Java 中有一个 Closeable 接口,标识了一个可关闭的对象,它只有一个 close 方法.
+     */
+    public static void closeQuietly(Closeable closeable) {
+        if (null != closeable) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

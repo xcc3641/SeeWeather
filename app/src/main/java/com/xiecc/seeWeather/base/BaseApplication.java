@@ -24,12 +24,11 @@ public class BaseApplication extends Application {
         // 初始化 retrofit
         RetrofitSingleton.init();
         CrashHandler.init(new CrashHandler(getApplicationContext()));
-        CrashReport.initCrashReport(getApplicationContext(), "900030389", false);
+        CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);
         RxUtils.unifiedErrorHandler();
         //Thread.setDefaultUncaughtExceptionHandler(new MyUnCaughtExceptionHandler());
-
         /**
          * 如果存在SD卡则将缓存写入SD卡,否则写入手机内存
          */

@@ -16,6 +16,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.component.ImageLoader;
@@ -24,7 +25,7 @@ import com.xiecc.seeWeather.modules.city.db.DBManager;
 import com.xiecc.seeWeather.modules.city.db.WeatherDB;
 import com.xiecc.seeWeather.modules.city.domain.City;
 import com.xiecc.seeWeather.modules.city.domain.Province;
-import com.xiecc.seeWeather.modules.setting.Setting;
+import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import java.util.ArrayList;
 import java.util.List;
 import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
@@ -112,8 +113,11 @@ public class ChoiceCityActivity extends BaseActivity {
                 selectedCity = cityList.get(pos);
                 Intent intent = new Intent();
                 String cityName = selectedCity.CityName;
-                intent.putExtra(Setting.CITY_NAME, cityName);
-                setResult(2, intent);
+                //intent.putExtra(Setting.CITY_NAME, cityName);
+                //setResult(2, intent);
+                mSetting.setCityName(cityName);
+                RxBus.getDefault().post(new ChangeCityEvent());
+
                 finish();
             }
         });

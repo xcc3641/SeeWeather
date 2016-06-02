@@ -46,14 +46,17 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
+import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
+import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.main.listener.HidingScrollListener;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
@@ -62,6 +65,7 @@ import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import java.util.Calendar;
 import rx.Observable;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 
 // TODO: 16/5/18  config.gradle 未提示 整合 retrofit 的使用
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -114,11 +118,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onStart() {
         super.onStart();
+        PLog.i("onStart");
         showEggs();
+        compositeSubscription.add(
+            RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                changeCityEvent -> {
+                    mRefreshLayout.setRefreshing(true);
+                    load();
+                }, throwable -> {
+                    PLog.e(throwable.getMessage())
+                    ;
+                }));
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        PLog.i("onRestart");
         //为了实现 Intent 重启使图标生效
         initIcon();
         // 修改 adapter 的初始化
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PLog.i("onResume");
     }
 
     @Override
@@ -131,6 +157,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onStop() {
         super.onStop();
         PLog.i("onStop");
+
     }
 
     /**
@@ -391,10 +418,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private Observable<Weather> fetchDataByNetWork() {
         String cityName = Util.replaceCity(mSetting.getCityName());
+        PLog.i("网络请求");
         return RetrofitSingleton.getInstance()
             .fetchWeather(cityName)
             .onErrorReturn(throwable -> {
                 PLog.e(throwable.getMessage());
+                ToastUtil.showLong(throwable.getMessage());
                 return null;
             });
     }
@@ -504,16 +533,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //requestCode标示请求的标示   resultCode表示有数据
-        if (requestCode == 1 && resultCode == 2) {
-            mRefreshLayout.setRefreshing(true);
-            mSetting.setCityName(data.getStringExtra(Setting.CITY_NAME));
-            load();
-        }
-    }
+    //@Override
+    //protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    //    super.onActivityResult(requestCode, resultCode, data);
+    //    //requestCode标示请求的标示   resultCode表示有数据
+    //    if (requestCode == 1 && resultCode == 2) {
+    //        mRefreshLayout.setRefreshing(true);
+    //        mSetting.setCityName(data.getStringExtra(Setting.CITY_NAME));
+    //        load();
+    //    }
+    //}
 
     private void normalStyleNotification(Weather weather) {
         Intent intent = new Intent(MainActivity.this, MainActivity.class);

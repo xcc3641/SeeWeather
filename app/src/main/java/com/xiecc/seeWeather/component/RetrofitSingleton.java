@@ -28,9 +28,6 @@ public class RetrofitSingleton {
     private static OkHttpClient okHttpClient = null;
     private static final String TAG = RetrofitSingleton.class.getSimpleName();
 
-    /**
-     * 初始化
-     */
     public static void init() {
         initOkHttp();
         initRetrofit();
@@ -48,7 +45,7 @@ public class RetrofitSingleton {
     private static void initOkHttp() {
         // https://drakeet.me/retrofit-2-0-okhttp-3-0-config
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .retryOnConnectionFailure(true)
@@ -77,7 +74,13 @@ public class RetrofitSingleton {
 
     public Observable<Weather> fetchWeather(String city) {
         return apiService.mWeatherAPI(city, C.KEY)
-            .filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
+            //.filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
+            .flatMap(weatherAPI -> {
+                if (weatherAPI.mHeWeatherDataService30s.get(0).status.equals("no more requests")) {
+                    return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
+                }
+                return Observable.just(weatherAPI);
+            })
             .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
             .compose(RxUtils.rxSchedulerHelper());
     }

@@ -65,6 +65,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.transpant"/>
 
+
+
     </application>
 
 </manifest>

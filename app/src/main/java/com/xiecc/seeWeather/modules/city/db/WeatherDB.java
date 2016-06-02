@@ -2,6 +2,7 @@ package com.xiecc.seeWeather.modules.city.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.modules.city.domain.City;
 import com.xiecc.seeWeather.modules.city.domain.Province;
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.List;
  * 封装数据库操作
  */
 public class WeatherDB {
-
 
     public WeatherDB() {
 
@@ -32,7 +32,7 @@ public class WeatherDB {
                 list.add(province);
             } while (cursor.moveToNext());
         }
-        cursor.close();
+        Util.closeQuietly(cursor);
         return list;
     }
 
@@ -48,8 +48,7 @@ public class WeatherDB {
                 list.add(city);
             } while (cursor.moveToNext());
         }
-        cursor.close();
-
+        Util.closeQuietly(cursor);
         return list;
     }
 }
