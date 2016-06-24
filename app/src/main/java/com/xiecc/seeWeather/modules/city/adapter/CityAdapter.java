@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
 import java.util.ArrayList;
@@ -55,14 +53,13 @@ public class CityAdapter extends AnimRecyclerViewAdapter<CityAdapter.CityViewHol
 
     class CityViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.item_city)
         TextView itemCity;
-        @Bind(R.id.cardView)
         CardView cardView;
 
         public CityViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            itemCity = (TextView) itemView.findViewById(R.id.item_city);
+            cardView = (CardView) itemView.findViewById(R.id.cardView);
         }
 
         public void bind(String name) {

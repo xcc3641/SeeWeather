@@ -1,5 +1,7 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -8,11 +10,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.RxBus;
@@ -34,22 +38,15 @@ import rx.Observable;
  * Created by hugo on 2016/2/19 0019.
  */
 public class ChoiceCityActivity extends BaseActivity {
-    @Bind(R.id.banner)
-    ImageView banner;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    @Bind(R.id.toolbar_layout)
-    CollapsingToolbarLayout collapsingToolbarLayout;
-    @Bind(R.id.app_bar)
-    AppBarLayout appBar;
-    @Bind(R.id.recyclerview)
-    RecyclerView mRecyclerView;
-    @Bind(R.id.progressBar)
-    ProgressBar mProgressBar;
-    @Bind(R.id.iv_erro)
-    ImageView ivErro;
-    @Bind(R.id.coord)
-    CoordinatorLayout coord;
+
+    private CoordinatorLayout mCoord;
+    private AppBarLayout mAppBar;
+    private CollapsingToolbarLayout mToolbarLayout;
+    private ImageView mBanner;
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerview;
+    private ProgressBar mProgressBar;
+    private ImageView mIvErro;
 
     private DBManager mDBManager;
 
@@ -68,7 +65,6 @@ public class ChoiceCityActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice_city);
-        ButterKnife.bind(this);
         initView();
 
         compositeSubscription.add(
@@ -84,12 +80,22 @@ public class ChoiceCityActivity extends BaseActivity {
     }
 
     private void initView() {
+
+        mCoord = (CoordinatorLayout) findViewById(R.id.coord);
+        mAppBar = (AppBarLayout) findViewById(R.id.app_bar);
+        mToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        mBanner = (ImageView) findViewById(R.id.banner);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mRecyclerview = (RecyclerView) findViewById(R.id.recyclerview);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mIvErro = (ImageView) findViewById(R.id.iv_erro);
+
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        if (banner != null) {
-            ImageLoader.load(this, R.mipmap.city_day, banner);
+        if (mBanner != null) {
+            ImageLoader.load(this, R.mipmap.city_day, mBanner);
             if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-                collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-                ImageLoader.load(this, R.mipmap.city_night, banner);
+                mToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
+                ImageLoader.load(this, R.mipmap.city_night, mBanner);
                 setStatusBarColorForKitkat(R.color.colorSunset);
             }
         }
@@ -99,16 +105,16 @@ public class ChoiceCityActivity extends BaseActivity {
     }
 
     private void initRecyclerView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(new FadeInUpAnimator());
+        mRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerview.setHasFixedSize(true);
+        mRecyclerview.setItemAnimator(new FadeInUpAnimator());
         mAdapter = new CityAdapter(this, dataList);
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerview.setAdapter(mAdapter);
 
         mAdapter.setOnItemClickListener((view, pos) -> {
             if (currentLevel == LEVEL_PROVINCE) {
                 selectedProvince = provincesList.get(pos);
-                mRecyclerView.smoothScrollToPosition(0);
+                mRecyclerview.smoothScrollToPosition(0);
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(pos);
@@ -123,7 +129,7 @@ public class ChoiceCityActivity extends BaseActivity {
      * 查询全国所有的省，从数据库查询
      */
     private void queryProvinces() {
-        collapsingToolbarLayout.setTitle("选择省份");
+        mToolbarLayout.setTitle("选择省份");
         compositeSubscription.add(Observable.defer(() -> {
             if (provincesList.isEmpty()) {
                 provincesList.addAll(WeatherDB.loadProvinces(mDBManager.getDatabase()));
@@ -152,7 +158,7 @@ public class ChoiceCityActivity extends BaseActivity {
     private void queryCities() {
         dataList.clear();
         mAdapter.notifyDataSetChanged();
-        collapsingToolbarLayout.setTitle(selectedProvince.ProName);
+        mToolbarLayout.setTitle(selectedProvince.ProName);
         compositeSubscription.add(Observable.defer(() -> {
             cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
@@ -165,7 +171,7 @@ public class ChoiceCityActivity extends BaseActivity {
                 currentLevel = LEVEL_CITY;
                 mAdapter.notifyDataSetChanged();
                 //定位到第一个item
-                mRecyclerView.smoothScrollToPosition(0);
+                mRecyclerview.smoothScrollToPosition(0);
             }));
     }
 
@@ -176,7 +182,7 @@ public class ChoiceCityActivity extends BaseActivity {
             finish();
         } else {
             queryProvinces();
-            mRecyclerView.smoothScrollToPosition(0);
+            mRecyclerview.smoothScrollToPosition(0);
         }
     }
 
@@ -184,6 +190,6 @@ public class ChoiceCityActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mDBManager.closeDatabase();
-        ButterKnife.unbind(this);
     }
+
 }

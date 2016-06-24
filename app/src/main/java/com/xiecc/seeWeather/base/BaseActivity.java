@@ -25,9 +25,9 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //overridePendingTransition(R.anim.zoom_enter,R.anim.zoom_exit);
         aCache = ACache.get(getApplication());
         mSetting = Setting.getInstance();
-
         /**
          * http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/1122/3712.html
          * 在BaseActivity.java里：我们通过判断当前sdk_int大于4.4(kitkat),则通过代码的形式设置status bar为透明
@@ -93,5 +93,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+
     }
+
 }

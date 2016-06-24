@@ -16,6 +16,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -97,7 +98,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         PLog.i("onCreate");
-        //ButterKnife.bind(this);
         initView();
         initDrawer();
         initDataObserver();
@@ -386,6 +386,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 优先网络
      */
     private void load() {
+        compositeSubscription.unsubscribe();
         compositeSubscription.add(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
             .first(weather -> weather != null)
             .doOnError(throwable -> {
@@ -451,14 +452,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         switch (item.getItemId()) {
             case R.id.nav_set:
                 Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-                intentSetting.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intentSetting);
+                startActivity(intentSetting, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.nav_about:
-                startActivity(new Intent(this, AboutActivity.class));
+                startActivity(new Intent(this, AboutActivity.class),
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
             case R.id.nav_city:
-                startActivityForResult(new Intent(this, ChoiceCityActivity.class), 1);
+                Intent intentCity = new Intent(this, ChoiceCityActivity.class);
+                startActivity(intentCity,ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);

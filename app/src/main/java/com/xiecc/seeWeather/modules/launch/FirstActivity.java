@@ -34,6 +34,7 @@ public class FirstActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
             Intent i = new Intent(FirstActivity.this, MainActivity.class);
             FirstActivity.this.startActivity(i);
             //activity切换的淡入淡出效果

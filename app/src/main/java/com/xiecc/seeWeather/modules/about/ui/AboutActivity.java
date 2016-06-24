@@ -15,6 +15,7 @@ public class AboutActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        assert toolbar != null;
         toolbar.setTitle("关于");
         toolbar.setNavigationIcon(ContextCompat.getDrawable(this,R.drawable.ic_keyboard_arrow_left_32dpdp));
         setSupportActionBar(toolbar);
@@ -27,4 +28,5 @@ public class AboutActivity extends BaseActivity {
         }
         getFragmentManager().beginTransaction().replace(R.id.framelayout, new AboutFragment()).commit();
     }
+
 }
