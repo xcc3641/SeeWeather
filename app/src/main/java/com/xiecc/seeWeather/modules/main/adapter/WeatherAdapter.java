@@ -142,7 +142,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
             }
-
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onItemClick(mWeatherData);

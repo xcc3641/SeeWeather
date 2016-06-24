@@ -16,7 +16,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -50,6 +49,7 @@ import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
@@ -65,7 +65,6 @@ import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.Setting;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -73,9 +72,8 @@ import rx.android.schedulers.AndroidSchedulers;
 // TODO: 16/5/18  config.gradle 未提示 整合 retrofit 的使用
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
     AMapLocationListener {
-    private final String TAG = MainActivity.class.getSimpleName();
 
-    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private FloatingActionButton fab;
@@ -116,7 +114,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             });
         // bus
-        compositeSubscription.add(
+        addSubscription(
             RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 changeCityEvent -> {
                     mRefreshLayout.setRefreshing(true);
@@ -167,7 +165,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private void initView() {
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        // http://stackoverflow.com/questions/30655939/programmatically-collapse-or-expand-collapsingtoolbarlayout
+        // http://stackoverflow.com/questions/30655939/programmatically-collapse-or-expand-mCollapsingToolbarLayout
         if (appBarLayout != null) {
             //控制是否展开
             appBarLayout.setExpanded(false);
@@ -191,9 +189,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         //标题
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        if (collapsingToolbarLayout != null) {
-            collapsingToolbarLayout.setTitle(" ");
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        if (mCollapsingToolbarLayout != null) {
+            mCollapsingToolbarLayout.setTitle(" ");
         }
 
         //fab
@@ -277,7 +275,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ImageLoader.load(this, R.mipmap.sunrise, bannner);
         if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
             ImageLoader.load(this, R.mipmap.sunset, bannner);
-            collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
+            mCollapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColorForKitkat(R.color.colorSunset);
             headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back_night));
         }
@@ -373,7 +371,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mWeather.now = weather.now;
                 mWeather.dailyForecast = weather.dailyForecast;
                 mWeather.hourlyForecast = weather.hourlyForecast;
-                collapsingToolbarLayout.setTitle(mWeather.basic.city);
+                mCollapsingToolbarLayout.setTitle(mWeather.basic.city);
                 //mAdapter = new WeatherAdapter(MainActivity.this, weather);
                 //mRecyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
@@ -388,8 +386,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 优先网络
      */
     private void load() {
-        compositeSubscription.unsubscribe();
-        compositeSubscription.add(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
+        getCompositeSubscription().unsubscribe();
+        addSubscription(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
             .first(weather -> weather != null)
             .doOnError(throwable -> {
                 mErroImageView.setVisibility(View.VISIBLE);
@@ -451,23 +449,44 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        drawer.closeDrawer(GravityCompat.START);
-        Observable.just(item.getItemId()).delay(200, TimeUnit.MILLISECONDS).compose(RxUtils.rxSchedulerHelper()).subscribe(integer -> {
-            switch (integer) {
+
+        RxDrawer.close(drawer).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(aVoid -> {
+            switch (item.getItemId()) {
                 case R.id.nav_set:
                     Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-                    startActivity(intentSetting, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    //startActivity(intentSetting,
+                    //    ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    startActivity(intentSetting);
                     break;
                 case R.id.nav_about:
-                    startActivity(new Intent(MainActivity.this, AboutActivity.class),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
                     break;
                 case R.id.nav_city:
                     Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                    startActivity(intentCity, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    startActivity(intentCity);
                     break;
             }
         });
+        //Observable.just(item.getItemId())
+        //    .delay(200, TimeUnit.MILLISECONDS)
+        //    .compose(RxUtils.rxSchedulerHelper())
+        //    .subscribe(integer -> {
+        //        switch (integer) {
+        //            case R.id.nav_set:
+        //                Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
+        //                //startActivity(intentSetting,
+        //                //    ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+        //                startActivity(intentSetting);
+        //                break;
+        //            case R.id.nav_about:
+        //                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+        //                break;
+        //            case R.id.nav_city:
+        //                Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
+        //                startActivity(intentCity);
+        //                break;
+        //        }
+        //    });
         return false;
     }
 

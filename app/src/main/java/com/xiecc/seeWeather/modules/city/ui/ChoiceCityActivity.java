@@ -1,7 +1,5 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -10,11 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
@@ -67,7 +61,7 @@ public class ChoiceCityActivity extends BaseActivity {
         setContentView(R.layout.activity_choice_city);
         initView();
 
-        compositeSubscription.add(
+        addSubscription(
             Observable.defer(() -> {
                 mDBManager = new DBManager(ChoiceCityActivity.this);
                 mDBManager.openDatabase();
@@ -130,7 +124,7 @@ public class ChoiceCityActivity extends BaseActivity {
      */
     private void queryProvinces() {
         mToolbarLayout.setTitle("选择省份");
-        compositeSubscription.add(Observable.defer(() -> {
+        addSubscription(Observable.defer(() -> {
             if (provincesList.isEmpty()) {
                 provincesList.addAll(WeatherDB.loadProvinces(mDBManager.getDatabase()));
             }
@@ -159,7 +153,7 @@ public class ChoiceCityActivity extends BaseActivity {
         dataList.clear();
         mAdapter.notifyDataSetChanged();
         mToolbarLayout.setTitle(selectedProvince.ProName);
-        compositeSubscription.add(Observable.defer(() -> {
+        addSubscription(Observable.defer(() -> {
             cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
         })

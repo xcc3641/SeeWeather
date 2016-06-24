@@ -2,38 +2,36 @@ package com.xiecc.seeWeather.modules.setting.ui;
 
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.base.ToolbarActivity;
 
 /**
  * Created by hugo on 2016/2/19 0019.
  */
-public class SettingActivity extends BaseActivity {
+public class SettingActivity extends ToolbarActivity {
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected int provideContentViewId() {
+        return R.layout.activity_setting;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //beforeInitView();
-        setContentView(R.layout.activity_setting);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("设置");
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_left_32dpdp));
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
-
+        //mToolbar.setTitle("设置"); don't work and i find this
+        //http://stackoverflow.com/questions/26486730/in-android-app-toolbar-settitle-method-has-no-effect-application-name-is-shown
+        getSupportActionBar().setTitle("设置");
         setStatusBarColor(R.color.colorPrimary);
-        if (mSetting.getCurrentHour()< 6 || mSetting.getCurrentHour() > 18) {
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
+        if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
+            mToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColor(R.color.colorSunset);
         }
         getFragmentManager().beginTransaction().replace(R.id.framelayout, new SettingFragment()).commit();
     }
 
-    //@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    //public void beforeInitView(){
-    //    getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-    //    getWindow().setEnterTransition(new Fade());
-    //    getWindow().setExitTransition(new Fade());
-    //}
+    @Override
+    public boolean canBack() {
+        return true;
+    }
+
 }

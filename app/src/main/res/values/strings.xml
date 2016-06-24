@@ -20,6 +20,10 @@
     <string name="readme">https://github.com/xcc3641/SeeWeather/blob/master/README.md</string>
 
     <string name="chage_icon">更换图标</string>
+    <string name="nav_city">选择城市</string>
+    <string name="setting">设置</string>
+    <string name="about">关于</string>
+    <string name="multi_cities">多城市管理</string>
     <string-array name="icons">
         <item>图标一</item>
         <item>图标二</item>

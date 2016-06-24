@@ -5,7 +5,12 @@
         <item
             android:id="@+id/nav_city"
             android:icon="@drawable/ic_location_on_24dp"
-            android:title="选择城市"/>
+            android:title="@string/nav_city"/>
+        <item
+            android:id="@+id/nav_multi_cities"
+            android:title="@string/multi_cities"
+            android:icon="@drawable/ic_multi_cities"
+            />
     </group>
 
     <item android:title="@string/app_name">
@@ -13,11 +18,11 @@
             <item
                 android:id="@+id/nav_set"
                 android:icon="@drawable/ic_settings_24dp"
-                android:title="设置"/>
+                android:title="@string/setting"/>
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_menu_about"
-                android:title="关于"/>
+                android:title="@string/about"/>
         </menu>
     </item>
 

@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.modules.setting.Setting;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -20,7 +21,7 @@ public class BaseActivity extends AppCompatActivity {
     public ACache aCache;
     public Setting mSetting = null;
 
-    protected CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private CompositeSubscription mCompositeSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,21 @@ public class BaseActivity extends AppCompatActivity {
             window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+    }
+
+    public CompositeSubscription getCompositeSubscription() {
+        if (this.mCompositeSubscription == null) {
+            this.mCompositeSubscription = new CompositeSubscription();
+        }
+        return this.mCompositeSubscription;
+    }
+
+    public void addSubscription(Subscription s) {
+        if (this.mCompositeSubscription == null) {
+            this.mCompositeSubscription = new CompositeSubscription();
+        }
+
+        this.mCompositeSubscription.add(s);
     }
 
     @Override
@@ -92,8 +108,8 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        compositeSubscription.clear();
-
+        if (this.mCompositeSubscription != null) {
+            this.mCompositeSubscription.unsubscribe();
+        }
     }
-
 }
