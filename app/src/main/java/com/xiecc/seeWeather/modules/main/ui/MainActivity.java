@@ -50,6 +50,7 @@ import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.ImageLoader;
@@ -64,6 +65,7 @@ import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.Setting;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -449,21 +451,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_set:
-                Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-                startActivity(intentSetting, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
-                break;
-            case R.id.nav_about:
-                startActivity(new Intent(this, AboutActivity.class),
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
-                break;
-            case R.id.nav_city:
-                Intent intentCity = new Intent(this, ChoiceCityActivity.class);
-                startActivity(intentCity,ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
-                break;
-        }
         drawer.closeDrawer(GravityCompat.START);
+        Observable.just(item.getItemId()).delay(200, TimeUnit.MILLISECONDS).compose(RxUtils.rxSchedulerHelper()).subscribe(integer -> {
+            switch (integer) {
+                case R.id.nav_set:
+                    Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
+                    startActivity(intentSetting, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    break;
+                case R.id.nav_about:
+                    startActivity(new Intent(MainActivity.this, AboutActivity.class),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    break;
+                case R.id.nav_city:
+                    Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
+                    startActivity(intentCity, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    break;
+            }
+        });
         return false;
     }
 
