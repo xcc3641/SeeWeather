@@ -92,4 +92,3 @@ dependencies {
     compile 'com.google.firebase:firebase-core:9.0.0'
 }
 
-apply plugin: 'com.google.gms.google-services'

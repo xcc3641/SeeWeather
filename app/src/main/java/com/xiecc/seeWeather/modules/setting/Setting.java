@@ -19,8 +19,6 @@ public class Setting {
     public static final String HOUR = "current_hour";//当前小时
     public static final String NOTIFICATION_MODEL = "notification_model";
 
-
-
     public static int ONE_HOUR = 1000 * 60 * 60;
 
     private static Setting sInstance;

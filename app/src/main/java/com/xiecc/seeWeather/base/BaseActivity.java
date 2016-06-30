@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.xiecc.seeWeather.common.ACache;
@@ -36,12 +35,14 @@ public class BaseActivity extends AppCompatActivity {
          * 还需要注意的是我们这里的AppCompatAcitivity是android.support.v7.app.AppCompatActivity支持包中的AppCompatAcitivity,
          * 也是为了在低版本的android系统中兼容toolbar。
          */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window window = getWindow();
-            // Translucent status bar
-            window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        //    Window window = getWindow();
+        //    // Translucent status bar
+        //    window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+        //        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //    window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+        //        WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        //}
     }
 
     public CompositeSubscription getCompositeSubscription() {
@@ -55,7 +56,6 @@ public class BaseActivity extends AppCompatActivity {
         if (this.mCompositeSubscription == null) {
             this.mCompositeSubscription = new CompositeSubscription();
         }
-
         this.mCompositeSubscription.add(s);
     }
 

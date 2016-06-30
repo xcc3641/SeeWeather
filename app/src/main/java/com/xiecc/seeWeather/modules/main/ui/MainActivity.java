@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -29,8 +30,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -49,6 +48,7 @@ import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.DoubleClickExit;
 import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
@@ -60,7 +60,6 @@ import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import com.xiecc.seeWeather.modules.main.listener.HidingScrollListener;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.Setting;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
@@ -87,7 +86,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Weather mWeather = new Weather();
     private WeatherAdapter mAdapter;
     private Observer<Weather> observer;
-    private long exitTime = 0; ////记录第一次点击的时间
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -103,7 +101,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDataObserver();
         initIcon();
         startService(new Intent(this, AutoUpdateService.class));
-        CheckVersion.checkVersion(this, fab);
+        CheckVersion.checkVersion(this);
         // https://github.com/tbruyelle/RxPermissions
         RxPermissions.getInstance(this).request(Manifest.permission.ACCESS_COARSE_LOCATION)
             .subscribe(granted -> {
@@ -199,26 +197,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (fab != null) {
             fab.setOnClickListener(v -> showFabDialog());
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-            final int fabBottomMargin = lp.bottomMargin;
-
+            //int fabBottomMargin = lp.bottomMargin + Util.getNavigationBarHeight(this);
+            if (Util.checkDeviceHasNavigationBar(this)) {
+                Resources res = getResources();
+                int fabMargin = Util.dip2px(this, res.getDimension(R.dimen.fab_margin)) / 3;
+                lp.setMargins(fabMargin, fabMargin, fabMargin, Util.getNavigationBarHeight(this) + fabMargin);
+            }
             //recclerview
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
             mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.addOnScrollListener(new HidingScrollListener() {
-                @Override
-                public void onHide() {
-                    fab.animate()
-                        .translationY(fab.getHeight() + fabBottomMargin)
-                        .setInterpolator(new AccelerateInterpolator(2))
-                        .start();
-                }
-
-                @Override
-                public void onShow() {
-                    fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
-                }
-            });
+            //mRecyclerView.addOnScrollListener(new HidingScrollListener() {
+            //    @Override
+            //    public void onHide() {
+            //        fab.animate()
+            //            .translationY(fab.getHeight() + fabBottomMargin)
+            //            .setInterpolator(new AccelerateInterpolator(2))
+            //            .start();
+            //    }
+            //
+            //    @Override
+            //    public void onShow() {
+            //        fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+            //    }
+            //});
             mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
             mRecyclerView.setAdapter(mAdapter);
 
@@ -345,7 +347,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onCompleted() {
-
+                ToastUtil.showShort(getString(R.string.complete));
             }
 
             @Override
@@ -372,11 +374,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mWeather.dailyForecast = weather.dailyForecast;
                 mWeather.hourlyForecast = weather.hourlyForecast;
                 mCollapsingToolbarLayout.setTitle(mWeather.basic.city);
-                //mAdapter = new WeatherAdapter(MainActivity.this, weather);
-                //mRecyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
                 normalStyleNotification(mWeather);
-                showSnackbar(fab, "加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,");
             }
         };
     }
@@ -386,9 +385,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 优先网络
      */
     private void load() {
-        getCompositeSubscription().unsubscribe();
-        addSubscription(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
-            .first(weather -> weather != null)
+        //addSubscription(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
+        //    .first(weather -> weather != null)
+        //    .doOnError(throwable -> {
+        //        mErroImageView.setVisibility(View.VISIBLE);
+        //        mRecyclerView.setVisibility(View.GONE);
+        //    })
+        //    .doOnNext(weather -> {
+        //        mErroImageView.setVisibility(View.GONE);
+        //        mRecyclerView.setVisibility(View.VISIBLE);
+        //    })
+        //    .doOnTerminate(() -> {
+        //        mRefreshLayout.setRefreshing(false);
+        //        mProgressBar.setVisibility(View.GONE);
+        //    })
+        //    .subscribe(observer));
+        addSubscription(fetchDataByNetWork()
             .doOnError(throwable -> {
                 mErroImageView.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
@@ -400,8 +412,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             .doOnTerminate(() -> {
                 mRefreshLayout.setRefreshing(false);
                 mProgressBar.setVisibility(View.GONE);
-            })
-            .subscribe(observer));
+            }).subscribe(observer));
     }
 
     /**
@@ -449,13 +460,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         RxDrawer.close(drawer).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(aVoid -> {
             switch (item.getItemId()) {
                 case R.id.nav_set:
                     Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-                    //startActivity(intentSetting,
-                    //    ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
                     startActivity(intentSetting);
                     break;
                 case R.id.nav_about:
@@ -467,26 +475,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     break;
             }
         });
-        //Observable.just(item.getItemId())
-        //    .delay(200, TimeUnit.MILLISECONDS)
-        //    .compose(RxUtils.rxSchedulerHelper())
-        //    .subscribe(integer -> {
-        //        switch (integer) {
-        //            case R.id.nav_set:
-        //                Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-        //                //startActivity(intentSetting,
-        //                //    ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-        //                startActivity(intentSetting);
-        //                break;
-        //            case R.id.nav_about:
-        //                startActivity(new Intent(MainActivity.this, AboutActivity.class));
-        //                break;
-        //            case R.id.nav_city:
-        //                Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
-        //                startActivity(intentCity);
-        //                break;
-        //        }
-        //    });
         return false;
     }
 
@@ -495,9 +483,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if ((System.currentTimeMillis() - exitTime) > 2000) {
-                showSnackbar(fab, "再按一次退出程序");
-                exitTime = System.currentTimeMillis();
+            if (!DoubleClickExit.check()) {
+                ToastUtil.showShort(getString(R.string.double_exit));
             } else {
                 finish();
             }
@@ -551,7 +538,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                 mSetting.setCityName(aMapLocation.getCity());
             } else {
-                showSnackbar(fab, "定位失败,加载默认城市", true);
+                ToastUtil.showShort(getString(R.string.errorLocation));
             }
             load();
         }

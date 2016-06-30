@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
@@ -14,7 +13,7 @@ import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
  */
 public class CheckVersion {
 
-    public static void checkVersion(final Context context, final View view) {
+    public static void checkVersion(final Context context) {
         RetrofitSingleton.getInstance().fetchVersion()
             .subscribe(versionAPI -> {
                 String firVersionName = versionAPI.versionShort;

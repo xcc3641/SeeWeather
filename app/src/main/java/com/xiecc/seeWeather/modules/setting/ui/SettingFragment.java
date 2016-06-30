@@ -64,6 +64,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mChangeUpdate.setOnPreferenceClickListener(this);
         mClearCache.setOnPreferenceClickListener(this);
         mNotificationType.setOnPreferenceClickListener(this);
+
+
     }
 
     @Override

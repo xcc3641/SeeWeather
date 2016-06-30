@@ -74,4 +74,5 @@ public abstract class ToolbarActivity extends BaseActivity {
             .start();
         mIsHidden = !mIsHidden;
     }
+
 }

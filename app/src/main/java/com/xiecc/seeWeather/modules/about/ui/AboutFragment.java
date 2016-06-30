@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.about.ui;
 
+import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -42,13 +43,14 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
     private Preference mGithub;
     private Preference mEmail;
 
+
     //@Override public void onAttach(Context context) {
     //    super.onAttach(context);
     //    mActivity = (AboutActivity) context;
     //}
 
-
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.about);
 
@@ -75,74 +77,67 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         mVersion.setSummary(getActivity().getString(R.string.version_name) + Util.getVersion(getActivity()));
     }
 
-
-    @Override public boolean onPreferenceClick(Preference preference) {
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
         if (mVersion == preference) {
             new AlertDialog.Builder(getActivity()).setTitle("就看天气的完成离不开开源项目的支持，向以下致谢：")
-                                                  .setMessage("Google Support Design,Gson,Rxjava,RxAndroid,Retrofit," +
-                                                          "Glide,systembartint")
-                                                  .setPositiveButton("关闭", null)
-                                                  .show();
-        }
-        else if (mShare == preference) {
+                .setMessage("Google Support Design,Gson,Rxjava,RxAndroid,Retrofit," +
+                    "Glide,systembartint")
+                .setPositiveButton("关闭", null)
+                .show();
+        } else if (mShare == preference) {
             Intent sharingIntent = new Intent(Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
             sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here");
             sharingIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_txt));
             startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_app)));
-        }
-        else if (mStar == preference) {
+        } else if (mStar == preference) {
 
             new AlertDialog.Builder(getActivity()).setTitle("点赞")
-                                                  .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-                                                  .setNegativeButton("复制", (dialog, which) -> {
-                                                      copyToClipboard(getView(), getActivity().getResources()
-                                                                                              .getString(
-                                                                                                      R.string.app_html));
-                                                  })
-                                                  .setPositiveButton("打开", (dialog, which) -> {
-                                                      Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
-                                                      Intent intent = new Intent();
-                                                      intent.setAction(Intent.ACTION_VIEW);           //指定Action
-                                                      intent.setData(uri);                            //设置Uri
-                                                      getActivity().startActivity(intent);        //启动Activity
-                                                  })
-                                                  .show();
-        }
-        else if (mIntroduction == preference) {
-            Uri uri = Uri.parse(getString(R.string.readme));   //指定网址
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_VIEW);           //指定Action
-            intent.setData(uri);                            //设置Uri
-            getActivity().startActivity(intent);        //启动Activity
-        }
-        else if (mEncounrage == preference) {
+                .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
+                .setNegativeButton("复制", (dialog, which) -> {
+                    copyToClipboard(getView(), getActivity().getResources()
+                        .getString(
+                            R.string.app_html));
+                })
+                .setPositiveButton("打开", (dialog, which) -> {
+                    Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);           //指定Action
+                    intent.setData(uri);                            //设置Uri
+                    getActivity().startActivity(intent);        //启动Activity
+                })
+                .show();
+        } else if (mIntroduction == preference) {
+            //Uri uri = Uri.parse(getString(R.string.readme));   //指定网址
+            //Intent intent = new Intent();
+            //intent.setAction(Intent.ACTION_VIEW);           //指定Action
+            //intent.setData(uri);                            //设置Uri
+            //getActivity().startActivity(intent);        //启动Activity
+            goToWebFragment(getString(R.string.readme));
+        } else if (mEncounrage == preference) {
             new AlertDialog.Builder(getActivity()).setTitle("请作者喝杯咖啡？(〃ω〃)")
-                                                  .setMessage("点击按钮后，作者支付宝账号将会复制到剪切板，" + "你就可以使用支付宝转账给作者啦( •̀ .̫ •́ )✧")
-                                                  .setPositiveButton("好叻", (dialog, which) -> {
-                                                      copyToClipboard(getView(), getActivity().getResources()
-                                                                                              .getString(
-                                                                                                      R.string.alipay));
-                                                  })
-                                                  .show();
-        }
-        else if (mBolg == preference) {
-            copyToClipboard(getView(), mBolg.getSummary().toString());
-        }
-        else if (mGithub == preference) {
-
-            copyToClipboard(getView(), mGithub.getSummary().toString());
-        }
-        else if (mEmail == preference) {
+                .setMessage("点击按钮后，作者支付宝账号将会复制到剪切板，" + "你就可以使用支付宝转账给作者啦( •̀ .̫ •́ )✧")
+                .setPositiveButton("好叻", (dialog, which) -> {
+                    copyToClipboard(getView(), getActivity().getResources()
+                        .getString(
+                            R.string.alipay));
+                })
+                .show();
+        } else if (mBolg == preference) {
+            //copyToClipboard(getView(), mBolg.getSummary().toString());
+            goToWebFragment(mBolg.getSummary().toString());
+        } else if (mGithub == preference) {
+            //copyToClipboard(getView(), mGithub.getSummary().toString());
+            goToWebFragment(mGithub.getSummary().toString());
+        } else if (mEmail == preference) {
             copyToClipboard(getView(), mEmail.getSummary().toString());
-        }
-        else if (mCheckVersion == preference) {
+        } else if (mCheckVersion == preference) {
             //Snackbar.make(getView(), "正在检查(σﾟ∀ﾟ)σ", Snackbar.LENGTH_SHORT).show();
-            CheckVersion.checkVersion(getActivity(), getView());
+            CheckVersion.checkVersion(getActivity());
         }
         return false;
     }
-
 
     //复制黏贴板
     private void copyToClipboard(View view, String info) {
@@ -150,6 +145,15 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         ClipData clipData = ClipData.newPlainText("msg", info);
         manager.setPrimaryClip(clipData);
         Snackbar.make(view, "已经复制到剪切板啦( •̀ .̫ •́ )✧", Snackbar.LENGTH_SHORT).show();
+    }
 
+    private void goToWebFragment(String url) {
+       WebviewFragment webviewFragment = new WebviewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        webviewFragment.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.framelayout, webviewFragment, "webview");
+        fragmentTransaction.commit();
     }
 }
