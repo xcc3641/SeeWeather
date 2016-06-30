@@ -196,9 +196,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(v -> showFabDialog());
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-            //int fabBottomMargin = lp.bottomMargin + Util.getNavigationBarHeight(this);
             if (Util.checkDeviceHasNavigationBar(this)) {
+                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
                 Resources res = getResources();
                 int fabMargin = Util.dip2px(this, res.getDimension(R.dimen.fab_margin)) / 3;
                 lp.setMargins(fabMargin, fabMargin, fabMargin, Util.getNavigationBarHeight(this) + fabMargin);
