@@ -42,6 +42,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
@@ -196,7 +197,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(v -> showFabDialog());
-            if (Util.checkDeviceHasNavigationBar(this)) {
+            if (Util.checkDeviceHasNavigationBar(this) || BuildConfig.DEBUG) {
                 CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
                 Resources res = getResources();
                 int fabMargin = Util.dip2px(this, res.getDimension(R.dimen.fab_margin)) / 3;
