@@ -2,6 +2,7 @@ package com.xiecc.seeWeather.base;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.v7.app.AppCompatDelegate;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -16,6 +17,11 @@ public class BaseApplication extends Application {
 
     public static String cacheDir = "";
     public static Context mAppContext = null;
+
+    static {
+        AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_NO);
+    }
 
     @Override
     public void onCreate() {
@@ -37,6 +43,8 @@ public class BaseApplication extends Application {
         } else {
             cacheDir = getApplicationContext().getCacheDir().toString();
         }
+
+
     }
 
     private boolean ExistSDCard() {

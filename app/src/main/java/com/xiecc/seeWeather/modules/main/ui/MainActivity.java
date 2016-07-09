@@ -69,7 +69,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 
-// TODO: 16/5/18  config.gradle 未提示 整合 retrofit 的使用
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
     AMapLocationListener {
 
@@ -101,6 +100,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDrawer();
         initDataObserver();
         initIcon();
+
         startService(new Intent(this, AutoUpdateService.class));
         CheckVersion.checkVersion(this);
         // https://github.com/tbruyelle/RxPermissions
@@ -128,7 +128,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onStart() {
         super.onStart();
         PLog.i("onStart");
-        showEggs();
     }
 
     @Override
@@ -145,6 +144,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onResume() {
         super.onResume();
         PLog.i("onResume");
+        PLog.d(toolbar.getHeight() + "");
     }
 
     @Override
@@ -195,91 +195,83 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //fab
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(v -> showFabDialog());
-            if (Util.checkDeviceHasNavigationBar(this) || BuildConfig.DEBUG) {
-                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-                Resources res = getResources();
-                int fabMargin = Util.dip2px(this, res.getDimension(R.dimen.fab_margin)) / 3;
-                lp.setMargins(fabMargin, fabMargin, fabMargin, Util.getNavigationBarHeight(this) + fabMargin);
-            }
-            //recclerview
-            mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            mRecyclerView.setHasFixedSize(true);
-            //mRecyclerView.addOnScrollListener(new HidingScrollListener() {
-            //    @Override
-            //    public void onHide() {
-            //        fab.animate()
-            //            .translationY(fab.getHeight() + fabBottomMargin)
-            //            .setInterpolator(new AccelerateInterpolator(2))
-            //            .start();
-            //    }
-            //
-            //    @Override
-            //    public void onShow() {
-            //        fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
-            //    }
-            //});
-            mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
-            mRecyclerView.setAdapter(mAdapter);
+        fab.setOnClickListener(v -> showFabDialog());
+        // 与抽屉结合实现效果不好 除非背景不是白色
+        //fab.setOnClickListener(v -> showRevealAnim());
+        //recclerview
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        mRecyclerView.setHasFixedSize(true);
+        mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
+        mRecyclerView.setAdapter(mAdapter);
 
-            mAdapter.setOnItemClickListener(mWeather1 -> {
-                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) this.findViewById(
-                    R.id.weather_dialog_root));
-                AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                    .setView(dialogLayout);
-                final AlertDialog alertDialog = builder.create();
+        if (Util.checkDeviceHasNavigationBar(this) || BuildConfig.DEBUG) {
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+            Resources res = getResources();
+            int fabMargin = Util.dip2px(this, res.getDimension(R.dimen.fab_margin)) / 4;
+            lp.setMargins(fabMargin, fabMargin, fabMargin, Util.getNavigationBarHeight(this) + fabMargin);
 
-                RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
-                switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
-                    case "晴":
-                        root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
-                        break;
-                    case "阴":
-                        root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
-                        break;
-                    case "雨":
-                        root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
-                        break;
-                    default:
-                        break;
-                }
-
-                TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
-                city.setText(mWeather1.basic.city);
-                TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
-                temp.setText(String.format("%s°", mWeather1.now.tmp));
-                ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
-
-                Glide.with(this)
-                    .load(mSetting.getInt(mWeather1.now.cond.txt, R.mipmap.none))
-                    .asBitmap()
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            icon.setImageBitmap(resource);
-                            icon.setColorFilter(Color.WHITE);
-                        }
-                    });
-
-                alertDialog.show();
-            });
         }
+    
+        mAdapter.setOnItemClickListener(mWeather1 -> {
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) this.findViewById(
+                R.id.weather_dialog_root));
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setView(dialogLayout);
+            final AlertDialog alertDialog = builder.create();
+
+            RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
+            switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
+                case "晴":
+                    root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
+                    break;
+                case "阴":
+                    root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
+                    break;
+                case "雨":
+                    root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
+                    break;
+                default:
+                    break;
+            }
+
+            TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
+            city.setText(mWeather1.basic.city);
+            TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
+            temp.setText(String.format("%s°", mWeather1.now.tmp));
+            ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
+
+            Glide.with(this)
+                .load(mSetting.getInt(mWeather1.now.cond.txt, R.mipmap.none))
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        icon.setImageBitmap(resource);
+                        icon.setColorFilter(Color.WHITE);
+                    }
+                });
+
+            alertDialog.show();
+        });
     }
 
+    /**
+     * 已经替换为 DayNight 主题切换日/夜间
+     */
+    @Deprecated
     private void showEggs() {
         //彩蛋-夜间模式
         Calendar calendar = Calendar.getInstance();
         mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
         setStatusBarColorForKitkat(R.color.colorSunrise);
-        ImageLoader.load(this, R.mipmap.sunrise, bannner);
+        ImageLoader.load(this, R.mipmap.sun_main, bannner);
         if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-            ImageLoader.load(this, R.mipmap.sunset, bannner);
+            ImageLoader.load(this, R.mipmap.sun_main, bannner);
             mCollapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
             setStatusBarColorForKitkat(R.color.colorSunset);
-            headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back_night));
+            headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back));
         }
     }
 
@@ -451,6 +443,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             })
             .show();
     }
+    // TODO: 16/7/8 波澜效果 与 抽屉 状态栏会有冲突 实现效果不佳 
+    //private void showRevealAnim() {
+    //    RevealAnimUtil.animateRevealShow(this, findViewById(R.id.bg1), fab, fab.getWidth() / 2, R.color.colorSunrise,
+    //        new RevealAnimUtil.OnRevealAnimationListener() {
+    //            @Override
+    //            public void onRevealHide() {
+    //            }
+    //
+    //            @Override
+    //            public void onRevealShow() {
+    //                startActivity(new Intent(MainActivity.this, SettingActivity.class));
+    //            }
+    //        });
+    //}
 
     /**
      * Called when an item in the navigation menu is selected.

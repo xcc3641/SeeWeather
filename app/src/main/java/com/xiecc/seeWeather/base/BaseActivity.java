@@ -2,9 +2,8 @@ package com.xiecc.seeWeather.base;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.xiecc.seeWeather.common.ACache;
@@ -26,23 +25,11 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //overridePendingTransition(R.anim.zoom_enter,R.anim.zoom_exit);
+        if (savedInstanceState==null){
+            setTheme(this);
+        }
         aCache = ACache.get(getApplication());
         mSetting = Setting.getInstance();
-        /**
-         * http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/1122/3712.html
-         * 在BaseActivity.java里：我们通过判断当前sdk_int大于4.4(kitkat),则通过代码的形式设置status bar为透明
-         * (这里其实可以通过values-v19 的sytle.xml里设置windowTranslucentStatus属性为true来进行设置，但是在某些手机会不起效，所以采用代码的形式进行设置)。
-         * 还需要注意的是我们这里的AppCompatAcitivity是android.support.v7.app.AppCompatActivity支持包中的AppCompatAcitivity,
-         * 也是为了在低版本的android系统中兼容toolbar。
-         */
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        //    Window window = getWindow();
-        //    // Translucent status bar
-        //    window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-        //        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //    window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
-        //        WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        //}
     }
 
     public CompositeSubscription getCompositeSubscription() {
@@ -68,6 +55,7 @@ public class BaseActivity extends AppCompatActivity {
      * 设置状态栏颜色
      * 也就是所谓沉浸式状态栏
      */
+    @Deprecated
     public void setStatusBarColor(int color) {
         /**
          * Android4.4以上  但是抽屉有点冲突，目前就重写一个方法暂时解决4.4的问题
@@ -92,14 +80,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void showSnackbar(View view, String s) {
-        Snackbar.make(view, s, Snackbar.LENGTH_SHORT).show();
-    }
-
-    public void showSnackbar(View view, String s, boolean ture) {
-        Snackbar.make(view, s, Snackbar.LENGTH_LONG).show();
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -111,5 +91,37 @@ public class BaseActivity extends AppCompatActivity {
         if (this.mCompositeSubscription != null) {
             this.mCompositeSubscription.unsubscribe();
         }
+    }
+
+    public static void setDayTheme(AppCompatActivity activity) {
+        AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_NO);
+        activity.getDelegate().setLocalNightMode(
+            AppCompatDelegate.MODE_NIGHT_NO);
+        // 调用 recreate() 使设置生效
+        activity.recreate();
+    }
+
+    public static void setNightTheme(AppCompatActivity activity) {
+        AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_YES);
+        activity.getDelegate().setLocalNightMode(
+            AppCompatDelegate.MODE_NIGHT_YES);
+        // 调用 recreate() 使设置生效
+        activity.recreate();
+    }
+
+    public void setTheme(boolean isNights, AppCompatActivity activity) {
+        if (isNights) {
+            setNightTheme(activity);
+        } else {
+            setDayTheme(activity);
+        }
+    }
+
+    public void setTheme(AppCompatActivity activity) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+        activity.getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+        activity.recreate();
     }
 }

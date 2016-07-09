@@ -58,7 +58,12 @@ public abstract class ToolbarActivity extends BaseActivity {
         mAppBar.setAlpha(alpha);
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    public Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
@@ -74,5 +79,4 @@ public abstract class ToolbarActivity extends BaseActivity {
             .start();
         mIsHidden = !mIsHidden;
     }
-
 }

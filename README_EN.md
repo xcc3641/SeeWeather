@@ -2,25 +2,6 @@
 
 [中文版](https://github.com/xcc3641/SeeWeather/blob/master/README.md)丨[English](https://github.com/xcc3641/SeeWeather/blob/master/README_EN.md)
 
-
-### Foreword
-
-SeeWeather is my first relatively mature application,going on-line in the October 2015.And then I answered this question [how to learn Android by oneself](https://www.zhihu.com/question/26417244/answer/70193822) in the ZhiHu platform
-
-Because my code was poorly written, I decided to refactor the whole project and made a new look to show SeeWeather Version 2.0.
-
-If you find any problems and suggestion,you can e-mail me or open issues at any time.
-
-
-**Attention**
-
-**If you want to pull the project to run, you should apply for API at [和风天气](http://www.heweather.com/) and add it in Setting.java**
-
-**If the application crashes, pleace e-mail the log(`/Android/data/com.xiecc.seeWeather/cache/Log`) to me**
-
-- **open-source project is valuable, hope to give me a star for support**
-
-
 ### Brief introduction
 SeeWeather is an following ** Material Design** Weather application.Use	the least Permission to do the best with the least experience.
 
@@ -70,7 +51,7 @@ Kuan：http://www.coolapk.com/apk/com.xiecc.seeWeather
 
 
 ### TODO
-I am a little busy in this semester,preparing for the job interview, but I will still complete to-do.
+
 - [ ] Widget
 - [ ] Notification
 - [ ] Prettier Weather Icons
@@ -91,6 +72,7 @@ City Data：CSDN
 City Orientation： 高德地图
 
 #### Open-source project
+
 1. [Rxjava](https://github.com/ReactiveX/RxJava)
 2. [RxAndroid](https://github.com/ReactiveX/RxAndroid)
 3. [Retrofit](https://github.com/square/retrofit)
@@ -138,8 +120,9 @@ _ _ _
 ### LICENSE
 
 Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\")
-        you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-        Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 
 ** Pictures from the network, the copyright belongs to the original author.**

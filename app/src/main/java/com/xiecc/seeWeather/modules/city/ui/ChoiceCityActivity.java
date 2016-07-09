@@ -1,22 +1,16 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.RxBus;
+import com.xiecc.seeWeather.base.ToolbarActivity;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
-import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.city.adapter.CityAdapter;
 import com.xiecc.seeWeather.modules.city.db.DBManager;
 import com.xiecc.seeWeather.modules.city.db.WeatherDB;
@@ -31,13 +25,8 @@ import rx.Observable;
 /**
  * Created by hugo on 2016/2/19 0019.
  */
-public class ChoiceCityActivity extends BaseActivity {
+public class ChoiceCityActivity extends ToolbarActivity {
 
-    private CoordinatorLayout mCoord;
-    private AppBarLayout mAppBar;
-    private CollapsingToolbarLayout mToolbarLayout;
-    private ImageView mBanner;
-    private Toolbar mToolbar;
     private RecyclerView mRecyclerview;
     private ProgressBar mProgressBar;
     private ImageView mIvErro;
@@ -51,16 +40,25 @@ public class ChoiceCityActivity extends BaseActivity {
     private List<City> cityList;
     private CityAdapter mAdapter;
 
+
     public static final int LEVEL_PROVINCE = 1;
     public static final int LEVEL_CITY = 2;
     private int currentLevel;
 
     @Override
+    protected int provideContentViewId() {
+        return R.layout.activity_choice_city;
+    }
+
+    @Override
+    public boolean canBack() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choice_city);
         initView();
-
         addSubscription(
             Observable.defer(() -> {
                 mDBManager = new DBManager(ChoiceCityActivity.this);
@@ -74,25 +72,9 @@ public class ChoiceCityActivity extends BaseActivity {
     }
 
     private void initView() {
-
-        mCoord = (CoordinatorLayout) findViewById(R.id.coord);
-        mAppBar = (AppBarLayout) findViewById(R.id.app_bar);
-        mToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        mBanner = (ImageView) findViewById(R.id.banner);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mRecyclerview = (RecyclerView) findViewById(R.id.recyclerview);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mIvErro = (ImageView) findViewById(R.id.iv_erro);
-
-        setStatusBarColorForKitkat(R.color.colorSunrise);
-        if (mBanner != null) {
-            ImageLoader.load(this, R.mipmap.city_day, mBanner);
-            if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-                mToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-                ImageLoader.load(this, R.mipmap.city_night, mBanner);
-                setStatusBarColorForKitkat(R.color.colorSunset);
-            }
-        }
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -123,7 +105,7 @@ public class ChoiceCityActivity extends BaseActivity {
      * 查询全国所有的省，从数据库查询
      */
     private void queryProvinces() {
-        mToolbarLayout.setTitle("选择省份");
+        getToolbar().setTitle("选择省份");
         addSubscription(Observable.defer(() -> {
             if (provincesList.isEmpty()) {
                 provincesList.addAll(WeatherDB.loadProvinces(mDBManager.getDatabase()));
@@ -150,9 +132,9 @@ public class ChoiceCityActivity extends BaseActivity {
      * 查询选中省份的所有城市，从数据库查询
      */
     private void queryCities() {
+        getToolbar().setTitle("选择城市");
         dataList.clear();
         mAdapter.notifyDataSetChanged();
-        mToolbarLayout.setTitle(selectedProvince.ProName);
         addSubscription(Observable.defer(() -> {
             cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
@@ -185,5 +167,4 @@ public class ChoiceCityActivity extends BaseActivity {
         super.onDestroy();
         mDBManager.closeDatabase();
     }
-
 }

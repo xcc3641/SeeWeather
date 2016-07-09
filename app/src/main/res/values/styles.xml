@@ -14,10 +14,8 @@
     </style>
 
     <style name="FirstTheme" parent="Theme.AppCompat">
-
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@mipmap/first_backpng</item>
-
     </style>
 
     <style name="text_shadow">
@@ -26,6 +24,5 @@
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">1</item>
     </style>
-
 
 </resources>

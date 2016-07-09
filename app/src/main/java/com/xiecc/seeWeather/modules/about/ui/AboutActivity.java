@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.modules.about.ui;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.ToolbarActivity;
 
@@ -22,12 +21,7 @@ public class AboutActivity extends ToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("关于");
-        setStatusBarColor(R.color.colorPrimary);
-        if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-            mToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
-            setStatusBarColor(R.color.colorSunset);
-        }
+        getToolbar().setTitle("关于");
         mFragmentTransaction = getFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.framelayout, mAboutFragment);
         mFragmentTransaction.commit();
