@@ -20,12 +20,8 @@ public class SettingActivity extends ToolbarActivity {
         //mToolbar.setTitle("设置"); don't work and i find this
         //http://stackoverflow.com/questions/26486730/in-android-app-toolbar-settitle-method-has-no-effect-application-name-is
         // -shown
-        getSupportActionBar().setTitle("设置");
-        setStatusBarColorForKitkat(R.color.colorSunrise);
-        //if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-        //    mToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSunset));
-        //    setStatusBarColorForKitkat(R.color.colorSunset);
-        //}
+        getToolbar().setTitle("设置");
+
         getFragmentManager().beginTransaction().replace(R.id.framelayout, new SettingFragment()).commit();
     }
 

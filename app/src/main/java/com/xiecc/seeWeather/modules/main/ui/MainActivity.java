@@ -1,95 +1,44 @@
 package com.xiecc.seeWeather.modules.main.ui;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.tbruyelle.rxpermissions.RxPermissions;
-import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
 import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
-import com.xiecc.seeWeather.common.utils.Util;
-import com.xiecc.seeWeather.component.ImageLoader;
-import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
-import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
-import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
+import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
-import com.xiecc.seeWeather.modules.setting.Setting;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
-import java.util.Calendar;
-import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
-    AMapLocationListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private Toolbar toolbar;
     private DrawerLayout drawer;
-    private FloatingActionButton fab;
-    private SwipeRefreshLayout mRefreshLayout;
-    private ImageView bannner;
-    private ProgressBar mProgressBar;
-    private ImageView mErroImageView;
-    private RelativeLayout headerBackground;
-
-    private RecyclerView mRecyclerView;
-    private Weather mWeather = new Weather();
-    private WeatherAdapter mAdapter;
-    private Observer<Weather> observer;
-
-    //声明AMapLocationClient类对象
-    public AMapLocationClient mLocationClient = null;
-    public AMapLocationClientOption mLocationOption = null;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,30 +47,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         PLog.i("onCreate");
         initView();
         initDrawer();
-        initDataObserver();
         initIcon();
-
         startService(new Intent(this, AutoUpdateService.class));
         CheckVersion.checkVersion(this);
-        // https://github.com/tbruyelle/RxPermissions
-        RxPermissions.getInstance(this).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-            .subscribe(granted -> {
-                if (granted) {
-                    location();
-                } else {
-                    load();
-                }
-            });
-        // bus
-        addSubscription(
-            RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                changeCityEvent -> {
-                    mRefreshLayout.setRefreshing(true);
-                    load();
-                }, throwable -> {
-                    PLog.e(throwable.getMessage())
-                    ;
-                }));
     }
 
     @Override
@@ -136,15 +64,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         PLog.i("onRestart");
         //为了实现 Intent 重启使图标生效
         initIcon();
-        // 修改 adapter 的初始化
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         PLog.i("onResume");
-        PLog.d(toolbar.getHeight() + "");
     }
 
     @Override
@@ -163,116 +88,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化基础View
      */
     private void initView() {
-        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        // http://stackoverflow.com/questions/30655939/programmatically-collapse-or-expand-mCollapsingToolbarLayout
-        if (appBarLayout != null) {
-            //控制是否展开
-            appBarLayout.setExpanded(false);
-        }
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        bannner = (ImageView) findViewById(R.id.banner);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
-        mErroImageView = (ImageView) findViewById(R.id.iv_erro);
+
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        mHomePagerAdapter.addTab(new MainFragment(), "主页");
+        mHomePagerAdapter.addTab(new MainFragment(), "其他页面");
+        mViewPager.setAdapter(mHomePagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
+
         // Glide 加载本地 GIF 图的方法
         //GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(mErroImageView);
         //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiprefresh);
-        if (mRefreshLayout != null) {
-            mRefreshLayout.setOnRefreshListener(
-                () -> mRefreshLayout.postDelayed(this::load, 1000));
-        }
-
-        //标题
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        if (mCollapsingToolbarLayout != null) {
-            mCollapsingToolbarLayout.setTitle(" ");
-        }
-
         //fab
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(v -> showFabDialog());
-        // 与抽屉结合实现效果不好 除非背景不是白色
-        //fab.setOnClickListener(v -> showRevealAnim());
-        //recclerview
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        mRecyclerView.setHasFixedSize(true);
-        mAdapter = new WeatherAdapter(MainActivity.this, mWeather);
-        mRecyclerView.setAdapter(mAdapter);
-
-        if (Util.checkDeviceHasNavigationBar(this) || BuildConfig.DEBUG) {
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-            Resources res = getResources();
-            int fabMargin = Util.dip2px(this, res.getDimension(R.dimen.fab_margin)) / 4;
-            lp.setMargins(fabMargin, fabMargin, fabMargin, Util.getNavigationBarHeight(this) + fabMargin);
-
-        }
-    
-        mAdapter.setOnItemClickListener(mWeather1 -> {
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) this.findViewById(
-                R.id.weather_dialog_root));
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setView(dialogLayout);
-            final AlertDialog alertDialog = builder.create();
-
-            RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
-            switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
-                case "晴":
-                    root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
-                    break;
-                case "阴":
-                    root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
-                    break;
-                case "雨":
-                    root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
-                    break;
-                default:
-                    break;
-            }
-
-            TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
-            city.setText(mWeather1.basic.city);
-            TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
-            temp.setText(String.format("%s°", mWeather1.now.tmp));
-            ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
-
-            Glide.with(this)
-                .load(mSetting.getInt(mWeather1.now.cond.txt, R.mipmap.none))
-                .asBitmap()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        icon.setImageBitmap(resource);
-                        icon.setColorFilter(Color.WHITE);
-                    }
-                });
-
-            alertDialog.show();
-        });
+        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(v -> showFabDialog());
     }
 
-    /**
-     * 已经替换为 DayNight 主题切换日/夜间
-     */
-    @Deprecated
-    private void showEggs() {
-        //彩蛋-夜间模式
-        Calendar calendar = Calendar.getInstance();
-        mSetting.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-        setStatusBarColorForKitkat(R.color.colorSunrise);
-        ImageLoader.load(this, R.mipmap.sun_main, bannner);
-        if (mSetting.getCurrentHour() < 6 || mSetting.getCurrentHour() > 18) {
-            ImageLoader.load(this, R.mipmap.sun_main, bannner);
-            mCollapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, R.color.colorSunset));
-            setStatusBarColorForKitkat(R.color.colorSunset);
-            headerBackground.setBackground(ContextCompat.getDrawable(this, R.mipmap.header_back));
-        }
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 
     /**
@@ -284,7 +121,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
             View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
-            headerBackground = (RelativeLayout) headerLayout.findViewById(R.id.header_background);
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
@@ -329,108 +165,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    /**
-     * 初始化 observer (观察者)
-     * 拿到数据后的操作
-     */
-    private void initDataObserver() {
-
-        observer = new Observer<Weather>() {
-
-            @Override
-            public void onCompleted() {
-                ToastUtil.showShort(getString(R.string.complete));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                PLog.e(e.toString());
-                Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
-                    load();
-                }).show();
-            }
-
-            @Override
-            public void onNext(Weather weather) {
-                if (mSetting.getAutoUpdate() == 0) {
-                    aCache.put(C.WEATHER_CACHE, weather);
-                } else {
-                    aCache.put(C.WEATHER_CACHE, weather,
-                        (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认3小时后缓存失效
-                }
-                mWeather.status = weather.status;
-                mWeather.aqi = weather.aqi;
-                mWeather.basic = weather.basic;
-                mWeather.suggestion = weather.suggestion;
-                mWeather.now = weather.now;
-                mWeather.dailyForecast = weather.dailyForecast;
-                mWeather.hourlyForecast = weather.hourlyForecast;
-                mCollapsingToolbarLayout.setTitle(mWeather.basic.city);
-                mAdapter.notifyDataSetChanged();
-                normalStyleNotification(mWeather);
-            }
-        };
-    }
-
-    /**
-     * 优化网络+缓存逻辑
-     * 优先网络
-     */
-    private void load() {
-        //addSubscription(Observable.concat(fetchDataByNetWork(), fetchDataByCache())
-        //    .first(weather -> weather != null)
-        //    .doOnError(throwable -> {
-        //        mErroImageView.setVisibility(View.VISIBLE);
-        //        mRecyclerView.setVisibility(View.GONE);
-        //    })
-        //    .doOnNext(weather -> {
-        //        mErroImageView.setVisibility(View.GONE);
-        //        mRecyclerView.setVisibility(View.VISIBLE);
-        //    })
-        //    .doOnTerminate(() -> {
-        //        mRefreshLayout.setRefreshing(false);
-        //        mProgressBar.setVisibility(View.GONE);
-        //    })
-        //    .subscribe(observer));
-        addSubscription(fetchDataByNetWork()
-            .doOnError(throwable -> {
-                mErroImageView.setVisibility(View.VISIBLE);
-                mRecyclerView.setVisibility(View.GONE);
-            })
-            .doOnNext(weather -> {
-                mErroImageView.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-            })
-            .doOnTerminate(() -> {
-                mRefreshLayout.setRefreshing(false);
-                mProgressBar.setVisibility(View.GONE);
-            }).subscribe(observer));
-    }
-
-    /**
-     * 从本地获取
-     */
-    private Observable<Weather> fetchDataByCache() {
-        return Observable.defer(() -> {
-            Weather weather = (Weather) aCache.getAsObject(C.WEATHER_CACHE);
-            return Observable.just(weather);
-        });
-    }
-
-    /**
-     * 从网络获取
-     */
-    private Observable<Weather> fetchDataByNetWork() {
-        String cityName = Util.replaceCity(mSetting.getCityName());
-        return RetrofitSingleton.getInstance()
-            .fetchWeather(cityName)
-            .onErrorReturn(throwable -> {
-                PLog.e(throwable.getMessage());
-                ToastUtil.showLong(throwable.getMessage());
-                return null;
-            });
-    }
-
     private void showFabDialog() {
         new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
             .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
@@ -443,7 +177,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             })
             .show();
     }
-    // TODO: 16/7/8 波澜效果 与 抽屉 状态栏会有冲突 实现效果不佳 
+    // TODO: 16/7/8 波澜效果 与 抽屉 状态栏会有冲突 实现效果不佳
     //private void showRevealAnim() {
     //    RevealAnimUtil.animateRevealShow(this, findViewById(R.id.bg1), fab, fab.getWidth() / 2, R.color.colorSunrise,
     //        new RevealAnimUtil.OnRevealAnimationListener() {
@@ -479,6 +213,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
                     startActivity(intentCity);
                     break;
+                case R.id.nav_multi_cities:
+                    mViewPager.setCurrentItem(1);
+                    break;
             }
         });
         return false;
@@ -494,59 +231,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 finish();
             }
-        }
-    }
-
-    /**
-     * 高德定位
-     */
-    private void location() {
-        //初始化定位
-        mLocationClient = new AMapLocationClient(getApplicationContext());
-        //设置定位回调监听
-        mLocationClient.setLocationListener(this);
-        mLocationOption = new AMapLocationClientOption();
-        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
-        //设置是否返回地址信息（默认返回地址信息）
-        mLocationOption.setNeedAddress(true);
-        //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(false);
-        //设置是否强制刷新WIFI，默认为强制刷新
-        mLocationOption.setWifiActiveScan(true);
-        //设置是否允许模拟位置,默认为false，不允许模拟位置
-        mLocationOption.setMockEnable(false);
-        //设置定位间隔 单位毫秒
-        int tempTime = mSetting.getAutoUpdate();
-        if (tempTime == 0) {
-            tempTime = 100;
-        }
-        mLocationOption.setInterval(tempTime * Setting.ONE_HOUR);
-        //给定位客户端对象设置定位参数
-        mLocationClient.setLocationOption(mLocationOption);
-        //启动定位
-        mLocationClient.startLocation();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mLocationClient != null) {
-            mLocationClient.unRegisterLocationListener(this);
-        }
-    }
-
-    @Override
-    public void onLocationChanged(AMapLocation aMapLocation) {
-        if (aMapLocation != null) {
-            if (aMapLocation.getErrorCode() == 0) {
-                //定位成功回调信息，设置相关消息
-                aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                mSetting.setCityName(aMapLocation.getCity());
-            } else {
-                ToastUtil.showShort(getString(R.string.errorLocation));
-            }
-            load();
         }
     }
 

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatDelegate;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -15,7 +16,7 @@ import com.xiecc.seeWeather.component.RetrofitSingleton;
  */
 public class BaseApplication extends Application {
 
-    public static String cacheDir = "";
+    public static String cacheDir;
     public static Context mAppContext = null;
 
     static {
@@ -30,7 +31,9 @@ public class BaseApplication extends Application {
         // 初始化 retrofit
         RetrofitSingleton.init();
         CrashHandler.init(new CrashHandler(getApplicationContext()));
-        CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
+        if (!BuildConfig.DEBUG) {
+            CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
+        }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);
         RxUtils.unifiedErrorHandler();
@@ -43,8 +46,6 @@ public class BaseApplication extends Application {
         } else {
             cacheDir = getApplicationContext().getCacheDir().toString();
         }
-
-
     }
 
     private boolean ExistSDCard() {

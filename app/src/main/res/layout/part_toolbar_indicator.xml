@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar_with_indicator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/appbar_layout"
+        android:layout_marginBottom="-2.5dp"
+        app:tabIndicatorColor="@color/colorPrimaryDark"/>
+
+    <include layout="@layout/part_toolbar"/>
+
+</RelativeLayout>

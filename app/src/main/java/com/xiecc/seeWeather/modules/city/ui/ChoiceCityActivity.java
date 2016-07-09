@@ -69,7 +69,10 @@ public class ChoiceCityActivity extends ToolbarActivity {
                     initRecyclerView();
                     queryProvinces();
                 }));
+
     }
+
+
 
     private void initView() {
         mRecyclerview = (RecyclerView) findViewById(R.id.recyclerview);

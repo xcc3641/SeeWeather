@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.modules.setting.Setting;
 import rx.Subscription;
@@ -30,6 +31,8 @@ public class BaseActivity extends AppCompatActivity {
         }
         aCache = ACache.get(getApplication());
         mSetting = Setting.getInstance();
+        
+        setStatusBarColorForKitkat(R.color.colorSunrise);
     }
 
     public CompositeSubscription getCompositeSubscription() {

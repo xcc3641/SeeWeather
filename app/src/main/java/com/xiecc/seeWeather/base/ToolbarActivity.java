@@ -30,8 +30,8 @@ public abstract class ToolbarActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        beforeSetContent();
         setContentView(provideContentViewId());
-
         mAppBar = (AppBarLayout) findViewById(R.id.appbar_layout);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar == null || mAppBar == null) {
@@ -40,7 +40,6 @@ public abstract class ToolbarActivity extends BaseActivity {
         }
         mToolbar.setOnClickListener(v -> onToolbarClick());
         setSupportActionBar(mToolbar);
-
         if (canBack()) {
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
@@ -78,5 +77,9 @@ public abstract class ToolbarActivity extends BaseActivity {
             .setInterpolator(new DecelerateInterpolator(2))
             .start();
         mIsHidden = !mIsHidden;
+    }
+
+    protected void beforeSetContent() {
+
     }
 }

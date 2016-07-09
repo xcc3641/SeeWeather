@@ -1,12 +1,10 @@
 <resources>
 
     <style name="AppTheme.transparent" parent="AppTheme">
-        <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
-        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
         <!--透明状态栏-->
         <item name="android:windowTranslucentStatus">true</item>
         <!--透明导航栏-->
-        <item name="android:windowTranslucentNavigation">true</item>
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
         <!--使状态栏，导航栏可绘制-->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
