@@ -21,9 +21,9 @@ import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.FileSizeUtil;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
-import com.xiecc.seeWeather.modules.setting.Setting;
 
 /**
  * Created by hugo on 2016/2/19 0019.
@@ -32,7 +32,7 @@ import com.xiecc.seeWeather.modules.setting.Setting;
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
     private static String TAG = SettingFragment.class.getSimpleName();
     //private SettingActivity mActivity;
-    private Setting mSetting;
+    private SharedPreferenceUtil mSharedPreferenceUtil;
     private Preference mChangeIcons;
     private Preference mChangeUpdate;
     private Preference mClearCache;
@@ -45,18 +45,19 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting);
-        mSetting = Setting.getInstance();
+        mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
         mACache = ACache.get(getActivity());
 
-        mChangeIcons = findPreference(Setting.CHANGE_ICONS);
-        mChangeUpdate = findPreference(Setting.AUTO_UPDATE);
-        mClearCache = findPreference(Setting.CLEAR_CACHE);
+        mChangeIcons = findPreference(SharedPreferenceUtil.CHANGE_ICONS);
+        mChangeUpdate = findPreference(SharedPreferenceUtil.AUTO_UPDATE);
+        mClearCache = findPreference(SharedPreferenceUtil.CLEAR_CACHE);
 
-        mNotificationType = (SwitchPreference) findPreference(Setting.NOTIFICATION_MODEL);
+        mNotificationType = (SwitchPreference) findPreference(SharedPreferenceUtil.NOTIFICATION_MODEL);
 
-        mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSetting.getIconType()]);
+        mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSharedPreferenceUtil.getIconType()]);
 
-        mChangeUpdate.setSummary(mSetting.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSetting.getAutoUpdate() + "小时更新");
+        mChangeUpdate.setSummary(
+            mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
         mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
 
 
@@ -81,9 +82,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             showUpdateDialog();
         } else if (mNotificationType == preference) {
             mNotificationType.setChecked(mNotificationType.isChecked());
-            mSetting.setNotificationModel(
+            mSharedPreferenceUtil.setNotificationModel(
                 mNotificationType.isChecked() ? Notification.FLAG_AUTO_CANCEL : Notification.FLAG_ONGOING_EVENT);
-            PLog.i(mSetting.getAutoUpdate() + "");
+            PLog.i(mSharedPreferenceUtil.getAutoUpdate() + "");
         }
         return false;
     }
@@ -109,7 +110,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
 
 
-        switch (mSetting.getIconType()) {
+        switch (mSharedPreferenceUtil.getIconType()) {
             case 0:
                 radioTypeOne.setChecked(true);
                 radioTypeTwo.setChecked(false);
@@ -131,7 +132,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         });
 
         done.setOnClickListener(v -> {
-            mSetting.setIconType(radioTypeOne.isChecked() ? 0 : 1);
+            mSharedPreferenceUtil.setIconType(radioTypeOne.isChecked() ? 0 : 1);
             String[] iconsText = getResources().getStringArray(R.array.icons);
             mChangeIcons.setSummary(radioTypeOne.isChecked() ? iconsText[0] :
                 iconsText[1]);
@@ -162,7 +163,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         TextView tvDone = (TextView) dialogLayout.findViewById(R.id.done);
 
         mSeekBar.setMax(24);
-        mSeekBar.setProgress(mSetting.getAutoUpdate());
+        mSeekBar.setProgress(mSharedPreferenceUtil.getAutoUpdate());
         tvShowHour.setText(String.format("每%s小时",mSeekBar.getProgress()));
         alertDialog.show();
 
@@ -184,8 +185,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             }
         });
         tvDone.setOnClickListener(v -> {
-            mSetting.setAutoUpdate(mSeekBar.getProgress());
-            mChangeUpdate.setSummary(mSetting.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSetting.getAutoUpdate() + "小时更新");
+            mSharedPreferenceUtil.setAutoUpdate(mSeekBar.getProgress());
+            mChangeUpdate.setSummary(
+                mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
             //需要再调用一次才能生效设置 不会重复的执行onCreate()， 而是会调用onStart()和onStartCommand()。
             getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
             alertDialog.dismiss();

@@ -155,7 +155,7 @@ public static <T> Observable.Transformer<T, T> rxSchedulerHelper() {
 
 ```java
     private Observable<Weather> fetchDataByNetWork() {
-        String cityName = Util.replaceCity(mSetting.getCityName());
+        String cityName = Util.replaceCity(mSharedPreferenceUtils.getCityName());
         return RetrofitSingleton.getInstance()
             .fetchWeather(cityName)
             .onErrorReturn(throwable -> {

@@ -97,7 +97,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(pos);
-                mSetting.setCityName(selectedCity.CityName);
+                mSharedPreferenceUtil.setCityName(selectedCity.CityName);
                 RxBus.getDefault().post(new ChangeCityEvent());
                 finish();
             }

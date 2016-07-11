@@ -17,7 +17,7 @@ import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import com.xiecc.seeWeather.modules.setting.Setting;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 
 /**
  * Created by hugo on 2016/1/31 0031.
@@ -33,12 +33,12 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     private final int TYPE_FORE = 3;
 
     private Weather mWeatherData;
-    private Setting mSetting;
+    private SharedPreferenceUtil mSharedPreferenceUtil;
 
     public WeatherAdapter(Context context, Weather weatherData) {
         mContext = context;
         this.mWeatherData = weatherData;
-        mSetting = Setting.getInstance();
+        mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     String.format("↓ %s °", weather.dailyForecast.get(0).tmp.min));
                 tempPm.setText(Util.safeText("PM25： ", weather.aqi.city.pm25));
                 tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
-                ImageLoader.load(context, mSetting.getInt(weather.now.cond.txt, R.mipmap.none),
+                ImageLoader.load(context, mSharedPreferenceUtil.getInt(weather.now.cond.txt, R.mipmap.none),
                     weatherIcon);
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
@@ -282,7 +282,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                             PLog.e(e.toString());
                         }
                     }
-                    ImageLoader.load(mContext, mSetting.getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
+                    ImageLoader.load(mContext, mSharedPreferenceUtil.getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
                         forecastIcon[i]);
                     forecastTemp[i].setText(
                         String.format("%s° %s°",

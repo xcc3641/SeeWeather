@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.PLog;
@@ -39,6 +40,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private ViewPager mViewPager;
+    private TabLayout mTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,12 +92,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initView() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
-        mHomePagerAdapter.addTab(new MainFragment(), "主页");
-        mHomePagerAdapter.addTab(new MainFragment(), "其他页面");
+        mHomePagerAdapter.addTab(new MainFragment(), "主页面");
+        mHomePagerAdapter.addTab(new MultiCityFragment(), "多城市");
         mViewPager.setAdapter(mHomePagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
 
@@ -133,35 +134,35 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化Icon
      */
     private void initIcon() {
-        if (mSetting.getIconType() == 0) {
-            mSetting.putInt("未知", R.mipmap.none);
-            mSetting.putInt("晴", R.mipmap.type_one_sunny);
-            mSetting.putInt("阴", R.mipmap.type_one_cloudy);
-            mSetting.putInt("多云", R.mipmap.type_one_cloudy);
-            mSetting.putInt("少云", R.mipmap.type_one_cloudy);
-            mSetting.putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
-            mSetting.putInt("小雨", R.mipmap.type_one_light_rain);
-            mSetting.putInt("中雨", R.mipmap.type_one_light_rain);
-            mSetting.putInt("大雨", R.mipmap.type_one_heavy_rain);
-            mSetting.putInt("阵雨", R.mipmap.type_one_thunderstorm);
-            mSetting.putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
-            mSetting.putInt("霾", R.mipmap.type_one_fog);
-            mSetting.putInt("雾", R.mipmap.type_one_fog);
+        if (mSharedPreferenceUtil.getIconType() == 0) {
+            mSharedPreferenceUtil.putInt("未知", R.mipmap.none);
+            mSharedPreferenceUtil.putInt("晴", R.mipmap.type_one_sunny);
+            mSharedPreferenceUtil.putInt("阴", R.mipmap.type_one_cloudy);
+            mSharedPreferenceUtil.putInt("多云", R.mipmap.type_one_cloudy);
+            mSharedPreferenceUtil.putInt("少云", R.mipmap.type_one_cloudy);
+            mSharedPreferenceUtil.putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
+            mSharedPreferenceUtil.putInt("小雨", R.mipmap.type_one_light_rain);
+            mSharedPreferenceUtil.putInt("中雨", R.mipmap.type_one_light_rain);
+            mSharedPreferenceUtil.putInt("大雨", R.mipmap.type_one_heavy_rain);
+            mSharedPreferenceUtil.putInt("阵雨", R.mipmap.type_one_thunderstorm);
+            mSharedPreferenceUtil.putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
+            mSharedPreferenceUtil.putInt("霾", R.mipmap.type_one_fog);
+            mSharedPreferenceUtil.putInt("雾", R.mipmap.type_one_fog);
         } else {
-            mSetting.putInt("未知", R.mipmap.none);
-            mSetting.putInt("晴", R.mipmap.type_two_sunny);
-            mSetting.putInt("阴", R.mipmap.type_two_cloudy);
-            mSetting.putInt("多云", R.mipmap.type_two_cloudy);
-            mSetting.putInt("少云", R.mipmap.type_two_cloudy);
-            mSetting.putInt("晴间多云", R.mipmap.type_two_cloudytosunny);
-            mSetting.putInt("小雨", R.mipmap.type_two_light_rain);
-            mSetting.putInt("中雨", R.mipmap.type_two_rain);
-            mSetting.putInt("大雨", R.mipmap.type_two_rain);
-            mSetting.putInt("阵雨", R.mipmap.type_two_rain);
-            mSetting.putInt("雷阵雨", R.mipmap.type_two_thunderstorm);
-            mSetting.putInt("霾", R.mipmap.type_two_haze);
-            mSetting.putInt("雾", R.mipmap.type_two_fog);
-            mSetting.putInt("雨夹雪", R.mipmap.type_two_snowrain);
+            mSharedPreferenceUtil.putInt("未知", R.mipmap.none);
+            mSharedPreferenceUtil.putInt("晴", R.mipmap.type_two_sunny);
+            mSharedPreferenceUtil.putInt("阴", R.mipmap.type_two_cloudy);
+            mSharedPreferenceUtil.putInt("多云", R.mipmap.type_two_cloudy);
+            mSharedPreferenceUtil.putInt("少云", R.mipmap.type_two_cloudy);
+            mSharedPreferenceUtil.putInt("晴间多云", R.mipmap.type_two_cloudytosunny);
+            mSharedPreferenceUtil.putInt("小雨", R.mipmap.type_two_light_rain);
+            mSharedPreferenceUtil.putInt("中雨", R.mipmap.type_two_rain);
+            mSharedPreferenceUtil.putInt("大雨", R.mipmap.type_two_rain);
+            mSharedPreferenceUtil.putInt("阵雨", R.mipmap.type_two_rain);
+            mSharedPreferenceUtil.putInt("雷阵雨", R.mipmap.type_two_thunderstorm);
+            mSharedPreferenceUtil.putInt("霾", R.mipmap.type_two_haze);
+            mSharedPreferenceUtil.putInt("雾", R.mipmap.type_two_fog);
+            mSharedPreferenceUtil.putInt("雨夹雪", R.mipmap.type_two_snowrain);
         }
     }
 
@@ -233,6 +234,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         }
     }
+    protected boolean mIsHidden = false;
+    public void hideOrShowToolbar() {
+        mTabLayout.animate()
+            .translationY(mIsHidden ? 0 : -mTabLayout.getHeight())
+            .setInterpolator(new DecelerateInterpolator(2))
+            .start();
+        mIsHidden = !mIsHidden;
+    }
 
     private void normalStyleNotification(Weather weather) {
         Intent intent = new Intent(MainActivity.this, MainActivity.class);
@@ -244,9 +253,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             .setContentTitle(weather.basic.city)
             .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
             // 这里部分 ROM 无法成功
-            .setSmallIcon(mSetting.getInt(weather.now.cond.txt, R.mipmap.none))
+            .setSmallIcon(mSharedPreferenceUtil.getInt(weather.now.cond.txt, R.mipmap.none))
             .build();
-        notification.flags = mSetting.getNotificationModel();
+        notification.flags = mSharedPreferenceUtil.getNotificationModel();
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // tag和id都是可以拿来区分不同的通知的
         manager.notify(1, notification);

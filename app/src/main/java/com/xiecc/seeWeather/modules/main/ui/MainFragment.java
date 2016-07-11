@@ -2,13 +2,10 @@ package com.xiecc.seeWeather.modules.main.ui;
 
 import android.Manifest;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,29 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
 import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import com.xiecc.seeWeather.modules.setting.Setting;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -80,7 +72,7 @@ public class MainFragment extends BaseFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.content_main, null, false);
+        View mView = inflater.inflate(R.layout.content_main, container, false);
         ButterKnife.bind(this, mView);
         initView();
         isCreateView = true;
@@ -98,6 +90,7 @@ public class MainFragment extends BaseFragment implements
                 PLog.e(throwable.getMessage())
                 ;
             });
+
     }
 
     private void initView() {
@@ -111,48 +104,59 @@ public class MainFragment extends BaseFragment implements
         mAdapter = new WeatherAdapter(getActivity(), mWeather);
         mRecyclerview.setAdapter(mAdapter);
 
-        mAdapter.setOnItemClickListener(mWeather1 -> {
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) getActivity().findViewById(
-                R.id.weather_dialog_root));
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setView(dialogLayout);
-            final AlertDialog alertDialog = builder.create();
+        //mRecyclerview.addOnScrollListener(new HidingScrollListener() {
+        //    @Override
+        //    public void onHide() {
+        //        mActivity.hideOrShowToolbar();
+        //    }
+        //
+        //    @Override
+        //    public void onShow() {
+        //        mActivity.hideOrShowToolbar();
+        //    }
+        //});
 
-            RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
-            switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
-                case "晴":
-                    root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
-                    break;
-                case "阴":
-                    root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
-                    break;
-                case "雨":
-                    root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
-                    break;
-                default:
-                    break;
-            }
-
-            TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
-            city.setText(mWeather1.basic.city);
-            TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
-            temp.setText(String.format("%s°", mWeather1.now.tmp));
-            ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
-
-            Glide.with(this)
-                .load(mActivity.mSetting.getInt(mWeather1.now.cond.txt, R.mipmap.none))
-                .asBitmap()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        icon.setImageBitmap(resource);
-                        icon.setColorFilter(Color.WHITE);
-                    }
-                });
-
-            alertDialog.show();
-        });
+        //mAdapter.setOnItemClickListener(mWeather1 -> {
+        //    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //    View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) getActivity().findViewById(
+        //        R.id.weather_dialog_root));
+        //    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+        //        .setView(dialogLayout);
+        //    final AlertDialog alertDialog = builder.create();
+        //    RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
+        //    switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
+        //        case "晴":
+        //            root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
+        //            break;
+        //        case "阴":
+        //            root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
+        //            break;
+        //        case "雨":
+        //            root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //
+        //    TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
+        //    city.setText(mWeather1.basic.city);
+        //    TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
+        //    temp.setText(String.format("%s°", mWeather1.now.tmp));
+        //    ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
+        //
+        //    Glide.with(this)
+        //        .load(mActivity.mSharedPreferenceUtil.getInt(mWeather1.now.cond.txt, R.mipmap.none))
+        //        .asBitmap()
+        //        .into(new SimpleTarget<Bitmap>() {
+        //            @Override
+        //            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+        //                icon.setImageBitmap(resource);
+        //                icon.setColorFilter(Color.WHITE);
+        //            }
+        //        });
+        //
+        //    alertDialog.show();
+        //});
     }
 
     /**
@@ -178,12 +182,6 @@ public class MainFragment extends BaseFragment implements
 
             @Override
             public void onNext(Weather weather) {
-                //if (mSetting.getAutoUpdate() == 0) {
-                //    aCache.put(C.WEATHER_CACHE, weather);
-                //} else {
-                //    aCache.put(C.WEATHER_CACHE, weather,
-                //        (mSetting.getAutoUpdate() * Setting.ONE_HOUR));//默认3小时后缓存失效
-                //}
                 mWeather.status = weather.status;
                 mWeather.aqi = weather.aqi;
                 mWeather.basic = weather.basic;
@@ -193,7 +191,6 @@ public class MainFragment extends BaseFragment implements
                 mWeather.hourlyForecast = weather.hourlyForecast;
                 mActivity.getToolbar().setTitle(weather.basic.city);
                 mAdapter.notifyDataSetChanged();
-                //normalStyleNotification(mWeather);
             }
         };
     }
@@ -232,7 +229,7 @@ public class MainFragment extends BaseFragment implements
      * 从网络获取
      */
     private Observable<Weather> fetchDataByNetWork() {
-        String cityName = Util.replaceCity(mActivity.mSetting.getCityName());
+        String cityName = Util.replaceCity(mActivity.mSharedPreferenceUtil.getCityName());
         return RetrofitSingleton.getInstance()
             .fetchWeather(cityName)
             .onErrorReturn(throwable -> {
@@ -262,11 +259,11 @@ public class MainFragment extends BaseFragment implements
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔 单位毫秒
-        int tempTime = mActivity.mSetting.getAutoUpdate();
+        int tempTime = mActivity.mSharedPreferenceUtil.getAutoUpdate();
         if (tempTime == 0) {
             tempTime = 100;
         }
-        mLocationOption.setInterval(tempTime * Setting.ONE_HOUR);
+        mLocationOption.setInterval(tempTime * SharedPreferenceUtil.ONE_HOUR);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -279,7 +276,7 @@ public class MainFragment extends BaseFragment implements
             if (aMapLocation.getErrorCode() == 0) {
                 //定位成功回调信息，设置相关消息
                 aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                mActivity.mSetting.setCityName(aMapLocation.getCity());
+                mActivity.mSharedPreferenceUtil.setCityName(aMapLocation.getCity());
             } else {
                 ToastUtil.showShort(getString(R.string.errorLocation));
             }

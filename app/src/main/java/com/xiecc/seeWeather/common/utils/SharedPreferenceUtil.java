@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.modules.setting;
+package com.xiecc.seeWeather.common.utils;
 
 import android.app.Notification;
 import android.content.Context;
@@ -10,7 +10,7 @@ import com.xiecc.seeWeather.base.BaseApplication;
  *
  * 设置相关 包括 sp 的写入
  */
-public class Setting {
+public class SharedPreferenceUtil {
 
     public static final String CHANGE_ICONS = "change_icons";//切换图标
     public static final String CLEAR_CACHE = "clear_cache";//清空缓存
@@ -21,24 +21,24 @@ public class Setting {
 
     public static int ONE_HOUR = 1000 * 60 * 60;
 
-    private static Setting sInstance;
+    private static SharedPreferenceUtil sInstance;
 
     private SharedPreferences mPrefs;
 
-    public static Setting getInstance() {
+    public static SharedPreferenceUtil getInstance() {
         if (sInstance == null) {
-            sInstance = new Setting(BaseApplication.mAppContext);
+            sInstance = new SharedPreferenceUtil(BaseApplication.mAppContext);
         }
         return sInstance;
     }
 
-    private Setting(Context context) {
+    private SharedPreferenceUtil(Context context) {
         mPrefs = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
         //mPrefs.edit().putInt(CHANGE_ICONS, 1).apply();
     }
 
 
-    public Setting putInt(String key, int value) {
+    public SharedPreferenceUtil putInt(String key, int value) {
         mPrefs.edit().putInt(key, value).apply();
         return this;
     }
@@ -47,7 +47,7 @@ public class Setting {
         return mPrefs.getInt(key, defValue);
     }
 
-    public Setting putString(String key, String value) {
+    public SharedPreferenceUtil putString(String key, String value) {
         mPrefs.edit().putString(key, value).apply();
         return this;
     }

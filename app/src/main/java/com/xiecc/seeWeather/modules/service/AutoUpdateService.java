@@ -14,7 +14,7 @@ import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.main.ui.MainActivity;
-import com.xiecc.seeWeather.modules.setting.Setting;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscription;
@@ -29,7 +29,7 @@ import rx.subscriptions.CompositeSubscription;
 public class AutoUpdateService extends Service {
 
     private final String TAG = AutoUpdateService.class.getSimpleName();
-    private Setting mSetting;
+    private SharedPreferenceUtil mSharedPreferenceUtil;
     private ACache mAcache;
     // http://blog.csdn.net/lzyzsd/article/details/45033611
     // 在生命周期的某个时刻取消订阅。一个很常见的模式就是使用CompositeSubscription来持有所有的Subscriptions，然后在onDestroy()或者onDestroyView()里取消所有的订阅
@@ -46,7 +46,7 @@ public class AutoUpdateService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mSetting = Setting.getInstance();
+        mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
         mAcache = ACache.get(getApplication());
         mCompositeSubscription = new CompositeSubscription();
     }
@@ -57,11 +57,11 @@ public class AutoUpdateService extends Service {
             unSubscribed();
             if (isUnsubscribed) {
                 unSubscribed();
-                if (mSetting.getAutoUpdate() != 0) {
-                    mNetSubcription = Observable.interval(mSetting.getAutoUpdate(), TimeUnit.HOURS)
+                if (mSharedPreferenceUtil.getAutoUpdate() != 0) {
+                    mNetSubcription = Observable.interval(mSharedPreferenceUtil.getAutoUpdate(), TimeUnit.HOURS)
                         .subscribe(aLong -> {
                             isUnsubscribed = false;
-                            //PLog.i(TAG, SystemClock.elapsedRealtime() + " 当前设置" + mSetting.getAutoUpdate());
+                            //PLog.i(TAG, SystemClock.elapsedRealtime() + " 当前设置" + mSharedPreferenceUtil.getAutoUpdate());
                             fetchDataByNetWork();
                         });
                     mCompositeSubscription.add(mNetSubcription);
@@ -82,7 +82,7 @@ public class AutoUpdateService extends Service {
     }
 
     private void fetchDataByNetWork() {
-        String cityName = mSetting.getCityName();
+        String cityName = mSharedPreferenceUtil.getCityName();
         if (cityName != null) {
             cityName = Util.replaceCity(cityName);
         }
@@ -103,9 +103,9 @@ public class AutoUpdateService extends Service {
             .setContentTitle(weather.basic.city)
             .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
             // 这里部分 ROM 无法成功
-            .setSmallIcon(mSetting.getInt(weather.now.cond.txt, R.mipmap.none))
+            .setSmallIcon(mSharedPreferenceUtil.getInt(weather.now.cond.txt, R.mipmap.none))
             .build();
-        notification.flags = mSetting.getNotificationModel();
+        notification.flags = mSharedPreferenceUtil.getNotificationModel();
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // tag和id都是可以拿来区分不同的通知的
         manager.notify(1, notification);

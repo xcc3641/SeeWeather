@@ -1,8 +1,8 @@
 package com.xiecc.seeWeather.common;
 
 import android.content.Context;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
-import com.xiecc.seeWeather.modules.setting.Setting;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -38,8 +38,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         PLog.e(TAG, collectCrashDeviceInfo());
         PLog.e(TAG, getCrashInfo(ex));
 
-        Setting mSetting = Setting.getInstance();
-        mSetting.setCityName("北京");
+        SharedPreferenceUtil mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
+        mSharedPreferenceUtil.setCityName("北京");
         // 调用系统错误机制
         defaultHandler.uncaughtException(thread, ex);
     }
