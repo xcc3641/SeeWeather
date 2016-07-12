@@ -124,19 +124,7 @@ public class MainFragment extends BaseFragment implements
         //        .setView(dialogLayout);
         //    final AlertDialog alertDialog = builder.create();
         //    RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
-        //    switch (Util.getWeatherType(Integer.parseInt(mWeather1.now.cond.code))) {
-        //        case "晴":
-        //            root.setBackgroundResource(R.mipmap.dialog_bg_sunny);
-        //            break;
-        //        case "阴":
-        //            root.setBackgroundResource(R.mipmap.dialog_bg_cloudy);
-        //            break;
-        //        case "雨":
-        //            root.setBackgroundResource(R.mipmap.dialog_bg_rainy);
-        //            break;
-        //        default:
-        //            break;
-        //    }
+
         //
         //    TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
         //    city.setText(mWeather1.basic.city);
