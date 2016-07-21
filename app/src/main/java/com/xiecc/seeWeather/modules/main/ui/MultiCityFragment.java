@@ -13,6 +13,9 @@ import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
 import com.xiecc.seeWeather.modules.main.adapter.MultiCityAdapter;
+import com.xiecc.seeWeather.modules.main.domain.Weather;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -29,6 +32,9 @@ public class MultiCityFragment extends BaseFragment {
     SwipeRefreshLayout mSwiprefresh;
 
     private MultiCityAdapter mAdatper;
+    private List<Weather> weatherArrayList;
+
+    private View view;
 
     /**
      * 加载数据操作,在视图创建之前初始化
@@ -41,24 +47,27 @@ public class MultiCityFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.fragment_multicity, container, false);
-        ButterKnife.bind(this, mView);
-        initView();
-        return mView;
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_multicity, container, false);
+            ButterKnife.bind(this, view);
+            initView();
+        }
+        return view;
     }
 
     private void initView() {
+        weatherArrayList = new ArrayList<>();
+        weatherArrayList.add(new Weather());
+        weatherArrayList.add(new Weather());
 
-        mAdatper = new MultiCityAdapter(getActivity());
+        mAdatper = new MultiCityAdapter(getActivity(), weatherArrayList);
         mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerview.setAdapter(mAdatper);
-
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override

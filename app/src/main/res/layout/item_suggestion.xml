@@ -27,10 +27,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@mipmap/icon_cloth"/>
+                android:src="@drawable/icon_cloth"/>
 
             <LinearLayout
-                android:layout_marginLeft="64dp"
+                android:layout_marginStart="64dp"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -61,10 +61,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@mipmap/icon_sport"/>
+                android:src="@drawable/icon_sport"/>
 
             <LinearLayout
-                android:layout_marginLeft="64dp"
+                android:layout_marginStart="64dp"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -96,10 +96,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@mipmap/icon_travel"/>
+                android:src="@drawable/icon_travel"/>
 
             <LinearLayout
-                android:layout_marginLeft="64dp"
+                android:layout_marginStart="64dp"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -131,10 +131,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@mipmap/icon_flu"/>
+                android:src="@drawable/icon_flu"/>
 
             <LinearLayout
-                android:layout_marginLeft="64dp"
+                android:layout_marginStart="64dp"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">

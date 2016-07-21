@@ -8,7 +8,9 @@
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardCornerRadius="2dp"
-    card_view:cardElevation="1dp">
+    card_view:cardElevation="1dp"
+    android:background="@mipmap/dialog_bg_rainy"
+    >
 
     <include layout="@layout/weather_dialog"/>
 

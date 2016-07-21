@@ -74,6 +74,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
 
 
 
+
     private void initView() {
         mRecyclerview = (RecyclerView) findViewById(R.id.recyclerview);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);

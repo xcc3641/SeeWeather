@@ -50,19 +50,19 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.transparent"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".modules.setting.ui.SettingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.transparent"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".modules.city.ui.ChoiceCityActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.transparent"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".modules.about.ui.AboutActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.transparent"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

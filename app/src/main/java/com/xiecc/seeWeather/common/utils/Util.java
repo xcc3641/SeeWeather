@@ -208,4 +208,6 @@ public class Util {
             .deviceHasKey(KeyEvent.KEYCODE_BACK);
         return !hasMenuKey && !hasBackKey;
     }
+
+
 }

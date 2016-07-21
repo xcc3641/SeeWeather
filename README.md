@@ -15,24 +15,20 @@
 
 ----
 
-### 前言
-
-
 ### 简介
 就看天气——是一款遵循**Material Design**风格的只看天气的APP。无流氓权限，无自启，xxx，用最少的权限做最优的体验。
 - 卡片展现（当前天气情况，未来几小时天气情况，生活建议，一周七天概况）
-- 补全城市（第一版本因为自己偷懒所以城市有缺陷对不起各位）
-- 自动定位
 - 缓存数据，减少网络请求，保证离线查看
 - 内置两套图标（设置里更改）
 - 彩蛋（自动夜间状态）
+- 定位服务
 
 
 ----
 
 权限说明
 
-```
+```xml
 	<!--用于进行网络定位-->
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<!--用于访问GPS定位-->
@@ -99,7 +95,6 @@ v1.0
 
 
 ### TODO
-这学期有点忙，需要花时间巩固基础，准备面试，但是自己还是会抽空尽快做出这些功能的，谢谢大家理解和支持
 
 - [ ] 桌面小部件
 - [x] 通知栏提醒
@@ -126,11 +121,47 @@ v1.0
 2. [RxAndroid][3]
 3. [Retrofit][4]
 4. [GLide][5]
-5. [ASimpleCache][6]
+5. ~~[ASimpleCache][6]~~
 
 #### 代码
 
 ##### 网络
+Update 7.11:
+
+因为天气软件请求比较单一，没必要用其他的缓存，可以直接用 okhttp 网络缓存。
+```java
+File cacheFile = new File(BaseApplication.getmAppContext().getExternalCacheDir(), "SeeWeatherCache");
+Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
+Interceptor cacheInterceptor = chain -> {
+	Request request = chain.request();
+	if (!Util.isNetworkConnected(BaseApplication.getmAppContext())) {
+		request = request.newBuilder()
+			.cacheControl(CacheControl.FORCE_CACHE)
+			.build();
+	}
+	Response response = chain.proceed(request);
+	if (Util.isNetworkConnected(BaseApplication.getmAppContext())) {
+		int maxAge = 0;
+		// 有网络时 设置缓存超时时间0个小时
+		response.newBuilder()
+			.header("Cache-Control", "public, max-age=" + maxAge)
+			.build();
+	} else {
+		// 无网络时，设置超时为4周
+		int maxStale = 60 * 60 * 24 * 28;
+		response.newBuilder()
+			.header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+			.build();
+	}
+	return response;
+};
+builder.cache(cache).addInterceptor(cacheInterceptor);
+```
+设置好缓存地址，设置好 header 即可实现缓存。
+- - -
+
+其他缓存思路：
+
 就看天气的网络部分的支持是用`RxJava+RxAndroid+Retrofit+Gson`再加上`ACache`缓存
 
 网络部分：
@@ -210,7 +241,7 @@ private void load() {
 ```
 
 
-##### RxBus 
+##### RxBus
 
 具体的逻辑分析在这里[RxBus 的简单实现](http://brucezz.github.io/articles/2016/06/02/a-simple-rxbus-implementation/)
 

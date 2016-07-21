@@ -8,7 +8,6 @@ import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
-import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 
 /**
@@ -21,7 +20,7 @@ public class BaseApplication extends Application {
 
     static {
         AppCompatDelegate.setDefaultNightMode(
-            AppCompatDelegate.MODE_NIGHT_NO);
+            AppCompatDelegate.MODE_NIGHT_AUTO);
     }
 
     @Override
@@ -36,7 +35,7 @@ public class BaseApplication extends Application {
         }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);
-        RxUtils.unifiedErrorHandler();
+        //RxUtils.unifiedErrorHandler();
         //Thread.setDefaultUncaughtExceptionHandler(new MyUnCaughtExceptionHandler());
         /**
          * 如果存在SD卡则将缓存写入SD卡,否则写入手机内存

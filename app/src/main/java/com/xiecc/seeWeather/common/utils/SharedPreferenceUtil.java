@@ -97,4 +97,6 @@ public class SharedPreferenceUtil {
     public int getNotificationModel() {
         return mPrefs.getInt(NOTIFICATION_MODEL, Notification.FLAG_AUTO_CANCEL);
     }
+
+
 }

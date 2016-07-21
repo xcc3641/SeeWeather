@@ -63,6 +63,8 @@ public class MainFragment extends BaseFragment implements
 
     private MainActivity mActivity;
 
+    private View view;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -72,25 +74,29 @@ public class MainFragment extends BaseFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.content_main, container, false);
-        ButterKnife.bind(this, mView);
+        if (view==null) {
+             view = inflater.inflate(R.layout.content_main, container, false);
+            ButterKnife.bind(this, view);
+        }
         initView();
         isCreateView = true;
-        return mView;
+        PLog.d("onCreateView");
+        return view;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PLog.d("onCreate");
         RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
             changeCityEvent -> {
                 mSwiprefresh.setRefreshing(true);
                 load();
+                PLog.d("MainRxBus");
             }, throwable -> {
                 PLog.e(throwable.getMessage())
                 ;
             });
-
     }
 
     private void initView() {
@@ -116,35 +122,6 @@ public class MainFragment extends BaseFragment implements
         //    }
         //});
 
-        //mAdapter.setOnItemClickListener(mWeather1 -> {
-        //    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //    View dialogLayout = inflater.inflate(R.layout.weather_dialog, (ViewGroup) getActivity().findViewById(
-        //        R.id.weather_dialog_root));
-        //    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-        //        .setView(dialogLayout);
-        //    final AlertDialog alertDialog = builder.create();
-        //    RelativeLayout root = (RelativeLayout) dialogLayout.findViewById(R.id.weather_dialog_root);
-
-        //
-        //    TextView city = (TextView) dialogLayout.findViewById(R.id.dialog_city);
-        //    city.setText(mWeather1.basic.city);
-        //    TextView temp = (TextView) dialogLayout.findViewById(R.id.dialog_temp);
-        //    temp.setText(String.format("%s°", mWeather1.now.tmp));
-        //    ImageView icon = (ImageView) dialogLayout.findViewById(R.id.dialog_icon);
-        //
-        //    Glide.with(this)
-        //        .load(mActivity.mSharedPreferenceUtil.getInt(mWeather1.now.cond.txt, R.mipmap.none))
-        //        .asBitmap()
-        //        .into(new SimpleTarget<Bitmap>() {
-        //            @Override
-        //            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-        //                icon.setImageBitmap(resource);
-        //                icon.setColorFilter(Color.WHITE);
-        //            }
-        //        });
-        //
-        //    alertDialog.show();
-        //});
     }
 
     /**
@@ -282,7 +259,7 @@ public class MainFragment extends BaseFragment implements
     public void onDestroy() {
         super.onDestroy();
         mLocationClient = null;
-        mLocationOption =null;
+        mLocationOption = null;
     }
 
     /**

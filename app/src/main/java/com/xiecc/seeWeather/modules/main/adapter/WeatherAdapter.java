@@ -81,16 +81,16 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         int itemType = getItemViewType(position);
         switch (itemType) {
             case TYPE_ONE:
-                ((NowWeatherViewHolder) holder).bind(mContext, mWeatherData);
+                ((NowWeatherViewHolder) holder).bind(mWeatherData);
                 break;
             case TYPE_TWO:
-                ((HoursWeatherViewHolder) holder).bind(mContext, mWeatherData);
+                ((HoursWeatherViewHolder) holder).bind(mWeatherData);
                 break;
             case TYPE_THREE:
-                ((SuggestionViewHolder) holder).bind(mContext, mWeatherData);
+                ((SuggestionViewHolder) holder).bind(mWeatherData);
                 break;
             case TYPE_FORE:
-                ((ForecastViewHolder) holder).bind(mContext, mWeatherData);
+                ((ForecastViewHolder) holder).bind(mWeatherData);
                 break;
             default:
                 break;
@@ -128,7 +128,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(Context context, Weather weather) {
+        public void bind(Weather weather) {
             try {
                 tempFlu.setText(String.format("%s℃", weather.now.tmp));
                 tempMax.setText(
@@ -137,7 +137,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     String.format("↓ %s °", weather.dailyForecast.get(0).tmp.min));
                 tempPm.setText(Util.safeText("PM25： ", weather.aqi.city.pm25));
                 tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
-                ImageLoader.load(context, mSharedPreferenceUtil.getInt(weather.now.cond.txt, R.mipmap.none),
+                ImageLoader.load(itemView.getContext(), mSharedPreferenceUtil.getInt(weather.now.cond.txt, R.mipmap.none),
                     weatherIcon);
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
@@ -174,7 +174,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
 
-        public void bind(Context context, Weather weather) {
+        public void bind(Weather weather) {
 
             try {
                 for (int i = 0; i < weather.hourlyForecast.size(); i++) {
@@ -225,7 +225,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(Context context, Weather weather) {
+        public void bind(Weather weather) {
             try {
 
                 clothBrief.setText(String.format("穿衣指数---%s", weather.suggestion.drsg.brf));
@@ -268,7 +268,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
 
-        public void bind(Context context, Weather weather) {
+        public void bind(Weather weather) {
             try {
                 //今日 明日
                 forecastDate[0].setText("今日");
@@ -282,7 +282,8 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                             PLog.e(e.toString());
                         }
                     }
-                    ImageLoader.load(mContext, mSharedPreferenceUtil.getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
+                    ImageLoader.load(mContext,
+                        mSharedPreferenceUtil.getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
                         forecastIcon[i]);
                     forecastTemp[i].setText(
                         String.format("%s° %s°",
