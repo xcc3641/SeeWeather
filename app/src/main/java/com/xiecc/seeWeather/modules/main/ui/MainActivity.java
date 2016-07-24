@@ -5,11 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -19,10 +21,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
 import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.RxUtils;
@@ -37,15 +42,24 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Toolbar toolbar;
-    private DrawerLayout drawer;
-    private ViewPager mViewPager;
-    private TabLayout mTabLayout;
+    @Bind(R.id.viewPager)
+    ViewPager viewPager;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.tabLayout)
+    TabLayout tabLayout;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
+    @Bind(R.id.nav_view)
+    NavigationView navView;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         PLog.i("onCreate");
         initView();
         initDrawer();
@@ -90,27 +104,57 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化基础View
      */
     private void initView() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);
         HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
         mHomePagerAdapter.addTab(new MainFragment(), "主页面");
         mHomePagerAdapter.addTab(new MultiCityFragment(), "多城市");
-        mViewPager.setAdapter(mHomePagerAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
+        viewPager.setAdapter(mHomePagerAdapter);
+        tabLayout.setupWithViewPager(viewPager, false);
+        viewPager.setOffscreenPageLimit(2);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 1) {
+                    fab.setImageResource(R.drawable.ic_add_24dp);
+                    fab.setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            CircularAnimUtil.startActivity(MainActivity.this, ChoiceCityActivity.class, fab,
+                                R.color.colorPrimary);
+                        }
+                    });
+                } else {
+                    fab.setImageResource(R.drawable.ic_favorite_24dp);
+                    fab.setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showFabDialog();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         // Glide 加载本地 GIF 图的方法
         //GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(mErroImageView);
         //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
         //fab
-        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mFab.setOnClickListener(v -> showFabDialog());
-    }
-
-    public Toolbar getToolbar() {
-        return toolbar;
+        //fab.setOnClickListener(v -> showFabDialog());
     }
 
     /**
@@ -118,15 +162,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private void initDrawer() {
         //https://segmentfault.com/a/1190000004151222
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
+        if (navView != null) {
+            navView.setNavigationItemSelectedListener(this);
             //navigationView.setItemIconTintList(null);
-            View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+            View headerLayout = navView.inflateHeaderView(R.layout.nav_header_main);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-            drawer.addDrawerListener(toggle);
+            drawerLayout.addDrawerListener(toggle);
             toggle.syncState();
         }
     }
@@ -202,7 +244,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        RxDrawer.close(drawer).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(aVoid -> {
+        RxDrawer.close(drawerLayout).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(aVoid -> {
             switch (item.getItemId()) {
                 case R.id.nav_set:
                     Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
@@ -216,7 +258,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     startActivity(intentCity);
                     break;
                 case R.id.nav_multi_cities:
-                    mViewPager.setCurrentItem(1);
+                    viewPager.setCurrentItem(1);
                     break;
             }
         });
@@ -225,8 +267,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             if (!DoubleClickExit.check()) {
                 ToastUtil.showShort(getString(R.string.double_exit));
@@ -235,10 +277,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         }
     }
+
     protected boolean mIsHidden = false;
+
     public void hideOrShowToolbar() {
-        mTabLayout.animate()
-            .translationY(mIsHidden ? 0 : -mTabLayout.getHeight())
+        tabLayout.animate()
+            .translationY(mIsHidden ? 0 : -tabLayout.getHeight())
             .setInterpolator(new DecelerateInterpolator(2))
             .start();
         mIsHidden = !mIsHidden;

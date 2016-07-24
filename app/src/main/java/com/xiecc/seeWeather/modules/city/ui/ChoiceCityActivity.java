@@ -3,20 +3,23 @@ package com.xiecc.seeWeather.modules.city.ui;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.RxBus;
 import com.xiecc.seeWeather.base.ToolbarActivity;
+import com.xiecc.seeWeather.common.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.city.adapter.CityAdapter;
 import com.xiecc.seeWeather.modules.city.db.DBManager;
 import com.xiecc.seeWeather.modules.city.db.WeatherDB;
 import com.xiecc.seeWeather.modules.city.domain.City;
 import com.xiecc.seeWeather.modules.city.domain.Province;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
+import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import java.util.ArrayList;
 import java.util.List;
 import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
@@ -29,9 +32,6 @@ public class ChoiceCityActivity extends ToolbarActivity {
 
     private RecyclerView mRecyclerview;
     private ProgressBar mProgressBar;
-    private ImageView mIvErro;
-
-    private DBManager mDBManager;
 
     private ArrayList<String> dataList = new ArrayList<>();
     private Province selectedProvince;
@@ -40,10 +40,11 @@ public class ChoiceCityActivity extends ToolbarActivity {
     private List<City> cityList;
     private CityAdapter mAdapter;
 
-
     public static final int LEVEL_PROVINCE = 1;
     public static final int LEVEL_CITY = 2;
     private int currentLevel;
+
+    private boolean isChecked = false;
 
     @Override
     protected int provideContentViewId() {
@@ -61,24 +62,19 @@ public class ChoiceCityActivity extends ToolbarActivity {
         initView();
         addSubscription(
             Observable.defer(() -> {
-                mDBManager = new DBManager(ChoiceCityActivity.this);
-                mDBManager.openDatabase();
+                //mDBManager = new DBManager(ChoiceCityActivity.this);
+                DBManager.getInstance().openDatabase();
                 return Observable.just(1);
             }).compose(RxUtils.rxSchedulerHelper())
                 .subscribe(integer -> {
                     initRecyclerView();
                     queryProvinces();
                 }));
-
     }
-
-
-
 
     private void initView() {
         mRecyclerview = (RecyclerView) findViewById(R.id.recyclerview);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mIvErro = (ImageView) findViewById(R.id.iv_erro);
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -98,8 +94,13 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(pos);
-                mSharedPreferenceUtil.setCityName(selectedCity.CityName);
-                RxBus.getDefault().post(new ChangeCityEvent());
+
+                if (isChecked) {
+                    OrmLite.getInstance().save(new CityORM(selectedCity.CityName));
+                } else {
+                    mSharedPreferenceUtil.setCityName(selectedCity.CityName);
+                    RxBus.getDefault().post(new ChangeCityEvent());
+                }
                 finish();
             }
         });
@@ -112,7 +113,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
         getToolbar().setTitle("选择省份");
         addSubscription(Observable.defer(() -> {
             if (provincesList.isEmpty()) {
-                provincesList.addAll(WeatherDB.loadProvinces(mDBManager.getDatabase()));
+                provincesList.addAll(WeatherDB.loadProvinces(DBManager.getInstance().getDatabase()));
             }
             dataList.clear();
             return Observable.from(provincesList);
@@ -132,6 +133,25 @@ public class ChoiceCityActivity extends ToolbarActivity {
             ));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.multi_city_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.multi_check) {
+            if (isChecked) {
+                item.setChecked(false);
+            } else {
+                item.setChecked(true);
+            }
+            isChecked = item.isChecked();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * 查询选中省份的所有城市，从数据库查询
      */
@@ -140,7 +160,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
         dataList.clear();
         mAdapter.notifyDataSetChanged();
         addSubscription(Observable.defer(() -> {
-            cityList = WeatherDB.loadCities(mDBManager.getDatabase(), selectedProvince.ProSort);
+            cityList = WeatherDB.loadCities(DBManager.getInstance().getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
         })
             .map(city -> city.CityName)
@@ -169,6 +189,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDBManager.closeDatabase();
+
+        DBManager.getInstance().closeDatabase();
     }
 }

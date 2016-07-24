@@ -3,7 +3,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="multi_city">开启多城市</string>
     <string name="no_network">网络不好(˵¯͒⌢͗¯͒˵)</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="headerTxt">就看天气</string>
@@ -26,6 +26,7 @@
     <string name="double_exit">再按一次退出</string>
     <string name="complete">加载完毕，✺◟(∗❛ัᴗ❛ั∗)◞✺,</string>
     <string name="errorLocation">定位失败,加载默认城市</string>
+
     <string-array name="icons">
         <item>图标一</item>
         <item>图标二</item>

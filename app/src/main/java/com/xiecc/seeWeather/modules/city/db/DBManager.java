@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.common.PLog;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,37 +18,44 @@ import java.io.InputStream;
  * 数据库管理类
  */
 public class DBManager {
+
     private static String TAG = DBManager.class.getSimpleName();
     private final int BUFFER_SIZE = 400000;
     public static final String DB_NAME = "china_city.db"; //数据库名字
     public static final String PACKAGE_NAME = "com.xiecc.seeWeather";
     public static final String DB_PATH = "/data" + Environment.getDataDirectory().getAbsolutePath() + "/" +
-            PACKAGE_NAME;  //在手机里存放数据库的位置(/data/data/com.xiecc.seeWeather/china_city.db)
+        PACKAGE_NAME;  //在手机里存放数据库的位置(/data/data/com.xiecc.seeWeather/china_city.db)
     private SQLiteDatabase database;
     private Context context;
 
+    private static DBManager dbInstance = new DBManager();
 
+    public DBManager() {
+        if (null == dbInstance) {
+            dbInstance = new DBManager(BaseApplication.getmAppContext());
+        }
+    }
+
+    public static DBManager getInstance() {
+        return dbInstance;
+    }
 
     public DBManager(Context context) {
         this.context = context;
     }
 
-
     public SQLiteDatabase getDatabase() {
         return database;
     }
-
 
     public void setDatabase(SQLiteDatabase database) {
         this.database = database;
     }
 
-
     public void openDatabase() {
         //PLog.e(TAG, DB_PATH + "/" + DB_NAME);
         this.database = this.openDatabase(DB_PATH + "/" + DB_NAME);
     }
-
 
     @Nullable
     private SQLiteDatabase openDatabase(String dbfile) {
@@ -77,9 +85,10 @@ public class DBManager {
         return null;
     }
 
-
     public void closeDatabase() {
-        this.database.close();
+        if (this.database != null) {
+            this.database.close();
+        }
     }
 }
 

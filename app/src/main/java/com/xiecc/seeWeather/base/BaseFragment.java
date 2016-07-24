@@ -3,6 +3,8 @@ package com.xiecc.seeWeather.base;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -35,6 +37,13 @@ public abstract class BaseFragment extends Fragment {
         //第一个fragment会调用
         if (getUserVisibleHint()) {
             lazyLoad();
+        }
+    }
+
+    protected void safeSetTitle(String title) {
+        ActionBar appBarLayout = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (appBarLayout != null) {
+            appBarLayout.setTitle(title);
         }
     }
 }

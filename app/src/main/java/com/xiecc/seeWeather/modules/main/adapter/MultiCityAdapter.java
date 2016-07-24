@@ -49,16 +49,12 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
 
     @Override
     public void onBindViewHolder(MultiCityViewHolder holder, int position) {
-        //holder.invoke(mWeatherList.get(position));
+        holder.invoke(mWeatherList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        if (mWeatherList == null) {
-            return 0;
-        } else {
-            return mWeatherList.size();
-        }
+        return mWeatherList.size();
     }
 
     class MultiCityViewHolder extends RecyclerView.ViewHolder {
@@ -93,7 +89,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
             });
 
             //    默认背景是蓝色
-            switch (mWeather.now.hum) {
+            switch (mWeather.now.cond.txt) {
                 case "晴":
                     mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_sunny));
                     break;
@@ -101,6 +97,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                     mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_cloudy));
                     break;
                 default:
+                    mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_rainy));
                     break;
             }
         }

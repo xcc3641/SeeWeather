@@ -1,4 +1,4 @@
-package com.xiecc.seeWeather.base;
+package com.xiecc.seeWeather.component;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;

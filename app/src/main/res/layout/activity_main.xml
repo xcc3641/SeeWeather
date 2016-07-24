@@ -32,7 +32,6 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_favorite_24dp"
-            android:background="#FF4081"
             app:borderWidth="0dp"
             app:layout_anchor="@id/viewPager"
             app:layout_anchorGravity="end|bottom"

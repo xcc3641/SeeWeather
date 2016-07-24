@@ -22,7 +22,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
-import com.xiecc.seeWeather.base.RxBus;
+import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
@@ -42,8 +42,7 @@ import rx.android.schedulers.AndroidSchedulers;
  * GitHub: https://github.com/xcc3641
  * Info:
  */
-public class MainFragment extends BaseFragment implements
-    AMapLocationListener {
+public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     @Bind(R.id.recyclerview)
     RecyclerView mRecyclerview;
@@ -74,14 +73,28 @@ public class MainFragment extends BaseFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (view==null) {
-             view = inflater.inflate(R.layout.content_main, container, false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.content_main, container, false);
             ButterKnife.bind(this, view);
         }
-        initView();
         isCreateView = true;
         PLog.d("onCreateView");
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView();
+        // https://github.com/tbruyelle/RxPermissions
+        RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
+            .subscribe(granted -> {
+                if (granted) {
+                    location();
+                } else {
+                    load();
+                }
+            });
     }
 
     @Override
@@ -109,18 +122,6 @@ public class MainFragment extends BaseFragment implements
         mRecyclerview.setHasFixedSize(true);
         mAdapter = new WeatherAdapter(getActivity(), mWeather);
         mRecyclerview.setAdapter(mAdapter);
-
-        //mRecyclerview.addOnScrollListener(new HidingScrollListener() {
-        //    @Override
-        //    public void onHide() {
-        //        mActivity.hideOrShowToolbar();
-        //    }
-        //
-        //    @Override
-        //    public void onShow() {
-        //        mActivity.hideOrShowToolbar();
-        //    }
-        //});
 
     }
 
@@ -154,7 +155,8 @@ public class MainFragment extends BaseFragment implements
                 mWeather.now = weather.now;
                 mWeather.dailyForecast = weather.dailyForecast;
                 mWeather.hourlyForecast = weather.hourlyForecast;
-                mActivity.getToolbar().setTitle(weather.basic.city);
+                //mActivity.getToolbar().setTitle(weather.basic.city);
+                safeSetTitle(weather.basic.city);
                 mAdapter.notifyDataSetChanged();
             }
         };
@@ -180,15 +182,6 @@ public class MainFragment extends BaseFragment implements
             }).subscribe(observer);
     }
 
-    /**
-     * 从本地获取
-     */
-    //private Observable<Weather> fetchDataByCache() {
-    //    return Observable.defer(() -> {
-    //        Weather weather = (Weather) aCache.getAsObject(C.WEATHER_CACHE);
-    //        return Observable.just(weather);
-    //    });
-    //}
 
     /**
      * 从网络获取
@@ -267,16 +260,7 @@ public class MainFragment extends BaseFragment implements
      */
     @Override
     protected void lazyLoad() {
-        // https://github.com/tbruyelle/RxPermissions
-        RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-            .subscribe(granted -> {
-                if (granted) {
-                    location();
-                } else {
-                    load();
-                }
-            });
-
         initDataObserver();
     }
+
 }

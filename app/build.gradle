@@ -63,6 +63,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:24.0.0'
     compile 'com.android.support:support-v4:24.0.0'
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
+
     // Rx
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
