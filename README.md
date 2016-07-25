@@ -286,7 +286,7 @@ private void load() {
 
 
 ### 截图
-![][image-1]
+
 ![][image-2]
 ![][image-3]
 
@@ -315,13 +315,13 @@ private void load() {
 
 个人博客： http://IMXIE.CC
 
-
+<!-- 
 ### 请我喝杯咖啡
 
 ----
 
 ![][image-5]
-----
+---- -->
 
 ### LICENSE
 
@@ -353,8 +353,8 @@ Unless required by applicable law or agreed to in writing, software distributed 
 [13]:	https://github.com/Jude95
 [14]:	http://weibo.com/u/2711441293?topnav=1&wvr=6&topsug=1&is_all=1
 
-[image-1]:	http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E9%97%AA%E5%B1%8F.png
-[image-2]:	http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E7%99%BD%E5%A4%A9%E6%A8%A1%E5%BC%8F.png
-[image-3]:	http://xcc3641.qiniudn.com/app-%E5%B0%B1%E7%9C%8B%E5%A4%A9%E6%B0%94-%E5%A4%9C%E6%99%9A%E6%A8%A1%E5%BC%8F.png
+
+[image-2]:	/images/day.png
+[image-3]:	/images/night.png
 [image-4]:	http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg
 [image-5]:	http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg
