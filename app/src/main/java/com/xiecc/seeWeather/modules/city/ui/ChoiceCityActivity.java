@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,10 +9,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.ToolbarActivity;
 import com.xiecc.seeWeather.common.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
+import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.city.adapter.CityAdapter;
 import com.xiecc.seeWeather.modules.city.db.DBManager;
@@ -20,10 +24,12 @@ import com.xiecc.seeWeather.modules.city.domain.City;
 import com.xiecc.seeWeather.modules.city.domain.Province;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
+import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
 import java.util.ArrayList;
 import java.util.List;
 import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
 import rx.Observable;
+import rx.functions.Action0;
 
 /**
  * Created by hugo on 2016/2/19 0019.
@@ -70,6 +76,8 @@ public class ChoiceCityActivity extends ToolbarActivity {
                     initRecyclerView();
                     queryProvinces();
                 }));
+        Intent intent = getIntent();
+        isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false);
     }
 
     private void initView() {
@@ -93,12 +101,14 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 mRecyclerview.smoothScrollToPosition(0);
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
-                selectedCity = cityList.get(pos);
-
+                String city = Util.replaceCity(cityList.get(pos).CityName);
                 if (isChecked) {
-                    OrmLite.getInstance().save(new CityORM(selectedCity.CityName));
+                    OrmLite.getInstance().save(new CityORM(city));
+                    OrmLite.OrmTest(CityORM.class);
+                    RxBus.getDefault().post(new MultiUpdate());
+                    PLog.d("是多城市管理模式");
                 } else {
-                    mSharedPreferenceUtil.setCityName(selectedCity.CityName);
+                    mSharedPreferenceUtil.setCityName(city);
                     RxBus.getDefault().post(new ChangeCityEvent());
                 }
                 finish();
@@ -124,13 +134,19 @@ public class ChoiceCityActivity extends ToolbarActivity {
             .toList()
             .compose(RxUtils.rxSchedulerHelper())
             .doOnTerminate(() -> mProgressBar.setVisibility(View.GONE))
-            .subscribe(
-                province -> dataList.addAll(province)
-                , throwable -> PLog.e(throwable.toString()), () -> {
+            .doOnCompleted(new Action0() {
+                @Override
+                public void call() {
                     currentLevel = LEVEL_PROVINCE;
                     mAdapter.notifyDataSetChanged();
                 }
-            ));
+            })
+            .subscribe(new SimpleSubscriber<List<String>>() {
+                @Override
+                public void onNext(List<String> strings) {
+                    dataList.addAll(strings);
+                }
+            }));
     }
 
     @Override
@@ -166,12 +182,20 @@ public class ChoiceCityActivity extends ToolbarActivity {
             .map(city -> city.CityName)
             .toList()
             .compose(RxUtils.rxSchedulerHelper())
-            .subscribe(city -> dataList.addAll(city), throwable -> {
-            }, () -> {
-                currentLevel = LEVEL_CITY;
-                mAdapter.notifyDataSetChanged();
-                //定位到第一个item
-                mRecyclerview.smoothScrollToPosition(0);
+            .doOnCompleted(new Action0() {
+                @Override
+                public void call() {
+                    currentLevel = LEVEL_CITY;
+                    mAdapter.notifyDataSetChanged();
+                    //定位到第一个item
+                    mRecyclerview.smoothScrollToPosition(0);
+                }
+            })
+            .subscribe(new SimpleSubscriber<List<String>>() {
+                @Override
+                public void onNext(List<String> strings) {
+                    dataList.addAll(strings);
+                }
             }));
     }
 
@@ -189,7 +213,6 @@ public class ChoiceCityActivity extends ToolbarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         DBManager.getInstance().closeDatabase();
     }
 }

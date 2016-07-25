@@ -32,6 +32,11 @@ import java.util.List;
 public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.MultiCityViewHolder> {
     private Context mContext;
     private List<Weather> mWeatherList;
+    private onMultiCityLongClick onMultiCityLongClick = null;
+
+    public void setOnMultiCityLongClick(onMultiCityLongClick onMultiCityLongClick) {
+        this.onMultiCityLongClick = onMultiCityLongClick;
+    }
 
     public MultiCityAdapter(Context context) {
         mContext = context;
@@ -50,6 +55,13 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
     @Override
     public void onBindViewHolder(MultiCityViewHolder holder, int position) {
         holder.invoke(mWeatherList.get(position));
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onMultiCityLongClick.longClick(mWeatherList.get(holder.getAdapterPosition()).basic.city);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -65,8 +77,6 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         ImageView mDialogIcon;
         @Bind(R.id.dialog_temp)
         TextView mDialogTemp;
-        //@Bind(R.id.weather_dialog_root)
-        //RelativeLayout mWeatherDialogRoot;
         @Bind(R.id.cardView)
         CardView mCardView;
 
@@ -76,6 +86,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         }
 
         public void invoke(Weather mWeather) {
+
             mDialogCity.setText(Util.safeText(mWeather.basic.city));
             mDialogTemp.setText(String.format("%s", mWeather.now.tmp));
 
@@ -101,5 +112,9 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                     break;
             }
         }
+    }
+
+    public interface onMultiCityLongClick {
+        void longClick(String city);
     }
 }

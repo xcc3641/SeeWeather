@@ -25,6 +25,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
@@ -110,7 +111,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mHomePagerAdapter.addTab(new MultiCityFragment(), "多城市");
         viewPager.setAdapter(mHomePagerAdapter);
         tabLayout.setupWithViewPager(viewPager, false);
-        viewPager.setOffscreenPageLimit(2);
+        //viewPager.setOffscreenPageLimit(2);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -126,7 +127,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            CircularAnimUtil.startActivity(MainActivity.this, ChoiceCityActivity.class, fab,
+
+                            Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
+                            intent.putExtra(C.MULTI_CHECK, true);
+                            CircularAnimUtil.startActivity(MainActivity.this, intent, fab,
                                 R.color.colorPrimary);
                         }
                     });
@@ -221,20 +225,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             })
             .show();
     }
-    // TODO: 16/7/8 波澜效果 与 抽屉 状态栏会有冲突 实现效果不佳
-    //private void showRevealAnim() {
-    //    RevealAnimUtil.animateRevealShow(this, findViewById(R.id.bg1), fab, fab.getWidth() / 2, R.color.colorSunrise,
-    //        new RevealAnimUtil.OnRevealAnimationListener() {
-    //            @Override
-    //            public void onRevealHide() {
-    //            }
-    //
-    //            @Override
-    //            public void onRevealShow() {
-    //                startActivity(new Intent(MainActivity.this, SettingActivity.class));
-    //            }
-    //        });
-    //}
 
     /**
      * Called when an item in the navigation menu is selected.

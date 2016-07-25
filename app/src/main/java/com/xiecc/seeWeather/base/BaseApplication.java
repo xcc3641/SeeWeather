@@ -3,8 +3,6 @@ package com.xiecc.seeWeather.base;
 import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
-import com.github.moduth.blockcanary.BlockCanary;
-import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
@@ -33,8 +31,9 @@ public class BaseApplication extends Application {
         if (!BuildConfig.DEBUG) {
             CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
         }
-        BlockCanary.install(this, new AppBlockCanaryContext()).start();
-        LeakCanary.install(this);
+        //BlockCanary.install(this, new AppBlockCanaryContext()).start();
+        //LeakCanary.install(this);
+
         //RxUtils.unifiedErrorHandler();
         //Thread.setDefaultUncaughtExceptionHandler(new MyUnCaughtExceptionHandler());
         /**

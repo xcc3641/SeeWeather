@@ -21,7 +21,9 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.BaseFragment;
+import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
@@ -102,13 +104,13 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         super.onCreate(savedInstanceState);
         PLog.d("onCreate");
         RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-            changeCityEvent -> {
-                mSwiprefresh.setRefreshing(true);
-                load();
-                PLog.d("MainRxBus");
-            }, throwable -> {
-                PLog.e(throwable.getMessage())
-                ;
+            new SimpleSubscriber<ChangeCityEvent>() {
+                @Override
+                public void onNext(ChangeCityEvent changeCityEvent) {
+                    mSwiprefresh.setRefreshing(true);
+                    load();
+                    PLog.d("MainRxBus");
+                }
             });
     }
 
@@ -122,7 +124,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         mRecyclerview.setHasFixedSize(true);
         mAdapter = new WeatherAdapter(getActivity(), mWeather);
         mRecyclerview.setAdapter(mAdapter);
-
     }
 
     /**
@@ -162,10 +163,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         };
     }
 
-    /**
-     * 优化网络+缓存逻辑
-     * 优先网络
-     */
     private void load() {
         fetchDataByNetWork()
             .doOnError(throwable -> {
@@ -182,7 +179,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             }).subscribe(observer);
     }
 
-
     /**
      * 从网络获取
      */
@@ -191,7 +187,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         return RetrofitSingleton.getInstance()
             .fetchWeather(cityName)
             .onErrorReturn(throwable -> {
-                PLog.e(throwable.getMessage());
                 ToastUtil.showLong(throwable.getMessage());
                 return null;
             });
@@ -202,7 +197,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
      */
     private void location() {
         //初始化定位
-        mLocationClient = new AMapLocationClient(mActivity.getApplicationContext());
+        mLocationClient = new AMapLocationClient(BaseApplication.getmAppContext());
         //设置定位回调监听
         mLocationClient.setLocationListener(this);
         mLocationOption = new AMapLocationClientOption();
@@ -234,9 +229,11 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             if (aMapLocation.getErrorCode() == 0) {
                 //定位成功回调信息，设置相关消息
                 aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                mActivity.mSharedPreferenceUtil.setCityName(aMapLocation.getCity());
+                mActivity.mSharedPreferenceUtil.setCityName(Util.replaceCity(aMapLocation.getCity()));
             } else {
-                ToastUtil.showShort(getString(R.string.errorLocation));
+                if (isAdded()) {
+                    ToastUtil.showShort(getString(R.string.errorLocation));
+                }
             }
             load();
         }
@@ -262,5 +259,4 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     protected void lazyLoad() {
         initDataObserver();
     }
-
 }
