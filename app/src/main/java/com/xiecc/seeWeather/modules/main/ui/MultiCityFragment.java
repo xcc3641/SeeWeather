@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.litesuits.orm.db.assit.WhereBuilder;
@@ -46,6 +47,8 @@ public class MultiCityFragment extends BaseFragment {
     RecyclerView mRecyclerview;
     @Bind(R.id.swiprefresh)
     SwipeRefreshLayout mSwiprefresh;
+    @Bind(R.id.empty)
+    LinearLayout linearLayout;
 
     private MultiCityAdapter mAdatper;
     private List<Weather> weatherArrayList;
@@ -133,7 +136,6 @@ public class MultiCityFragment extends BaseFragment {
     }
 
     private void multiLoad() {
-        PLog.d("multi——load");
         weatherArrayList.clear();
         Observable.defer(new Func0<Observable<CityORM>>() {
             @Override
@@ -153,6 +155,7 @@ public class MultiCityFragment extends BaseFragment {
                 }
             })
             .distinct()
+            .take(3)
             .flatMap(new Func1<String, Observable<Weather>>() {
                 @Override
                 public Observable<Weather> call(String s) {
@@ -164,8 +167,12 @@ public class MultiCityFragment extends BaseFragment {
                 public void onCompleted() {
                     mAdatper.notifyDataSetChanged();
                     PLog.d("complete" + weatherArrayList.size() + "");
+                    if (weatherArrayList.isEmpty()) {
+                        linearLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        linearLayout.setVisibility(View.GONE);
+                    }
                 }
-
                 @Override
                 public void onError(Throwable e) {
 

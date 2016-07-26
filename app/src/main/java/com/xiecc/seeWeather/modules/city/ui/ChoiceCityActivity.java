@@ -1,7 +1,9 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -14,6 +16,7 @@ import com.xiecc.seeWeather.base.ToolbarActivity;
 import com.xiecc.seeWeather.common.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RxBus;
@@ -78,6 +81,9 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 }));
         Intent intent = getIntent();
         isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false);
+        if (isChecked && SharedPreferenceUtil.getInstance().getBoolean("Tips", true)) {
+            showTips();
+        }
     }
 
     private void initView() {
@@ -152,6 +158,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.multi_city_menu, menu);
+        menu.getItem(0).setChecked(isChecked);
         return true;
     }
 
@@ -214,5 +221,21 @@ public class ChoiceCityActivity extends ToolbarActivity {
     protected void onDestroy() {
         super.onDestroy();
         DBManager.getInstance().closeDatabase();
+    }
+
+    private void showTips() {
+        new AlertDialog.Builder(this).setTitle("多城市管理模式").setMessage("您现在是多城市管理模式,直接点击即可新增城市.如果暂时不需要添加,"
+            + "在右上选项中关闭即可像往常一样操作.\n因为 api 次数限制的影响,多城市列表最多三个城市.(๑′ᴗ‵๑)"
+        ).setPositiveButton("明白", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).setNegativeButton("不再提示", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferenceUtil.getInstance().putBoolean("Tips", false);
+            }
+        }).show();
     }
 }

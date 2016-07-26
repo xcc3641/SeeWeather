@@ -19,15 +19,20 @@ import android.widget.TextView;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.common.ACache;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.FileSizeUtil;
+import com.xiecc.seeWeather.common.utils.FileUtil;
+import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
+import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
+import java.io.File;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by hugo on 2016/2/19 0019.
- * todo 设置 点击是否展示 dialog
+ *
  */
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
     private static String TAG = SettingFragment.class.getSimpleName();
@@ -39,7 +44,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private SwitchPreference mNotificationType;
 
     private ACache mACache;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,15 +62,12 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         mChangeUpdate.setSummary(
             mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
-        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
-
+        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/NetCache"));
 
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
         mClearCache.setOnPreferenceClickListener(this);
         mNotificationType.setOnPreferenceClickListener(this);
-
-
     }
 
     @Override
@@ -76,15 +77,25 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         } else if (mClearCache == preference) {
             mACache.clear();
             ImageLoader.clear(getActivity());
-            mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/Data"));
-            Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
+            Observable.just(FileUtil.delete(new File(BaseApplication.cacheDir + "/NetCache")))
+                .filter(new Func1<Boolean, Boolean>() {
+                    @Override
+                    public Boolean call(Boolean aBoolean) {
+                        return aBoolean;
+                    }
+                }).compose(RxUtils.rxSchedulerHelper()).subscribe(new SimpleSubscriber<Boolean>() {
+                @Override
+                public void onNext(Boolean aBoolean) {
+                    mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/NetCache"));
+                    Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
+                }
+            });
         } else if (mChangeUpdate == preference) {
             showUpdateDialog();
         } else if (mNotificationType == preference) {
             mNotificationType.setChecked(mNotificationType.isChecked());
             mSharedPreferenceUtil.setNotificationModel(
                 mNotificationType.isChecked() ? Notification.FLAG_AUTO_CANCEL : Notification.FLAG_ONGOING_EVENT);
-            PLog.i(mSharedPreferenceUtil.getAutoUpdate() + "");
         }
         return false;
     }
@@ -107,8 +118,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         radioTypeTwo.setClickable(false);
 
         alertDialog.show();
-
-
 
         switch (mSharedPreferenceUtil.getIconType()) {
             case 0:
@@ -145,7 +154,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     getActivity().startActivity(intent);
                 }).show();
-
         });
     }
 
@@ -164,14 +172,13 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         mSeekBar.setMax(24);
         mSeekBar.setProgress(mSharedPreferenceUtil.getAutoUpdate());
-        tvShowHour.setText(String.format("每%s小时",mSeekBar.getProgress()));
+        tvShowHour.setText(String.format("每%s小时", mSeekBar.getProgress()));
         alertDialog.show();
-
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvShowHour.setText(String.format("每%s小时",mSeekBar.getProgress()));
+                tvShowHour.setText(String.format("每%s小时", mSeekBar.getProgress()));
             }
 
             @Override

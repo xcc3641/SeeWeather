@@ -8,4 +8,22 @@
     <color name="colorSunset">#201D45</color>
 
     <color name="textHint">#8C8C8C</color>
+
+    <!--多城市列表和卡片配色-->
+    <color name="multi_text">#C1C1C1</color>
+    <color name="multi_content">#696969</color>
+
+    <color name="sunnyText">#A88418</color>
+    <color name="sunny">#FFE498</color>
+    <color name="sunnyDark">#FFC000</color>
+
+    <color name="cloudyText">#728288</color>
+    <color name="cloudy">#D2E0E6</color>
+    <color name="cloudyDark">#A4BCC6</color>
+
+    <color name="rainyText">#035E8E</color>
+    <color name="rainy">#B2E8FE</color>
+    <color name="rainyDark">#58D2FA</color>
+
+
 </resources>

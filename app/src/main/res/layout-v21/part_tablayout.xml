@@ -18,7 +18,8 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        app:tabIndicatorColor="@color/colorAccent"
+        app:tabIndicatorColor="@android:color/white"
+        app:tabIndicatorHeight="4dp"
         />
 
 </android.support.design.widget.AppBarLayout>

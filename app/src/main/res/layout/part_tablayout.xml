@@ -14,8 +14,9 @@
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_scrollFlags="scroll|enterAlways"
+        app:tabIndicatorColor="@android:color/white"
+        app:tabIndicatorHeight="4dp"/>
 
-        />
     <android.support.design.widget.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"

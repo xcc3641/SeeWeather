@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
@@ -88,7 +89,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         public void invoke(Weather mWeather) {
 
             mDialogCity.setText(Util.safeText(mWeather.basic.city));
-            mDialogTemp.setText(String.format("%s", mWeather.now.tmp));
+            mDialogTemp.setText(String.format("%s°", mWeather.now.tmp));
 
             Glide.with(mContext).load(SharedPreferenceUtil.getInstance().getInt(mWeather.now.cond.txt, R.mipmap.none
             )).asBitmap().into(new SimpleTarget<Bitmap>() {
@@ -99,18 +100,16 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                 }
             });
 
-            //    默认背景是蓝色
-            switch (mWeather.now.cond.txt) {
-                case "晴":
-                    mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_sunny));
-                    break;
-                case "雨":
-                    mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_cloudy));
-                    break;
-                default:
-                    mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_rainy));
-                    break;
+            int code = Integer.valueOf(mWeather.now.cond.code);
+            if (code == 100) {
+                mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_sunny));
+            } else if (code >= 300 && code < 408) {
+                mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_rainy));
+            } else {
+                mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_cloudy));
             }
+
+            PLog.d(mWeather.now.cond.txt+" "+mWeather.now.cond.code);
         }
     }
 

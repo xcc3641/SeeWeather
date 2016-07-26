@@ -46,8 +46,5 @@
         <Preference
             android:summary="图片素材来源于网络，版权属于原作者"
             android:title="素材来源"/>
-        <Preference
-            android:summary="@string/license"
-            android:title="License"/>
     </PreferenceCategory>
 </PreferenceScreen>

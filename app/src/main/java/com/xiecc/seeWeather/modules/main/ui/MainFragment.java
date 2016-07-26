@@ -23,6 +23,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.BaseFragment;
+import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.common.PLog;
@@ -87,6 +88,9 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        CheckVersion.checkVersion(getActivity());
+
         initView();
         // https://github.com/tbruyelle/RxPermissions
         RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -102,6 +106,8 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         PLog.d("onCreate");
         RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
             new SimpleSubscriber<ChangeCityEvent>() {
@@ -168,6 +174,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             .doOnError(throwable -> {
                 mIvErro.setVisibility(View.VISIBLE);
                 mRecyclerview.setVisibility(View.GONE);
+                mSwiprefresh.setRefreshing(false);
             })
             .doOnNext(weather -> {
                 mIvErro.setVisibility(View.GONE);
@@ -258,5 +265,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     @Override
     protected void lazyLoad() {
         initDataObserver();
+
     }
 }

@@ -37,7 +37,6 @@ public class SharedPreferenceUtil {
         //mPrefs.edit().putInt(CHANGE_ICONS, 1).apply();
     }
 
-
     public SharedPreferenceUtil putInt(String key, int value) {
         mPrefs.edit().putInt(key, value).apply();
         return this;
@@ -56,13 +55,22 @@ public class SharedPreferenceUtil {
         return mPrefs.getString(key, defValue);
     }
 
+    public SharedPreferenceUtil putBoolean(String key, boolean value) {
+        mPrefs.edit().putBoolean(key, value).apply();
+        return this;
+    }
+
+    public boolean getBoolean(String key, boolean defValue) {
+        return mPrefs.getBoolean(key, defValue);
+    }
 
     // 设置当前小时
-    public void setCurrentHour(int h){
-        mPrefs.edit().putInt(HOUR,h).apply();
+    public void setCurrentHour(int h) {
+        mPrefs.edit().putInt(HOUR, h).apply();
     }
-    public int getCurrentHour(){
-        return mPrefs.getInt(HOUR,0);
+
+    public int getCurrentHour() {
+        return mPrefs.getInt(HOUR, 0);
     }
 
     // 图标种类相关
@@ -88,15 +96,16 @@ public class SharedPreferenceUtil {
         mPrefs.edit().putString(CITY_NAME, name).apply();
     }
 
-    public String getCityName() {return mPrefs.getString(CITY_NAME, "北京");}
+    public String getCityName() {
+        return mPrefs.getString(CITY_NAME, "北京");
+    }
 
     //  通知栏模式 默认为常驻
     public void setNotificationModel(int t) {
         mPrefs.edit().putInt(NOTIFICATION_MODEL, t).apply();
     }
+
     public int getNotificationModel() {
         return mPrefs.getInt(NOTIFICATION_MODEL, Notification.FLAG_AUTO_CANCEL);
     }
-
-
 }

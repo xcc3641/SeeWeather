@@ -25,17 +25,9 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: 16/7/15 自动更换主题 可设置
-        if (savedInstanceState==null){
-            //Calendar calendar = Calendar.getInstance();
-            //int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            setTheme(this);
-        }
         aCache = ACache.get(getApplication());
         mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
-
         setStatusBarColorForKitkat(R.color.colorSunrise);
-
     }
 
     public CompositeSubscription getCompositeSubscription() {

@@ -9,16 +9,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 
 /**
  * Created by hugo on 2016/2/20 0020.
+ * 
  */
+// TODO: 16/7/26 需要一个可爱迷人的关于页面 
 public class AboutFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
 
     //private AboutActivity mActivity;
@@ -42,7 +43,6 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
     private Preference mBolg;
     private Preference mGithub;
     private Preference mEmail;
-
 
     //@Override public void onAttach(Context context) {
     //    super.onAttach(context);
@@ -92,11 +92,10 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
             sharingIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_txt));
             startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_app)));
         } else if (mStar == preference) {
-
             new AlertDialog.Builder(getActivity()).setTitle("点赞")
                 .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
                 .setNegativeButton("复制", (dialog, which) -> {
-                    copyToClipboard(getView(), getActivity().getResources()
+                    copyToClipboard(getActivity().getResources()
                         .getString(
                             R.string.app_html));
                 })
@@ -119,36 +118,39 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
             new AlertDialog.Builder(getActivity()).setTitle("请作者喝杯咖啡？(〃ω〃)")
                 .setMessage("点击按钮后，作者支付宝账号将会复制到剪切板，" + "你就可以使用支付宝转账给作者啦( •̀ .̫ •́ )✧")
                 .setPositiveButton("好叻", (dialog, which) -> {
-                    copyToClipboard(getView(), getActivity().getResources()
+                    copyToClipboard(getActivity().getResources()
                         .getString(
                             R.string.alipay));
+                    try {
+                        Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage("com.alipay.android.app");
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        ToastUtil.showShort("未找到应用");
+                    }
                 })
                 .show();
         } else if (mBolg == preference) {
-            //copyToClipboard(getView(), mBolg.getSummary().toString());
             goToWebFragment(mBolg.getSummary().toString());
         } else if (mGithub == preference) {
-            //copyToClipboard(getView(), mGithub.getSummary().toString());
             goToWebFragment(mGithub.getSummary().toString());
         } else if (mEmail == preference) {
-            copyToClipboard(getView(), mEmail.getSummary().toString());
+            copyToClipboard(mEmail.getSummary().toString());
         } else if (mCheckVersion == preference) {
-            //Snackbar.make(getView(), "正在检查(σﾟ∀ﾟ)σ", Snackbar.LENGTH_SHORT).show();
-            CheckVersion.checkVersion(getActivity());
+            CheckVersion.checkVersion(getActivity(), true);
         }
         return false;
     }
 
     //复制黏贴板
-    private void copyToClipboard(View view, String info) {
+    private void copyToClipboard(String info) {
         ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("msg", info);
         manager.setPrimaryClip(clipData);
-        Snackbar.make(view, "已经复制到剪切板啦( •̀ .̫ •́ )✧", Snackbar.LENGTH_SHORT).show();
+        ToastUtil.showShort("已经复制到剪切板啦( •̀ .̫ •́ )✧");
     }
 
     private void goToWebFragment(String url) {
-       WebviewFragment webviewFragment = new WebviewFragment();
+        WebviewFragment webviewFragment = new WebviewFragment();
         Bundle bundle = new Bundle();
         bundle.putString("url", url);
         webviewFragment.setArguments(bundle);

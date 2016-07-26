@@ -27,7 +27,6 @@ import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
 import com.xiecc.seeWeather.common.utils.RxDrawer;
@@ -66,7 +65,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDrawer();
         initIcon();
         startService(new Intent(this, AutoUpdateService.class));
-        CheckVersion.checkVersion(this);
+
     }
 
     @Override
@@ -135,7 +134,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         }
                     });
                 } else {
-                    fab.setImageResource(R.drawable.ic_favorite_24dp);
+                    fab.setImageResource(R.drawable.ic_favorite);
                     fab.setBackgroundTintList(
                         ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
                     fab.setOnClickListener(new View.OnClickListener() {

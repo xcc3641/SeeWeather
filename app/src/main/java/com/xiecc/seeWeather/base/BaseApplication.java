@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatDelegate;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
-import com.xiecc.seeWeather.component.RetrofitSingleton;
 
 /**
  * Created by xcc on 2015/12/16.
@@ -25,8 +24,6 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mAppContext = getApplicationContext();
-        // 初始化 retrofit
-        RetrofitSingleton.init();
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         if (!BuildConfig.DEBUG) {
             CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
@@ -52,5 +49,9 @@ public class BaseApplication extends Application {
 
     public static Context getmAppContext() {
         return mAppContext;
+    }
+
+    public static String getCachedir(){
+        return cacheDir;
     }
 }

@@ -36,10 +36,14 @@ public class RetrofitSingleton {
     private static Retrofit retrofit = null;
     private static OkHttpClient okHttpClient = null;
 
-    public static void init() {
+    private void init() {
         initOkHttp();
         initRetrofit();
         apiService = retrofit.create(ApiInterface.class);
+    }
+
+    private RetrofitSingleton() {
+        init();
     }
 
     public static RetrofitSingleton getInstance() {
@@ -51,15 +55,15 @@ public class RetrofitSingleton {
     }
 
     private static void initOkHttp() {
-        OkHttpClient.Builder builder = new  OkHttpClient.Builder();
-        if (BuildConfig.DEBUG){
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        if (BuildConfig.DEBUG) {
             // https://drakeet.me/retrofit-2-0-okhttp-3-0-config
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
             builder.addInterceptor(loggingInterceptor);
         }
         // 缓存 http://www.jianshu.com/p/93153b34310e
-        File cacheFile = new File(BaseApplication.getmAppContext().getExternalCacheDir(), "SeeWeatherCache");
+        File cacheFile = new File(BaseApplication.cacheDir,"/NetCache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
         Interceptor cacheInterceptor = chain -> {
             Request request = chain.request();
@@ -92,7 +96,6 @@ public class RetrofitSingleton {
         //错误重连
         builder.retryOnConnectionFailure(true);
         okHttpClient = builder.build();
-
     }
 
     private static void initRetrofit() {

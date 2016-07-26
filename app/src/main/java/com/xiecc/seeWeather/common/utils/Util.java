@@ -123,6 +123,9 @@ public class Util {
     }
 
     public static String safeText(String msg) {
+        if (msg == null) {
+            return "";
+        }
         return safeText("", msg);
     }
 
@@ -208,6 +211,4 @@ public class Util {
             .deviceHasKey(KeyEvent.KEYCODE_BACK);
         return !hasMenuKey && !hasBackKey;
     }
-
-
 }

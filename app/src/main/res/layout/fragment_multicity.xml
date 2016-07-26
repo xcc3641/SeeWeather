@@ -15,4 +15,32 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/empty"/>
+
+        <TextView
+            android:textColor="@color/cloudyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="你还没有添加城市噢 (´･_･`)"
+            />
+
+    </LinearLayout>
+
+
 </RelativeLayout>
