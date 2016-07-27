@@ -72,7 +72,7 @@ v2.1.3
 v2.1
 - 修复 定位逻辑
 - 优化 SP的统一化
-- 优化 ERRO界面
+- 优化 Error界面
 - 更新 新的天气 ICON
 - 更新 通知栏提醒（后台可能需要白名单，不然无法自动更新）
 - 设置 自动更新频率（0 为不自动更新）
@@ -99,9 +99,10 @@ v1.0
 - [ ] 桌面小部件
 - [x] 通知栏提醒
 - [x] 更好，更多的天气ICONS
-- [ ] 管理城市（多城市选择）
+- [x] 管理城市（多城市选择）
 - [x] 自动定位
 - [ ] 自由定制的Item界面
+- [ ] 引导页面
 
 
 
@@ -126,9 +127,11 @@ v1.0
 #### 代码
 
 ##### 网络
+
 Update 7.11:
 
 因为天气软件请求比较单一，没必要用其他的缓存，可以直接用 okhttp 网络缓存。
+
 ```java
 File cacheFile = new File(BaseApplication.getmAppContext().getExternalCacheDir(), "SeeWeatherCache");
 Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
@@ -160,9 +163,7 @@ builder.cache(cache).addInterceptor(cacheInterceptor);
 设置好缓存地址，设置好 header 即可实现缓存。
 - - -
 
-其他缓存思路：
 
-就看天气的网络部分的支持是用`RxJava+RxAndroid+Retrofit+Gson`再加上`ACache`缓存
 
 网络部分：
 配合 RetrofitSingleton 中封装的方法：
@@ -224,9 +225,6 @@ private void load() {
             .doOnError(throwable -> {
                 mErroImageView.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
-                Snackbar.make(fab, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
-                    load();
-                }).show();
             })
             .doOnNext(weather -> {
                 mErroImageView.setVisibility(View.GONE);
