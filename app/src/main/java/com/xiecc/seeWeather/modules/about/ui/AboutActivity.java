@@ -37,10 +37,10 @@ public class AboutActivity extends BaseActivity {
     Button btPay;
     @Bind(R.id.bt_share)
     Button btShare;
-    @Bind(R.id.bt_blog_home)
-    Button btBlogHome;
     @Bind(R.id.bt_update)
     Button btUpdate;
+    @Bind(R.id.bt_bug)
+    Button btBug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class AboutActivity extends BaseActivity {
         }
     }
 
-    @OnClick({ R.id.bt_code, R.id.bt_blog, R.id.bt_pay, R.id.bt_share, R.id.bt_blog_home, R.id.bt_update })
+    @OnClick({ R.id.bt_code, R.id.bt_blog, R.id.bt_pay, R.id.bt_share, R.id.bt_bug, R.id.bt_update })
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_code:
@@ -87,8 +87,8 @@ public class AboutActivity extends BaseActivity {
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_txt));
                 startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_app)));
                 break;
-            case R.id.bt_blog_home:
-                goToHtml("http://imxie.cc/about/");
+            case R.id.bt_bug:
+                goToHtml(getString(R.string.bugTableUrl));
                 break;
             case R.id.bt_update:
                 CheckVersion.checkVersion(this, true);

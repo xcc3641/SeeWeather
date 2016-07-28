@@ -154,17 +154,18 @@
             <Button
                 android:paddingEnd="12dp"
                 android:paddingStart="12dp"
-                android:id="@+id/bt_blog_home"
+                android:id="@+id/bt_bug"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:drawablePadding="12dp"
-                android:drawableStart="@drawable/mine"
+                android:drawableStart="@drawable/bug"
                 android:gravity="start|center_vertical"
-                android:text="想要联系作者"
+                android:text="意见错误反馈"
                 android:textColor="@color/defaultTextColor"
                 tools:targetApi="lollipop"/>
+
         </GridLayout>
 
 

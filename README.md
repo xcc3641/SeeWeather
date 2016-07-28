@@ -50,6 +50,7 @@
 ```
 
 ### 版本更新&&下载地址
+
 Fir.im: http://fir.im/seeWeather
 
 酷安市场：http://www.coolapk.com/apk/com.xiecc.seeWeather
@@ -57,6 +58,13 @@ Fir.im: http://fir.im/seeWeather
 豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
 
 魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
+
+v2.2
+- 新增 多城市管理
+- 新增 Bug反馈和意见
+- 改版 首页UI 更丰富
+- 美化 关于页面
+- 美化 部分图标
 
 v2.1.6
 - 更新 RxUtil
@@ -87,9 +95,6 @@ v2.0
 - 缓存数据，减少网络请求，保证离线查看
 - 内置两套图标（设置里更改）
 
-v1.0
-- 就看天气V1.0
-- @图片和信息来源于网络，侵权删
 
 
 
