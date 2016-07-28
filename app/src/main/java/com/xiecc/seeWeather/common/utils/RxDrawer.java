@@ -18,7 +18,7 @@ public class RxDrawer {
 
     private static final float OFFSET_THRESHOLD = 0.01f;
 
-    public static Observable<Void> close(DrawerLayout drawer) {
+    public static Observable<Void> close(final DrawerLayout drawer) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {

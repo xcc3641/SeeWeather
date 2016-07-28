@@ -3,6 +3,7 @@ package com.xiecc.seeWeather.modules.main.ui;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 
@@ -77,7 +79,6 @@ public class MultiCityFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         RxBus.getDefault().toObserverable(MultiUpdate.class).subscribe(new SimpleSubscriber<MultiUpdate>() {
             @Override
             public void onNext(MultiUpdate multiUpdate) {
@@ -106,8 +107,15 @@ public class MultiCityFragment extends BaseFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
                             OrmLite.OrmTest(CityORM.class);
-                            mSwiprefresh.setRefreshing(true);
                             multiLoad();
+                            Snackbar.make(getView(), "已经将" + city + "删掉了 Ծ‸ Ծ", Snackbar.LENGTH_LONG).setAction("撤销",
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        OrmLite.getInstance().save(new CityORM(city));
+                                        multiLoad();
+                                    }
+                                }).show();
                         }
                     })
                     .show();
@@ -142,12 +150,19 @@ public class MultiCityFragment extends BaseFragment {
             public Observable<CityORM> call() {
                 return Observable.from(OrmLite.getInstance().query(CityORM.class));
             }
-        }).doOnTerminate(new Action0() {
-            @Override
-            public void call() {
-                mSwiprefresh.setRefreshing(false);
-            }
         })
+            .doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long aLong) {
+                    mSwiprefresh.setRefreshing(true);
+                }
+            })
+            .doOnTerminate(new Action0() {
+                @Override
+                public void call() {
+                    mSwiprefresh.setRefreshing(false);
+                }
+            })
             .map(new Func1<CityORM, String>() {
                 @Override
                 public String call(CityORM cityORM) {
@@ -173,6 +188,7 @@ public class MultiCityFragment extends BaseFragment {
                         linearLayout.setVisibility(View.GONE);
                     }
                 }
+
                 @Override
                 public void onError(Throwable e) {
 

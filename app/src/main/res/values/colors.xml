@@ -25,5 +25,7 @@
     <color name="rainy">#B2E8FE</color>
     <color name="rainyDark">#58D2FA</color>
 
+    <color name="lineColor">#60d3d3d3</color>
+    <color name="defaultTextColor">#6f6f6f</color>
 
 </resources>

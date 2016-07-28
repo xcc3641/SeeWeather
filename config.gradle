@@ -6,7 +6,7 @@ ext {
         applicationId    : "com.xiecc.seeWeather",
         minSdkVersion    : 19, // Android 4.4 Kitkat
         targetSdkVersion : 23,
-        versionCode      : 6,
+        versionCode      : 11,
         versionName      : "2.2",
         resConfigs       : "zh"
     ]

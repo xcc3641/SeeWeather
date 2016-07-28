@@ -21,7 +21,8 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:tabIndicatorColor="@color/colorAccent"
+        app:tabIndicatorColor="#fff"
+        app:tabIndicatorHeight="4dp"
         />
 
 </android.support.design.widget.AppBarLayout>

@@ -2,6 +2,8 @@ package com.xiecc.seeWeather.common.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -48,8 +50,7 @@ public class Util {
         try {
             PackageManager manager = context.getPackageManager();
             PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            int version = info.versionCode;
-            return version;
+            return info.versionCode;
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -210,5 +211,12 @@ public class Util {
         boolean hasBackKey = KeyCharacterMap
             .deviceHasKey(KeyEvent.KEYCODE_BACK);
         return !hasMenuKey && !hasBackKey;
+    }
+
+    public static void copyToClipboard(String info, Context context) {
+        ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("msg", info);
+        manager.setPrimaryClip(clipData);
+        ToastUtil.showShort("已经复制到剪切板啦( •̀ .̫ •́ )✧");
     }
 }

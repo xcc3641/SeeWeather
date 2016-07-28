@@ -110,7 +110,6 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 String city = Util.replaceCity(cityList.get(pos).CityName);
                 if (isChecked) {
                     OrmLite.getInstance().save(new CityORM(city));
-                    OrmLite.OrmTest(CityORM.class);
                     RxBus.getDefault().post(new MultiUpdate());
                     PLog.d("是多城市管理模式");
                 } else {
