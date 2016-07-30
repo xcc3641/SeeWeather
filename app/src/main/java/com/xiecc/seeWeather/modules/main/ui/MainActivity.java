@@ -118,6 +118,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
 
+            // TODO: 16/7/29 第一次进入的时候 fab 无法点击 切换页面比较卡
             @Override
             public void onPageSelected(int position) {
                 if (position == 1) {
@@ -127,7 +128,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
                             intent.putExtra(C.MULTI_CHECK, true);
                             CircularAnimUtil.startActivity(MainActivity.this, intent, fab,
@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
         //fab
-        //fab.setOnClickListener(v -> showFabDialog());
+        fab.setOnClickListener(v -> showFabDialog());
     }
 
     /**

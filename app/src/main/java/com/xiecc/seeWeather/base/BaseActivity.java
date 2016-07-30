@@ -15,7 +15,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by hugo on 2015/12/16.
  */
-public class BaseActivity extends AppCompatActivity {
+public  class BaseActivity extends AppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
     public ACache aCache;
     public SharedPreferenceUtil mSharedPreferenceUtil = null;
