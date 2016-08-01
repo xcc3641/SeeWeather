@@ -15,9 +15,10 @@ public class BaseApplication extends Application {
     public static String cacheDir;
     public static Context mAppContext = null;
 
+    // TODO: 16/8/1 这里的夜间模式 UI 有些没有适配好
     static {
         AppCompatDelegate.setDefaultNightMode(
-            AppCompatDelegate.MODE_NIGHT_AUTO);
+            AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     @Override

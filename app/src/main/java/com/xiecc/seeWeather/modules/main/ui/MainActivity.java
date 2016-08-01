@@ -1,9 +1,5 @@
 package com.xiecc.seeWeather.modules.main.ui;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -36,7 +32,6 @@ import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
-import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
 import rx.android.schedulers.AndroidSchedulers;
@@ -216,7 +211,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void showFabDialog() {
         new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
             .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-            .setPositiveButton("好叻", (dialog, which) -> {
+            .setPositiveButton("好嘞", (dialog, which) -> {
                 Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);           //指定Action
@@ -278,24 +273,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mIsHidden = !mIsHidden;
     }
 
-    private void normalStyleNotification(Weather weather) {
-        Intent intent = new Intent(MainActivity.this, MainActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent =
-            PendingIntent.getActivity(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification.Builder builder = new Notification.Builder(MainActivity.this);
-        Notification notification = builder.setContentIntent(pendingIntent)
-            .setContentTitle(weather.basic.city)
-            .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
-            // 这里部分 ROM 无法成功
-            .setSmallIcon(mSharedPreferenceUtil.getInt(weather.now.cond.txt, R.mipmap.none))
-            .build();
-        notification.flags = mSharedPreferenceUtil.getNotificationModel();
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // tag和id都是可以拿来区分不同的通知的
-        manager.notify(1, notification);
 
-    }
 
     @Override
     protected void onDestroy() {

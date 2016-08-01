@@ -32,7 +32,6 @@ import rx.functions.Func1;
 
 /**
  * Created by hugo on 2016/2/19 0019.
- *
  */
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
     private static String TAG = SettingFragment.class.getSimpleName();
@@ -57,6 +56,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mClearCache = findPreference(SharedPreferenceUtil.CLEAR_CACHE);
 
         mNotificationType = (SwitchPreference) findPreference(SharedPreferenceUtil.NOTIFICATION_MODEL);
+        mNotificationType.setChecked(true);
 
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSharedPreferenceUtil.getIconType()]);
 
@@ -95,7 +95,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         } else if (mNotificationType == preference) {
             mNotificationType.setChecked(mNotificationType.isChecked());
             mSharedPreferenceUtil.setNotificationModel(
-                mNotificationType.isChecked() ? Notification.FLAG_AUTO_CANCEL : Notification.FLAG_ONGOING_EVENT);
+                mNotificationType.isChecked() ? Notification.FLAG_ONGOING_EVENT : Notification.FLAG_AUTO_CANCEL);
         }
         return false;
     }

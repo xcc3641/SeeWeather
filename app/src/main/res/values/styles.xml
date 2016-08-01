@@ -9,7 +9,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    
+
     <style name="TransparentText">
         <item name="android:textColor">#00000000</item>
     </style>

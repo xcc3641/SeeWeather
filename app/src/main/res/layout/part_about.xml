@@ -24,7 +24,7 @@
             android:drawableStart="@drawable/about_1"
             android:gravity="center"
             android:text="很高兴认识你"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/aboutIcon"
             android:textSize="15sp"/>
         <View
             android:layout_width="match_parent"
@@ -63,7 +63,7 @@
             android:drawableStart="@drawable/about_2"
             android:gravity="center"
             android:text="一切都很值得"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/aboutIcon"
             android:textSize="15sp"/>
         <View
             android:layout_width="match_parent"
@@ -192,7 +192,7 @@
             android:drawableStart="@drawable/about_3"
             android:gravity="center"
             android:text="感谢开源的世界和开放的资源"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/aboutIcon"
             android:textSize="15sp"/>
         <View
             android:layout_width="match_parent"
