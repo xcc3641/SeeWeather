@@ -24,8 +24,6 @@ public class CheckVersion {
                         if (!SharedPreferenceUtil.getInstance().getString("version", "").equals(versionAPI.versionShort)) {
                             showUpdateDialog(versionAPI, context);
                         }
-                    } else {
-                        ToastUtil.showShort("已经是最新版本(⌐■_■)");
                     }
                 }
             });

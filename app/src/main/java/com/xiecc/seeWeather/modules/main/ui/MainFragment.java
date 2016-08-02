@@ -274,7 +274,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     private void normalStyleNotification(Weather weather) {
         Intent intent = new Intent(getActivity(), MainActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent =
             PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(getActivity());
