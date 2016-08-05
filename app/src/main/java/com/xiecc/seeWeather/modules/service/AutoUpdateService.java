@@ -8,13 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.common.ACache;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.main.ui.MainActivity;
-import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscription;
@@ -30,7 +28,6 @@ public class AutoUpdateService extends Service {
 
     private final String TAG = AutoUpdateService.class.getSimpleName();
     private SharedPreferenceUtil mSharedPreferenceUtil;
-    private ACache mAcache;
     // http://blog.csdn.net/lzyzsd/article/details/45033611
     // 在生命周期的某个时刻取消订阅。一个很常见的模式就是使用CompositeSubscription来持有所有的Subscriptions，然后在onDestroy()或者onDestroyView()里取消所有的订阅
     private CompositeSubscription mCompositeSubscription;
@@ -47,7 +44,6 @@ public class AutoUpdateService extends Service {
     public void onCreate() {
         super.onCreate();
         mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
-        mAcache = ACache.get(getApplication());
         mCompositeSubscription = new CompositeSubscription();
     }
 
@@ -88,7 +84,6 @@ public class AutoUpdateService extends Service {
         }
         RetrofitSingleton.getInstance().fetchWeather(cityName)
             .subscribe(weather -> {
-                mAcache.put(C.WEATHER_CACHE, weather);
                 normalStyleNotification(weather);
             });
     }

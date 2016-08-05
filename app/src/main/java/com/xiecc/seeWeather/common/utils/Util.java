@@ -158,6 +158,15 @@ public class Util {
     }
 
     /**
+     * 匹配掉无关信息
+     */
+
+    public static String replaceInfo(String city) {
+        city = safeText(city).replace("API没有", "");
+        return city;
+    }
+
+    /**
      * Java 中有一个 Closeable 接口,标识了一个可关闭的对象,它只有一个 close 方法.
      */
     public static void closeQuietly(Closeable closeable) {

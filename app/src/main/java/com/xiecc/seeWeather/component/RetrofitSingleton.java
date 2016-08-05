@@ -1,16 +1,16 @@
 package com.xiecc.seeWeather.component;
 
-import android.content.Context;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.widget.Toast;
+import com.litesuits.orm.db.assit.WhereBuilder;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.C;
+import com.xiecc.seeWeather.common.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
+import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +63,7 @@ public class RetrofitSingleton {
             builder.addInterceptor(loggingInterceptor);
         }
         // 缓存 http://www.jianshu.com/p/93153b34310e
-        File cacheFile = new File(BaseApplication.cacheDir,"/NetCache");
+        File cacheFile = new File(BaseApplication.cacheDir, "/NetCache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
         Interceptor cacheInterceptor = chain -> {
             Request request = chain.request();
@@ -107,22 +107,27 @@ public class RetrofitSingleton {
             .build();
     }
 
-    public static void disposeFailureInfo(Throwable t, Context context, View view) {
+    public static void disposeFailureInfo(Throwable t) {
         if (t.toString().contains("GaiException") || t.toString().contains("SocketTimeoutException") ||
             t.toString().contains("UnknownHostException")) {
-            Snackbar.make(view, "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            ToastUtil.showShort("网络问题");
+        } else if (t.toString().contains("API没有")) {
+            OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", Util.replaceInfo(t.getMessage())));
+            PLog.w(Util.replaceInfo(t.getMessage()));
+            ToastUtil.showShort(t.getMessage());
         }
-        PLog.w(t.toString());
+        PLog.w(t.getMessage());
     }
 
     public Observable<Weather> fetchWeather(String city) {
         return apiService.mWeatherAPI(city, C.KEY)
             //.filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
             .flatMap(weatherAPI -> {
-                if (weatherAPI.mHeWeatherDataService30s.get(0).status.equals("no more requests")) {
+                String status = weatherAPI.mHeWeatherDataService30s.get(0).status;
+                if (status.equals("no more requests")) {
                     return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
+                } else if (status.equals("unknown city")) {
+                    return Observable.error(new RuntimeException(String.format("API没有%s", city)));
                 }
                 return Observable.just(weatherAPI);
             })

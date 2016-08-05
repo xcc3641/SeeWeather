@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,14 +26,14 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.BaseFragment;
-import com.xiecc.seeWeather.common.utils.CheckVersion;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
-import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
+import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
+import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
@@ -67,14 +66,13 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public AMapLocationClient mLocationClient = null;
     public AMapLocationClientOption mLocationOption = null;
 
-    private MainActivity mActivity;
-
     private View view;
+
+    //private boolean isTodayFirst = true;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mActivity = (MainActivity) context;
     }
 
     @Nullable
@@ -92,9 +90,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        CheckVersion.checkVersion(getActivity());
-
         initView();
         // https://github.com/tbruyelle/RxPermissions
         RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -105,12 +100,12 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
                     load();
                 }
             });
+        CheckVersion.checkVersion(getActivity());
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         PLog.d("onCreate");
         RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
@@ -126,10 +121,13 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     private void initView() {
         if (mSwiprefresh != null) {
+            mSwiprefresh.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
             mSwiprefresh.setOnRefreshListener(
                 () -> mSwiprefresh.postDelayed(this::load, 1000));
         }
-
         mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerview.setHasFixedSize(true);
         mAdapter = new WeatherAdapter(getActivity(), mWeather);
@@ -146,15 +144,14 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
             @Override
             public void onCompleted() {
+
                 ToastUtil.showShort(getString(R.string.complete));
             }
 
             @Override
             public void onError(Throwable e) {
                 PLog.e(e.toString());
-                Snackbar.make(getView(), "网络不好,~( ´•︵•` )~", Snackbar.LENGTH_INDEFINITE).setAction("重试", v -> {
-                    load();
-                }).show();
+                RetrofitSingleton.disposeFailureInfo(e);
             }
 
             @Override
@@ -179,7 +176,8 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             .doOnError(throwable -> {
                 mIvErro.setVisibility(View.VISIBLE);
                 mRecyclerview.setVisibility(View.GONE);
-                mSwiprefresh.setRefreshing(false);
+                SharedPreferenceUtil.getInstance().setCityName("北京");
+                safeSetTitle("找不到城市啦");
             })
             .doOnNext(weather -> {
                 mIvErro.setVisibility(View.GONE);
@@ -195,13 +193,9 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
      * 从网络获取
      */
     private Observable<Weather> fetchDataByNetWork() {
-        String cityName = Util.replaceCity(mActivity.mSharedPreferenceUtil.getCityName());
+        String cityName = SharedPreferenceUtil.getInstance().getCityName();
         return RetrofitSingleton.getInstance()
-            .fetchWeather(cityName)
-            .onErrorReturn(throwable -> {
-                ToastUtil.showLong(throwable.getMessage());
-                return null;
-            });
+            .fetchWeather(cityName);
     }
 
     /**
@@ -224,7 +218,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔 单位毫秒
-        int tempTime = mActivity.mSharedPreferenceUtil.getAutoUpdate();
+        int tempTime = SharedPreferenceUtil.getInstance().getAutoUpdate();
         if (tempTime == 0) {
             tempTime = 100;
         }
@@ -241,7 +235,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             if (aMapLocation.getErrorCode() == 0) {
                 //定位成功回调信息，设置相关消息
                 aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                mActivity.mSharedPreferenceUtil.setCityName(Util.replaceCity(aMapLocation.getCity()));
+                SharedPreferenceUtil.getInstance().setCityName(Util.replaceCity(aMapLocation.getCity()));
             } else {
                 if (isAdded()) {
                     ToastUtil.showShort(getString(R.string.errorLocation));

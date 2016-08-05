@@ -56,6 +56,7 @@ public class MultiCityFragment extends BaseFragment {
     private List<Weather> weatherArrayList;
 
     private View view;
+    private String errorCity;
 
     /**
      * 加载数据操作,在视图创建之前初始化
@@ -71,7 +72,6 @@ public class MultiCityFragment extends BaseFragment {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_multicity, container, false);
             ButterKnife.bind(this, view);
-            initView();
         }
         return view;
     }
@@ -90,6 +90,7 @@ public class MultiCityFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initView();
         multiLoad();
     }
 
@@ -166,6 +167,7 @@ public class MultiCityFragment extends BaseFragment {
             .map(new Func1<CityORM, String>() {
                 @Override
                 public String call(CityORM cityORM) {
+                    errorCity = cityORM.getName();
                     return Util.replaceCity(cityORM.getName());
                 }
             })
@@ -191,6 +193,7 @@ public class MultiCityFragment extends BaseFragment {
 
                 @Override
                 public void onError(Throwable e) {
+                    RetrofitSingleton.disposeFailureInfo(e);
 
                 }
 
