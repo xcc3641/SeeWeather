@@ -1,8 +1,12 @@
 # 就看天气
 
 就看天气该应用就是如同它的名字一样，只做一个单纯、简单的看天气软件。这么多天气软件，你选择了我，这是我的幸运。
+
+
 从15年10月上线，到目前经历两次重大改版，一次代码的重构，一次界面的大幅度改动，目的都是为了你们。
 在开源的过程中，收到了很多来自有趣的你们的邮件。
+
+
 我也曾遇到过棘手的问题无处咨询又谷歌不到。那个时候的我，也可能是现在的你。所以我希望能够帮助到你。
 
 
@@ -107,7 +111,6 @@ v2.0
 - [x] 自动定位
 - [ ] 自由定制的Item界面
 - [ ] 引导页面
-
 
 
 ----
@@ -340,23 +343,23 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 
 
-[1]:	https://www.zhihu.com/question/26417244/answer/70193822
-[2]:	https://github.com/ReactiveX/RxJava
-[3]:	https://github.com/ReactiveX/RxAndroid
-[4]:	https://github.com/square/retrofit
-[5]:	https://github.com/bumptech/glide
-[6]:	https://github.com/yangfuhai/ASimpleCache
-[7]:	https://github.com/hongyangAndroid
-[8]:	https://github.com/rengwuxian
-[9]:	https://github.com/drakeet
-[10]:	https://github.com/daimajia
-[11]:	https://github.com/AlanCheen
-[12]:	https://github.com/SmartDengg
-[13]:	https://github.com/Jude95
-[14]:	http://weibo.com/u/2711441293?topnav=1&wvr=6&topsug=1&is_all=1
+[1]: https://www.zhihu.com/question/26417244/answer/70193822
+[2]: https://github.com/ReactiveX/RxJava
+[3]: https://github.com/ReactiveX/RxAndroid
+[4]: https://github.com/square/retrofit
+[5]: https://github.com/bumptech/glide
+[6]: https://github.com/yangfuhai/ASimpleCache
+[7]: https://github.com/hongyangAndroid
+[8]: https://github.com/rengwuxian
+[9]: https://github.com/drakeet
+[10]: https://github.com/daimajia
+[11]: https://github.com/AlanCheen
+[12]: https://github.com/SmartDengg
+[13]: https://github.com/Jude95
+[14]: http://weibo.com/u/2711441293?topnav=1&amp;wvr=6&amp;topsug=1&amp;is_all=1
 
 
-[image-2]:	/images/day.png
-[image-3]:	/images/night.png
-[image-4]:	http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg
-[image-5]:	http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg
+[image-2]: /images/day.png
+[image-3]: /images/night.png
+[image-4]: http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg
+[image-5]: http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg
