@@ -1,8 +1,9 @@
-package com.xiecc.seeWeather.common;
+package com.xiecc.seeWeather.component;
 
 import com.litesuits.orm.LiteOrm;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;

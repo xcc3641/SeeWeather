@@ -3,6 +3,7 @@ package com.xiecc.seeWeather.common;
 import android.content.Context;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.component.OrmLite;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;

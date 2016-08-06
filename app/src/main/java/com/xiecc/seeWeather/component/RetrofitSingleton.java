@@ -4,7 +4,6 @@ import com.litesuits.orm.db.assit.WhereBuilder;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.common.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.ToastUtil;

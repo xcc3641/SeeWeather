@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
 import com.litesuits.orm.db.assit.WhereBuilder;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
-import com.xiecc.seeWeather.common.OrmLite;
+import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.Util;

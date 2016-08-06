@@ -60,6 +60,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         switch (viewType) {
             case TYPE_ONE:
                 return new NowWeatherViewHolder(
@@ -142,11 +143,11 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
             }
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onItemClick(mWeatherData);
-                }
-            });
+            //itemView.setOnClickListener(v -> {
+            //    if (listener != null) {
+            //        listener.onItemClick(mWeatherData);
+            //    }
+            //});
         }
     }
 

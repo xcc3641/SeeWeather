@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.ToolbarActivity;
-import com.xiecc.seeWeather.common.OrmLite;
+import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;

@@ -124,7 +124,7 @@ public class Util {
     }
 
     public static String safeText(String msg) {
-        if (msg == null) {
+        if (null == msg) {
             return "";
         }
         return safeText("", msg);
