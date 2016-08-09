@@ -6,8 +6,8 @@
 从15年10月上线，到目前经历两次重大改版，一次代码的重构，一次界面的大幅度改动，目的都是为了你们。
 在开源的过程中，收到了很多来自有趣的你们的邮件。
 
-
 我也曾遇到过棘手的问题无处咨询又谷歌不到。那个时候的我，也可能是现在的你。所以我希望能够帮助到你。
+
 
 
 - **开源不易，希望能给个Star鼓励**
@@ -330,11 +330,13 @@ private void load() {
 
 ### LICENSE
 
+```
 Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\")
 
 you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+```
 
 图片来源于网络，版权属于原作者。
 
