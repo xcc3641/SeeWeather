@@ -137,7 +137,7 @@ v2.0
 
 Update 7.11:
 
-因为天气软件请求比较单一，没必要用其他的缓存，可以直接用 okhttp 网络缓存。
+因为天气软件请求比较单一，没必要用其他的缓存，可以直接用 okhttp 缓存。
 
 ```java
 File cacheFile = new File(BaseApplication.getmAppContext().getExternalCacheDir(), "SeeWeatherCache");
