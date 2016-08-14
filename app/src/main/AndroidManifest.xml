@@ -48,7 +48,8 @@
         <activity
             android:name=".modules.main.ui.MainActivity"
             android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".modules.setting.ui.SettingActivity"
             android:screenOrientation="portrait"

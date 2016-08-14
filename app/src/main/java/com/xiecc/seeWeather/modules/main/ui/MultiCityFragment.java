@@ -124,6 +124,12 @@ public class MultiCityFragment extends BaseFragment {
         });
 
         if (mSwiprefresh != null) {
+            mSwiprefresh.setColorSchemeResources(
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light,
+                android.R.color.holo_green_light,
+                android.R.color.holo_blue_bright
+            );
             mSwiprefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -149,6 +155,7 @@ public class MultiCityFragment extends BaseFragment {
         Observable.defer(new Func0<Observable<CityORM>>() {
             @Override
             public Observable<CityORM> call() {
+
                 return Observable.from(OrmLite.getInstance().query(CityORM.class));
             }
         })
@@ -193,8 +200,8 @@ public class MultiCityFragment extends BaseFragment {
 
                 @Override
                 public void onError(Throwable e) {
+                    linearLayout.setVisibility(View.VISIBLE);
                     RetrofitSingleton.disposeFailureInfo(e);
-
                 }
 
                 @Override

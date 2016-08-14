@@ -112,7 +112,9 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             new SimpleSubscriber<ChangeCityEvent>() {
                 @Override
                 public void onNext(ChangeCityEvent changeCityEvent) {
-                    mSwiprefresh.setRefreshing(true);
+                    if (mSwiprefresh != null) {
+                        mSwiprefresh.setRefreshing(true);
+                    }
                     load();
                     PLog.d("MainRxBus");
                 }
@@ -129,7 +131,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
                 () -> mSwiprefresh.postDelayed(this::load, 1000));
         }
         mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerview.setHasFixedSize(true);
         mAdapter = new WeatherAdapter(getActivity(), mWeather);
         mRecyclerview.setAdapter(mAdapter);
     }
@@ -181,7 +182,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             })
             .doOnNext(weather -> {
                 mIvErro.setVisibility(View.GONE);
-                mRecyclerview.setVisibility(View.VISIBLE);
+                //mRecyclerview.setVisibility(View.VISIBLE);
             })
             .doOnTerminate(() -> {
                 mSwiprefresh.setRefreshing(false);

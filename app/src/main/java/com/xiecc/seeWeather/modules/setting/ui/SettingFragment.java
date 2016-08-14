@@ -4,9 +4,9 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.SwitchPreference;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -25,6 +25,9 @@ import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.component.ImageLoader;
+import com.xiecc.seeWeather.component.RxBus;
+import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
+import com.xiecc.seeWeather.modules.main.ui.MainActivity;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import java.io.File;
 import rx.Observable;
@@ -33,15 +36,17 @@ import rx.functions.Func1;
 /**
  * Created by hugo on 2016/2/19 0019.
  */
-public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+public class SettingFragment extends PreferenceFragment
+    implements Preference.OnPreferenceClickListener,
+    Preference.OnPreferenceChangeListener {
     private static String TAG = SettingFragment.class.getSimpleName();
     //private SettingActivity mActivity;
     private SharedPreferenceUtil mSharedPreferenceUtil;
     private Preference mChangeIcons;
     private Preference mChangeUpdate;
     private Preference mClearCache;
-    private SwitchPreference mNotificationType;
-
+    private CheckBoxPreference mNotificationType;
+    private CheckBoxPreference mAnimationOnOff;
     private ACache mACache;
 
     @Override
@@ -55,8 +60,16 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mChangeUpdate = findPreference(SharedPreferenceUtil.AUTO_UPDATE);
         mClearCache = findPreference(SharedPreferenceUtil.CLEAR_CACHE);
 
-        mNotificationType = (SwitchPreference) findPreference(SharedPreferenceUtil.NOTIFICATION_MODEL);
-        mNotificationType.setChecked(true);
+        mAnimationOnOff = (CheckBoxPreference) findPreference(SharedPreferenceUtil.ANIM_STRAT);
+        mNotificationType = (CheckBoxPreference) findPreference(SharedPreferenceUtil.NOTIFICATION_MODEL);
+
+        if (SharedPreferenceUtil.getInstance().getNotificationModel() != Notification.FLAG_ONGOING_EVENT) {
+            mNotificationType.setChecked(false);
+        } else {
+            mNotificationType.setChecked(true);
+        }
+
+        mAnimationOnOff.setChecked(SharedPreferenceUtil.getInstance().getMainAnim());
 
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSharedPreferenceUtil.getIconType()]);
 
@@ -67,7 +80,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
         mClearCache.setOnPreferenceClickListener(this);
-        mNotificationType.setOnPreferenceClickListener(this);
+        mNotificationType.setOnPreferenceChangeListener(this);
+
+        mAnimationOnOff.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -92,12 +107,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             });
         } else if (mChangeUpdate == preference) {
             showUpdateDialog();
-        } else if (mNotificationType == preference) {
-            mNotificationType.setChecked(mNotificationType.isChecked());
-            mSharedPreferenceUtil.setNotificationModel(
-                mNotificationType.isChecked() ? Notification.FLAG_ONGOING_EVENT : Notification.FLAG_AUTO_CANCEL);
         }
-        return false;
+        return true;
     }
 
     private void showIconDialog() {
@@ -149,10 +160,14 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             Snackbar.make(getView(), "切换成功,重启应用生效",
                 Snackbar.LENGTH_INDEFINITE).setAction("重启",
                 v1 -> {
-                    Intent intent =
-                        getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName());
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    //Intent intent =
+                    //    getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName());
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     getActivity().startActivity(intent);
+                    getActivity().finish();
+                    RxBus.getDefault().post(new ChangeCityEvent());
                 }).show();
         });
     }
@@ -199,5 +214,17 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
             alertDialog.dismiss();
         });
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference == mAnimationOnOff) {
+            SharedPreferenceUtil.getInstance().setMainAnim((Boolean) newValue);
+        } else if (mNotificationType == preference) {
+            SharedPreferenceUtil.getInstance().setNotificationModel(
+                (boolean) newValue ? Notification.FLAG_ONGOING_EVENT : Notification.FLAG_AUTO_CANCEL);
+        }
+
+        return true;
     }
 }

@@ -12,12 +12,14 @@ import com.xiecc.seeWeather.base.BaseApplication;
  */
 public class SharedPreferenceUtil {
 
+    public static final String CITY_NAME = "城市";//选择城市
+    public static final String HOUR = "current_hour";//当前小时
+
     public static final String CHANGE_ICONS = "change_icons";//切换图标
     public static final String CLEAR_CACHE = "clear_cache";//清空缓存
     public static final String AUTO_UPDATE = "change_update_time"; //自动更新时长
-    public static final String CITY_NAME = "城市";//选择城市
-    public static final String HOUR = "current_hour";//当前小时
     public static final String NOTIFICATION_MODEL = "notification_model";
+    public static final String ANIM_STRAT = "animation_start";
 
     public static int ONE_HOUR = 1000 * 60 * 60;
 
@@ -107,5 +109,15 @@ public class SharedPreferenceUtil {
 
     public int getNotificationModel() {
         return mPrefs.getInt(NOTIFICATION_MODEL, Notification.FLAG_ONGOING_EVENT);
+    }
+
+    // 首页 Item 动画效果 默认关闭
+
+    public void setMainAnim(boolean b) {
+        mPrefs.edit().putBoolean(ANIM_STRAT, b).apply();
+    }
+
+    public boolean getMainAnim() {
+        return mPrefs.getBoolean(ANIM_STRAT, false);
     }
 }
