@@ -16,7 +16,7 @@ import rx.android.MainThreadSubscription;
  */
 public class RxDrawer {
 
-    private static final float OFFSET_THRESHOLD = 0.01f;
+    private static final float OFFSET_THRESHOLD = 0.03f;
 
     public static Observable<Void> close(final DrawerLayout drawer) {
         return Observable.create(new Observable.OnSubscribe<Void>() {

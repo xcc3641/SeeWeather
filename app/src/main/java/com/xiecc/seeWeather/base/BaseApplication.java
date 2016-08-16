@@ -3,6 +3,8 @@ package com.xiecc.seeWeather.base;
 import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
+import com.github.moduth.blockcanary.BlockCanary;
+import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
@@ -15,7 +17,7 @@ public class BaseApplication extends Application {
     public static String cacheDir;
     public static Context mAppContext = null;
 
-    // TODO: 16/8/1 这里的夜间模式 UI 有些没有适配好
+    // TODO: 16/8/1 这里的夜间模式 UI 有些没有适配好 暂时放弃夜间模式
     static {
         AppCompatDelegate.setDefaultNightMode(
             AppCompatDelegate.MODE_NIGHT_NO);
@@ -29,8 +31,8 @@ public class BaseApplication extends Application {
         if (!BuildConfig.DEBUG) {
             CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
         }
-        //BlockCanary.install(this, new AppBlockCanaryContext()).start();
-        //LeakCanary.install(this);
+        BlockCanary.install(this, new AppBlockCanaryContext()).start();
+        LeakCanary.install(this);
 
         //RxUtils.unifiedErrorHandler();
         //Thread.setDefaultUncaughtExceptionHandler(new MyUnCaughtExceptionHandler());

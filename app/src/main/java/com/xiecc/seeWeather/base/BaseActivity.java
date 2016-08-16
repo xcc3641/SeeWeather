@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -16,7 +15,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public  class BaseActivity extends AppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
-    public ACache aCache;
+
     public SharedPreferenceUtil mSharedPreferenceUtil = null;
 
     private CompositeSubscription mCompositeSubscription;
@@ -24,7 +23,7 @@ public  class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        aCache = ACache.get(getApplication());
+
         mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
         //setStatusBarColorForKitkat(R.color.colorSunrise);
     }

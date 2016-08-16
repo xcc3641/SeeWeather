@@ -18,7 +18,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
-import com.xiecc.seeWeather.common.ACache;
 import com.xiecc.seeWeather.common.utils.FileSizeUtil;
 import com.xiecc.seeWeather.common.utils.FileUtil;
 import com.xiecc.seeWeather.common.utils.RxUtils;
@@ -47,14 +46,14 @@ public class SettingFragment extends PreferenceFragment
     private Preference mClearCache;
     private CheckBoxPreference mNotificationType;
     private CheckBoxPreference mAnimationOnOff;
-    private ACache mACache;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting);
         mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
-        mACache = ACache.get(getActivity());
+
 
         mChangeIcons = findPreference(SharedPreferenceUtil.CHANGE_ICONS);
         mChangeUpdate = findPreference(SharedPreferenceUtil.AUTO_UPDATE);
@@ -90,7 +89,7 @@ public class SettingFragment extends PreferenceFragment
         if (mChangeIcons == preference) {
             showIconDialog();
         } else if (mClearCache == preference) {
-            mACache.clear();
+
             ImageLoader.clear(getActivity());
             Observable.just(FileUtil.delete(new File(BaseApplication.cacheDir + "/NetCache")))
                 .filter(new Func1<Boolean, Boolean>() {
