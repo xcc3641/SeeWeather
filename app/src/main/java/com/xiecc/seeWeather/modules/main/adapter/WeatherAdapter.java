@@ -188,12 +188,12 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     mClock[i].setText(
                         mDate.substring(mDate.length() - 5, mDate.length()));
                     mTemp[i].setText(
-                        String.format("%s°", weather.hourlyForecast.get(i).tmp));
+                        String.format("%s℃", weather.hourlyForecast.get(i).tmp));
                     mHumidity[i].setText(
                         String.format("%s%%", weather.hourlyForecast.get(i).hum)
                     );
                     mWind[i].setText(
-                        String.format("%sKm", weather.hourlyForecast.get(i).wind.spd)
+                        String.format("%sKm/h", weather.hourlyForecast.get(i).wind.spd)
                     );
                 }
             } catch (Exception e) {
@@ -290,7 +290,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                         SharedPreferenceUtil.getInstance().getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
                         forecastIcon[i]);
                     forecastTemp[i].setText(
-                        String.format("%s° %s°",
+                        String.format("%s℃ %s℃",
                             weather.dailyForecast.get(i).tmp.min,
                             weather.dailyForecast.get(i).tmp.max));
                     forecastTxt[i].setText(

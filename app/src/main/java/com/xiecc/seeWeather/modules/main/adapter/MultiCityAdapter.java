@@ -89,7 +89,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         public void invoke(Weather mWeather) {
 
             mDialogCity.setText(Util.safeText(mWeather.basic.city));
-            mDialogTemp.setText(String.format("%s°", mWeather.now.tmp));
+            mDialogTemp.setText(String.format("%s℃", mWeather.now.tmp));
 
             Glide.with(mContext).load(SharedPreferenceUtil.getInstance().getInt(mWeather.now.cond.txt, R.mipmap.none
             )).asBitmap().into(new SimpleTarget<Bitmap>() {
