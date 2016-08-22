@@ -135,11 +135,12 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             try {
                 tempFlu.setText(String.format("%s℃", weather.now.tmp));
                 tempMax.setText(
-                    String.format("↑ %s °", weather.dailyForecast.get(0).tmp.max));
+                    String.format("高%s℃", weather.dailyForecast.get(0).tmp.max));
                 tempMin.setText(
-                    String.format("↓ %s °", weather.dailyForecast.get(0).tmp.min));
-                tempPm.setText(Util.safeText("PM25： ", weather.aqi.city.pm25));
-                tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
+                    String.format("低%s℃", weather.dailyForecast.get(0).tmp.min));
+                tempPm.setText(
+                    String.format("PM25:%sμg/m³", weather.aqi.city.pm25));
+                tempQuality.setText(Util.safeText("空气质量:", weather.aqi.city.qlty));
                 ImageLoader.load(itemView.getContext(),
                     SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none),
                     weatherIcon);
@@ -290,17 +291,22 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                         SharedPreferenceUtil.getInstance().getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
                         forecastIcon[i]);
                     forecastTemp[i].setText(
-                        String.format("%s℃ %s℃",
-                            weather.dailyForecast.get(i).tmp.min,
-                            weather.dailyForecast.get(i).tmp.max));
+                        String.format("%s℃ - %s℃",
+                            weather.dailyForecast.get(i).tmp.min,			//最低温度
+                            weather.dailyForecast.get(i).tmp.max));		//最高温度
+	            		//本次修改之前的语序是：“多云。最高27℃。3-4 西北风  4 Km/h。 降水几率 98%。”
+	            		//本次修改之后的语序是：“多云，降水几率98%
+	            		//                       西北风，3-4级[4Km/h]。” 
+	            		//因为上面已经显示最高温度，所以这里删除最高温度。
                     forecastTxt[i].setText(
-                        String.format("%s。 最高%s℃。 %s %s %s km/h。 降水几率 %s%%。",
-                            weather.dailyForecast.get(i).cond.txtD,
-                            weather.dailyForecast.get(i).tmp.max,
-                            weather.dailyForecast.get(i).wind.sc,
-                            weather.dailyForecast.get(i).wind.dir,
-                            weather.dailyForecast.get(i).wind.spd,
-                            weather.dailyForecast.get(i).pop));
+                        String.format("%s，降水几率%s%%\n%s，%s%s[%skm/h]；",
+                            weather.dailyForecast.get(i).cond.txtD, //天气情况 
+                            weather.dailyForecast.get(i).pop,       //降水几率
+                            weather.dailyForecast.get(i).wind.dir,  //风向
+                            weather.dailyForecast.get(i).wind.sc,   //风速
+                            (weather.dailyForecast.get(i).wind.sc.indexOf("风") == -1)?"":"级", //如果是显示数字几级风，显示"级"
+                            weather.dailyForecast.get(i).wind.spd  //风速
+                        ));
                 }
             } catch (Exception e) {
                 PLog.e(e.toString());
