@@ -7,6 +7,7 @@
     android:layout_margin="@dimen/cardview_margin"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    xmlns:tools="http://schemas.android.com/tools"
     card_view:cardCornerRadius="3dp"
     card_view:cardElevation="2dp">
 

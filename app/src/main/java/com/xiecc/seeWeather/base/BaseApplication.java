@@ -5,9 +5,9 @@ import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
-import com.tencent.bugly.crashreport.CrashReport;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
+import im.fir.sdk.FIR;
 
 /**
  * Created by xcc on 2015/12/16.
@@ -29,7 +29,8 @@ public class BaseApplication extends Application {
         mAppContext = getApplicationContext();
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         if (!BuildConfig.DEBUG) {
-            CrashReport.initCrashReport(getApplicationContext(), "900028220", false);
+
+            FIR.init(this);
         }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);

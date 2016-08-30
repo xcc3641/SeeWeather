@@ -6,11 +6,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 
 public class CircularAnimUtil {
 
@@ -109,12 +109,13 @@ public class CircularAnimUtil {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
 
-                if (requestCode == null)
+                if (requestCode == null) {
                     thisActivity.startActivity(intent);
-                else if (bundle == null)
+                } else if (bundle == null) {
                     thisActivity.startActivityForResult(intent, requestCode);
-                else
+                } else {
                     thisActivity.startActivityForResult(intent, requestCode, bundle);
+                }
 
                 // 默认渐隐过渡动画.
                 thisActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -123,6 +124,7 @@ public class CircularAnimUtil {
                 triggerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d("animi", "End");
                         Animator anim =
                             ViewAnimationUtils.createCircularReveal(view, cx, cy, finalRadius, 0);
                         anim.setDuration(durationMills);
@@ -138,17 +140,20 @@ public class CircularAnimUtil {
                             }
                         });
                         anim.start();
+                        Log.d("animi2", "start");
                     }
                 }, 1000);
+
 
             }
         });
         anim.start();
+
+        Log.d("animi", "start");
     }
 
 
     /*下面的方法全是重载，用简化上面方法的构建*/
-
 
     public static void startActivityForResult(
         Activity thisActivity, Intent intent, Integer requestCode, View triggerView, int colorOrImageRes) {

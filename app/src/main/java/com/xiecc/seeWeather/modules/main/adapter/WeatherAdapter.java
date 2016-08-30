@@ -98,7 +98,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             showItemAnim(holder.itemView, position);
         }
 
-        PLog.d(SharedPreferenceUtil.getInstance().getMainAnim()+"");
+        PLog.d(SharedPreferenceUtil.getInstance().getMainAnim() + "");
     }
 
     @Override
@@ -138,7 +138,8 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     String.format("↑ %s °", weather.dailyForecast.get(0).tmp.max));
                 tempMin.setText(
                     String.format("↓ %s °", weather.dailyForecast.get(0).tmp.min));
-                tempPm.setText(Util.safeText("PM25： ", weather.aqi.city.pm25));
+
+                tempPm.setText(String.format("PM25:%s μg/m³", Util.safeText(weather.aqi.city.pm25)));
                 tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
                 ImageLoader.load(itemView.getContext(),
                     SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none),
@@ -290,13 +291,12 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                         SharedPreferenceUtil.getInstance().getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
                         forecastIcon[i]);
                     forecastTemp[i].setText(
-                        String.format("%s℃ %s℃",
+                        String.format("%s℃ - %s℃",
                             weather.dailyForecast.get(i).tmp.min,
                             weather.dailyForecast.get(i).tmp.max));
                     forecastTxt[i].setText(
-                        String.format("%s。 最高%s℃。 %s %s %s km/h。 降水几率 %s%%。",
+                        String.format("%s。 %s %s %s km/h。 降水几率 %s%%。",
                             weather.dailyForecast.get(i).cond.txtD,
-                            weather.dailyForecast.get(i).tmp.max,
                             weather.dailyForecast.get(i).wind.sc,
                             weather.dailyForecast.get(i).wind.dir,
                             weather.dailyForecast.get(i).wind.spd,

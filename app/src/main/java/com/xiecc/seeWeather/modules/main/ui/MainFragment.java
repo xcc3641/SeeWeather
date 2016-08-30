@@ -182,7 +182,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             })
             .doOnNext(weather -> {
                 mIvErro.setVisibility(View.GONE);
-                //mRecyclerview.setVisibility(View.VISIBLE);
+                mRecyclerview.setVisibility(View.VISIBLE);
             })
             .doOnTerminate(() -> {
                 mSwiprefresh.setRefreshing(false);

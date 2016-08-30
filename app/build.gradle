@@ -16,10 +16,7 @@ android {
         versionName app.versionName
         resConfigs "zh"
 
-        ndk {
-            //设置支持的SO库架构
-            abiFilters 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
-        }
+
     }
     buildTypes {
         release {
@@ -80,9 +77,6 @@ dependencies {
     compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
     compile 'com.jakewharton:butterknife:7.0.1'
 
-
-    compile 'com.tencent.bugly:crashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.1.5
-    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
 
     debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
     releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
