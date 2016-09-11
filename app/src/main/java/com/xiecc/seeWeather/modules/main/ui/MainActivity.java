@@ -22,12 +22,13 @@ import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
 import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
+import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
@@ -55,14 +56,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
         PLog.i("onCreate");
         initView();
         initDrawer();
         initIcon();
         startService(new Intent(this, AutoUpdateService.class));
-
     }
+
+
 
     @Override
     protected void onStart() {
@@ -113,7 +116,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
 
-            // TODO: 16/7/29 第一次进入的时候 fab 无法点击 切换页面比较卡
             @Override
             public void onPageSelected(int position) {
                 if (position == 1) {
@@ -129,6 +131,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                                 R.color.colorPrimary);
                         }
                     });
+                    if (!fab.isShown()) {
+                        fab.show();
+                    }
                 } else {
                     fab.setImageResource(R.drawable.ic_favorite);
                     fab.setBackgroundTintList(
@@ -176,35 +181,35 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化Icon
      */
     private void initIcon() {
-        if (mSharedPreferenceUtil.getIconType() == 0) {
-            mSharedPreferenceUtil.putInt("未知", R.mipmap.none);
-            mSharedPreferenceUtil.putInt("晴", R.mipmap.type_one_sunny);
-            mSharedPreferenceUtil.putInt("阴", R.mipmap.type_one_cloudy);
-            mSharedPreferenceUtil.putInt("多云", R.mipmap.type_one_cloudy);
-            mSharedPreferenceUtil.putInt("少云", R.mipmap.type_one_cloudy);
-            mSharedPreferenceUtil.putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
-            mSharedPreferenceUtil.putInt("小雨", R.mipmap.type_one_light_rain);
-            mSharedPreferenceUtil.putInt("中雨", R.mipmap.type_one_light_rain);
-            mSharedPreferenceUtil.putInt("大雨", R.mipmap.type_one_heavy_rain);
-            mSharedPreferenceUtil.putInt("阵雨", R.mipmap.type_one_thunderstorm);
-            mSharedPreferenceUtil.putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
-            mSharedPreferenceUtil.putInt("霾", R.mipmap.type_one_fog);
-            mSharedPreferenceUtil.putInt("雾", R.mipmap.type_one_fog);
+        if (SharedPreferenceUtil.getInstance().getIconType() == 0) {
+            SharedPreferenceUtil.getInstance().putInt("未知", R.mipmap.none);
+            SharedPreferenceUtil.getInstance().putInt("晴", R.mipmap.type_one_sunny);
+            SharedPreferenceUtil.getInstance().putInt("阴", R.mipmap.type_one_cloudy);
+            SharedPreferenceUtil.getInstance().putInt("多云", R.mipmap.type_one_cloudy);
+            SharedPreferenceUtil.getInstance().putInt("少云", R.mipmap.type_one_cloudy);
+            SharedPreferenceUtil.getInstance().putInt("晴间多云", R.mipmap.type_one_cloudytosunny);
+            SharedPreferenceUtil.getInstance().putInt("小雨", R.mipmap.type_one_light_rain);
+            SharedPreferenceUtil.getInstance().putInt("中雨", R.mipmap.type_one_light_rain);
+            SharedPreferenceUtil.getInstance().putInt("大雨", R.mipmap.type_one_heavy_rain);
+            SharedPreferenceUtil.getInstance().putInt("阵雨", R.mipmap.type_one_thunderstorm);
+            SharedPreferenceUtil.getInstance().putInt("雷阵雨", R.mipmap.type_one_thunder_rain);
+            SharedPreferenceUtil.getInstance().putInt("霾", R.mipmap.type_one_fog);
+            SharedPreferenceUtil.getInstance().putInt("雾", R.mipmap.type_one_fog);
         } else {
-            mSharedPreferenceUtil.putInt("未知", R.mipmap.none);
-            mSharedPreferenceUtil.putInt("晴", R.mipmap.type_two_sunny);
-            mSharedPreferenceUtil.putInt("阴", R.mipmap.type_two_cloudy);
-            mSharedPreferenceUtil.putInt("多云", R.mipmap.type_two_cloudy);
-            mSharedPreferenceUtil.putInt("少云", R.mipmap.type_two_cloudy);
-            mSharedPreferenceUtil.putInt("晴间多云", R.mipmap.type_two_cloudytosunny);
-            mSharedPreferenceUtil.putInt("小雨", R.mipmap.type_two_light_rain);
-            mSharedPreferenceUtil.putInt("中雨", R.mipmap.type_two_rain);
-            mSharedPreferenceUtil.putInt("大雨", R.mipmap.type_two_rain);
-            mSharedPreferenceUtil.putInt("阵雨", R.mipmap.type_two_rain);
-            mSharedPreferenceUtil.putInt("雷阵雨", R.mipmap.type_two_thunderstorm);
-            mSharedPreferenceUtil.putInt("霾", R.mipmap.type_two_haze);
-            mSharedPreferenceUtil.putInt("雾", R.mipmap.type_two_fog);
-            mSharedPreferenceUtil.putInt("雨夹雪", R.mipmap.type_two_snowrain);
+            SharedPreferenceUtil.getInstance().putInt("未知", R.mipmap.none);
+            SharedPreferenceUtil.getInstance().putInt("晴", R.mipmap.type_two_sunny);
+            SharedPreferenceUtil.getInstance().putInt("阴", R.mipmap.type_two_cloudy);
+            SharedPreferenceUtil.getInstance().putInt("多云", R.mipmap.type_two_cloudy);
+            SharedPreferenceUtil.getInstance().putInt("少云", R.mipmap.type_two_cloudy);
+            SharedPreferenceUtil.getInstance().putInt("晴间多云", R.mipmap.type_two_cloudytosunny);
+            SharedPreferenceUtil.getInstance().putInt("小雨", R.mipmap.type_two_light_rain);
+            SharedPreferenceUtil.getInstance().putInt("中雨", R.mipmap.type_two_rain);
+            SharedPreferenceUtil.getInstance().putInt("大雨", R.mipmap.type_two_rain);
+            SharedPreferenceUtil.getInstance().putInt("阵雨", R.mipmap.type_two_rain);
+            SharedPreferenceUtil.getInstance().putInt("雷阵雨", R.mipmap.type_two_thunderstorm);
+            SharedPreferenceUtil.getInstance().putInt("霾", R.mipmap.type_two_haze);
+            SharedPreferenceUtil.getInstance().putInt("雾", R.mipmap.type_two_fog);
+            SharedPreferenceUtil.getInstance().putInt("雨夹雪", R.mipmap.type_two_snowrain);
         }
     }
 
@@ -229,24 +234,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        RxDrawer.close(drawerLayout).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(aVoid -> {
-            switch (item.getItemId()) {
-                case R.id.nav_set:
-                    Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-                    startActivity(intentSetting);
-                    break;
-                case R.id.nav_about:
-                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
-                    break;
-                case R.id.nav_city:
-                    Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                    startActivity(intentCity);
-                    break;
-                case R.id.nav_multi_cities:
-                    viewPager.setCurrentItem(1);
-                    break;
-            }
-        });
+        RxDrawer.close(drawerLayout).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(
+            new SimpleSubscriber<Void>() {
+                @Override
+                public void onNext(Void aVoid) {
+                    switch (item.getItemId()) {
+                        case R.id.nav_set:
+                            Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
+                            startActivity(intentSetting);
+                            break;
+                        case R.id.nav_about:
+                            startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                            break;
+                        case R.id.nav_city:
+                            Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
+                            startActivity(intentCity);
+                            break;
+                        case R.id.nav_multi_cities:
+                            viewPager.setCurrentItem(1);
+                            break;
+                    }
+                }
+            });
         return false;
     }
 
@@ -273,11 +282,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mIsHidden = !mIsHidden;
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        OrmLite.getInstance().close();
+        //OrmLite.getInstance().close();
     }
 }

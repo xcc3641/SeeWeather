@@ -124,7 +124,7 @@ public class CircularAnimUtil {
                 triggerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("animi", "End");
+
                         Animator anim =
                             ViewAnimationUtils.createCircularReveal(view, cx, cy, finalRadius, 0);
                         anim.setDuration(durationMills);
@@ -140,7 +140,7 @@ public class CircularAnimUtil {
                             }
                         });
                         anim.start();
-                        Log.d("animi2", "start");
+
                     }
                 }, 1000);
 

@@ -2,9 +2,9 @@ package com.xiecc.seeWeather.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -13,7 +13,7 @@ import android.support.v7.app.AppCompatActivity;
  * GitHub: https://github.com/xcc3641
  * Info:
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends RxFragment {
 
     protected boolean isCreateView = false;
 

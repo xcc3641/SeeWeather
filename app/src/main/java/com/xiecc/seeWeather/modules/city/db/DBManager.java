@@ -28,29 +28,22 @@ public class DBManager {
     private SQLiteDatabase database;
     private Context context;
 
-    private static DBManager dbInstance = new DBManager();
+    private DBManager() {
 
-    public DBManager() {
-        if (null == dbInstance) {
-            dbInstance = new DBManager(BaseApplication.getmAppContext());
-        }
     }
 
     public static DBManager getInstance() {
-        return dbInstance;
+        return DBManagerHolder.sInstance;
     }
 
-    public DBManager(Context context) {
-        this.context = context;
+    private static final class DBManagerHolder {
+        public static final DBManager sInstance = new DBManager();
     }
 
     public SQLiteDatabase getDatabase() {
         return database;
     }
 
-    public void setDatabase(SQLiteDatabase database) {
-        this.database = database;
-    }
 
     public void openDatabase() {
         //PLog.e(TAG, DB_PATH + "/" + DB_NAME);

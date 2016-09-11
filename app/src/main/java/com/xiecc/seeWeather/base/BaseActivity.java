@@ -1,51 +1,19 @@
 package com.xiecc.seeWeather.base;
 
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 /**
  * Created by hugo on 2015/12/16.
  */
-public  class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends RxAppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
 
-    public SharedPreferenceUtil mSharedPreferenceUtil = null;
 
-    private CompositeSubscription mCompositeSubscription;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
-        //setStatusBarColorForKitkat(R.color.colorSunrise);
-    }
-
-    public CompositeSubscription getCompositeSubscription() {
-        if (this.mCompositeSubscription == null) {
-            this.mCompositeSubscription = new CompositeSubscription();
-        }
-        return this.mCompositeSubscription;
-    }
-
-    public void addSubscription(Subscription s) {
-        if (this.mCompositeSubscription == null) {
-            this.mCompositeSubscription = new CompositeSubscription();
-        }
-        this.mCompositeSubscription.add(s);
-    }
-
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
-    }
 
     /**
      * 设置状态栏颜色
@@ -84,9 +52,6 @@ public  class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (this.mCompositeSubscription != null) {
-            this.mCompositeSubscription.unsubscribe();
-        }
     }
 
     public static void setDayTheme(AppCompatActivity activity) {

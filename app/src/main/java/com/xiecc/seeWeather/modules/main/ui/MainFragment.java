@@ -39,7 +39,9 @@ import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -68,7 +70,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     private View view;
 
-    //private boolean isTodayFirst = true;
+    //private boolean isFirst = true;
 
     @Override
     public void onAttach(Context context) {
@@ -130,22 +132,36 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             mSwiprefresh.setOnRefreshListener(
                 () -> mSwiprefresh.postDelayed(this::load, 1000));
         }
+
         mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new WeatherAdapter(getActivity(), mWeather);
+        mAdapter = new WeatherAdapter(mWeather);
         mRecyclerview.setAdapter(mAdapter);
     }
 
-    /**
-     * 初始化 observer (观察者)
-     * 拿到数据后的操作
-     */
-    private void initDataObserver() {
-
-        observer = new Observer<Weather>() {
-
+    private void load() {
+        fetchDataByNetWork()
+            .doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long aLong) {
+                    mSwiprefresh.setRefreshing(true);
+                }
+            })
+            .doOnError(throwable -> {
+                mIvErro.setVisibility(View.VISIBLE);
+                mRecyclerview.setVisibility(View.GONE);
+                SharedPreferenceUtil.getInstance().setCityName("北京");
+                safeSetTitle("找不到城市啦");
+            })
+            .doOnNext(weather -> {
+                mIvErro.setVisibility(View.GONE);
+                mRecyclerview.setVisibility(View.VISIBLE);
+            })
+            .doOnTerminate(() -> {
+                mSwiprefresh.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
+            }).subscribe(new Subscriber<Weather>() {
             @Override
             public void onCompleted() {
-
                 ToastUtil.showShort(getString(R.string.complete));
             }
 
@@ -169,25 +185,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
                 mAdapter.notifyDataSetChanged();
                 normalStyleNotification(weather);
             }
-        };
-    }
-
-    private void load() {
-        fetchDataByNetWork()
-            .doOnError(throwable -> {
-                mIvErro.setVisibility(View.VISIBLE);
-                mRecyclerview.setVisibility(View.GONE);
-                SharedPreferenceUtil.getInstance().setCityName("北京");
-                safeSetTitle("找不到城市啦");
-            })
-            .doOnNext(weather -> {
-                mIvErro.setVisibility(View.GONE);
-                mRecyclerview.setVisibility(View.VISIBLE);
-            })
-            .doOnTerminate(() -> {
-                mSwiprefresh.setRefreshing(false);
-                mProgressBar.setVisibility(View.GONE);
-            }).subscribe(observer);
+        });
     }
 
     /**
@@ -196,13 +194,15 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     private Observable<Weather> fetchDataByNetWork() {
         String cityName = SharedPreferenceUtil.getInstance().getCityName();
         return RetrofitSingleton.getInstance()
-            .fetchWeather(cityName);
+            .fetchWeather(cityName)
+            .compose(this.bindToLifecycle());
     }
 
     /**
      * 高德定位
      */
     private void location() {
+        mSwiprefresh.setRefreshing(true);
         //初始化定位
         mLocationClient = new AMapLocationClient(BaseApplication.getmAppContext());
         //设置定位回调监听
@@ -264,7 +264,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
      */
     @Override
     protected void lazyLoad() {
-        initDataObserver();
+
     }
 
     private void normalStyleNotification(Weather weather) {

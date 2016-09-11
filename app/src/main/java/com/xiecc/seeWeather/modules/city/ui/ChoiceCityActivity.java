@@ -13,12 +13,12 @@ import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.ToolbarActivity;
-import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.city.adapter.CityAdapter;
 import com.xiecc.seeWeather.modules.city.db.DBManager;
@@ -30,7 +30,6 @@ import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
 import java.util.ArrayList;
 import java.util.List;
-import jp.wasabeef.recyclerview.animators.FadeInUpAnimator;
 import rx.Observable;
 import rx.functions.Action0;
 
@@ -69,16 +68,17 @@ public class ChoiceCityActivity extends ToolbarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        addSubscription(
-            Observable.defer(() -> {
-                //mDBManager = new DBManager(ChoiceCityActivity.this);
-                DBManager.getInstance().openDatabase();
-                return Observable.just(1);
-            }).compose(RxUtils.rxSchedulerHelper())
-                .subscribe(integer -> {
-                    initRecyclerView();
-                    queryProvinces();
-                }));
+
+        Observable.defer(() -> {
+            //mDBManager = new DBManager(ChoiceCityActivity.this);
+            DBManager.getInstance().openDatabase();
+            return Observable.just(1);
+        }).compose(RxUtils.rxSchedulerHelper())
+            .compose(this.bindToLifecycle())
+            .subscribe(integer -> {
+                initRecyclerView();
+                queryProvinces();
+            });
         Intent intent = getIntent();
         isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false);
         if (isChecked && SharedPreferenceUtil.getInstance().getBoolean("Tips", true)) {
@@ -97,7 +97,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
     private void initRecyclerView() {
         mRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerview.setHasFixedSize(true);
-        mRecyclerview.setItemAnimator(new FadeInUpAnimator());
+        //mRecyclerview.setItemAnimator(new FadeInUpAnimator());
         mAdapter = new CityAdapter(this, dataList);
         mRecyclerview.setAdapter(mAdapter);
 
@@ -113,7 +113,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
                     RxBus.getDefault().post(new MultiUpdate());
                     PLog.d("是多城市管理模式");
                 } else {
-                    mSharedPreferenceUtil.setCityName(city);
+                    SharedPreferenceUtil.getInstance().setCityName(city);
                     RxBus.getDefault().post(new ChangeCityEvent());
                 }
                 finish();
@@ -126,7 +126,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
      */
     private void queryProvinces() {
         getToolbar().setTitle("选择省份");
-        addSubscription(Observable.defer(() -> {
+        Observable.defer(() -> {
             if (provincesList.isEmpty()) {
                 provincesList.addAll(WeatherDB.loadProvinces(DBManager.getInstance().getDatabase()));
             }
@@ -138,6 +138,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
             //.onBackpressureBuffer() // 会缓存所有当前无法消费的数据，直到 Observer 可以处理为止
             .toList()
             .compose(RxUtils.rxSchedulerHelper())
+            .compose(this.bindToLifecycle())
             .doOnTerminate(() -> mProgressBar.setVisibility(View.GONE))
             .doOnCompleted(new Action0() {
                 @Override
@@ -151,7 +152,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 public void onNext(List<String> strings) {
                     dataList.addAll(strings);
                 }
-            }));
+            });
     }
 
     @Override
@@ -181,13 +182,15 @@ public class ChoiceCityActivity extends ToolbarActivity {
         getToolbar().setTitle("选择城市");
         dataList.clear();
         mAdapter.notifyDataSetChanged();
-        addSubscription(Observable.defer(() -> {
+        Observable.defer(() -> {
             cityList = WeatherDB.loadCities(DBManager.getInstance().getDatabase(), selectedProvince.ProSort);
             return Observable.from(cityList);
         })
+
             .map(city -> city.CityName)
             .toList()
             .compose(RxUtils.rxSchedulerHelper())
+            .compose(this.bindToLifecycle())
             .doOnCompleted(new Action0() {
                 @Override
                 public void call() {
@@ -202,7 +205,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 public void onNext(List<String> strings) {
                     dataList.addAll(strings);
                 }
-            }));
+            });
     }
 
     @Override

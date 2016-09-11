@@ -226,6 +226,6 @@ public class Util {
         ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("msg", info);
         manager.setPrimaryClip(clipData);
-        ToastUtil.showShort("已经复制到剪切板啦( •̀ .̫ •́ )✧");
+        ToastUtil.showShort(String.format("[%s] 已经复制到剪切板啦( •̀ .̫ •́ )✧",info));
     }
 }

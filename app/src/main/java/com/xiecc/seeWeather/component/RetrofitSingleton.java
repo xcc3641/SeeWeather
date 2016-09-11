@@ -113,19 +113,23 @@ public class RetrofitSingleton {
         } else if (t.toString().contains("API没有")) {
             OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", Util.replaceInfo(t.getMessage())));
             PLog.w(Util.replaceInfo(t.getMessage()));
-            ToastUtil.showShort(t.getMessage());
+            ToastUtil.showShort("错误: "+t.getMessage());
         }
         PLog.w(t.getMessage());
     }
 
+    public ApiInterface getApiService(){
+        return apiService;
+    }
+
     public Observable<Weather> fetchWeather(String city) {
+
         return apiService.mWeatherAPI(city, C.KEY)
-            //.filter(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0).status.equals("ok"))
             .flatMap(weatherAPI -> {
                 String status = weatherAPI.mHeWeatherDataService30s.get(0).status;
-                if (status.equals("no more requests")) {
+                if ("no more requests".equals(status)) {
                     return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
-                } else if (status.equals("unknown city")) {
+                } else if ("unknown city".equals(status)) {
                     return Observable.error(new RuntimeException(String.format("API没有%s", city)));
                 }
                 return Observable.just(weatherAPI);

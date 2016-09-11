@@ -39,22 +39,21 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         this.onMultiCityLongClick = onMultiCityLongClick;
     }
 
-    public MultiCityAdapter(Context context) {
-        mContext = context;
-    }
 
-    public MultiCityAdapter(Context context, List<Weather> weatherList) {
-        mContext = context;
+
+    public MultiCityAdapter(List<Weather> weatherList) {
         mWeatherList = weatherList;
     }
 
     @Override
     public MultiCityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MultiCityViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_multi_city, parent, false));
+        mContext = parent.getContext();
+        return new MultiCityViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_multi_city, parent, false));
     }
 
     @Override
     public void onBindViewHolder(MultiCityViewHolder holder, int position) {
+
         holder.invoke(mWeatherList.get(position));
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -68,6 +67,10 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
     @Override
     public int getItemCount() {
         return mWeatherList.size();
+    }
+
+    public boolean isEmpty() {
+        return 0 == mWeatherList.size();
     }
 
     class MultiCityViewHolder extends RecyclerView.ViewHolder {
@@ -88,8 +91,14 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
 
         public void invoke(Weather mWeather) {
 
-            mDialogCity.setText(Util.safeText(mWeather.basic.city));
-            mDialogTemp.setText(String.format("%s℃", mWeather.now.tmp));
+
+            try {
+                mDialogCity.setText(Util.safeText(mWeather.basic.city));
+                mDialogTemp.setText(String.format("%s℃", mWeather.now.tmp));
+            }catch (NullPointerException e){
+                PLog.e(e.getMessage());
+            }
+
 
             Glide.with(mContext).load(SharedPreferenceUtil.getInstance().getInt(mWeather.now.cond.txt, R.mipmap.none
             )).asBitmap().into(new SimpleTarget<Bitmap>() {
@@ -109,7 +118,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                 mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_cloudy));
             }
 
-            PLog.d(mWeather.now.cond.txt+" "+mWeather.now.cond.code);
+            PLog.d(mWeather.now.cond.txt + " " + mWeather.now.cond.code);
         }
     }
 

@@ -33,6 +33,7 @@ public class OrmLite {
     private OrmLite() {
         if (liteOrm == null) {
             liteOrm = LiteOrm.newSingleInstance(BaseApplication.getmAppContext(), C.ORM_NAME);
+
         }
         liteOrm.setDebugged(BuildConfig.DEBUG);
     }

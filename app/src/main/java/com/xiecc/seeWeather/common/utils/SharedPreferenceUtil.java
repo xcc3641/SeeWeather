@@ -23,20 +23,18 @@ public class SharedPreferenceUtil {
 
     public static int ONE_HOUR = 1000 * 60 * 60;
 
-    private static SharedPreferenceUtil sInstance;
-
     private SharedPreferences mPrefs;
 
     public static SharedPreferenceUtil getInstance() {
-        if (sInstance == null) {
-            sInstance = new SharedPreferenceUtil(BaseApplication.mAppContext);
-        }
-        return sInstance;
+        return SPHolder.sInstance;
     }
 
-    private SharedPreferenceUtil(Context context) {
-        mPrefs = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
-        //mPrefs.edit().putInt(CHANGE_ICONS, 1).apply();
+    private static class SPHolder {
+        private static final SharedPreferenceUtil sInstance = new SharedPreferenceUtil();
+    }
+
+    private SharedPreferenceUtil() {
+        mPrefs = BaseApplication.getmAppContext().getSharedPreferences("setting", Context.MODE_PRIVATE);
     }
 
     public SharedPreferenceUtil putInt(String key, int value) {

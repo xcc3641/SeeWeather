@@ -55,16 +55,21 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     // 默认 UI
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:design:24.0.0'
-    compile 'com.android.support:cardview-v7:24.0.0'
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'jp.wasabeef:recyclerview-animators:2.2.3'
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:cardview-v7:24.2.0'
+    compile 'com.android.support:support-v4:24.2.0'
+
 
     // Rx
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+    compile 'com.trello:rxlifecycle:0.7.0'
+    // If you want to bind to Android-specific lifecycles
+    compile 'com.trello:rxlifecycle-android:0.7.0'
+    // If you want pre-written Activities and Fragments you can subclass as providers
+    compile 'com.trello:rxlifecycle-components:0.7.0'
     // network
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'

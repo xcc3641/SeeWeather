@@ -26,39 +26,40 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     private static String TAG = WeatherAdapter.class.getSimpleName();
 
     private Context mContext;
-    private final int TYPE_ONE = 0;
 
-    private final int TYPE_TWO = 1;
-    private final int TYPE_THREE = 2;
-    private final int TYPE_FORE = 3;
+    private static final int TYPE_ONE = 0;
+    private static final int TYPE_TWO = 1;
+    private static final int TYPE_THREE = 2;
+    private static final int TYPE_FORE = 3;
 
     private Weather mWeatherData;
 
-    public WeatherAdapter(Context context, Weather weatherData) {
-        mContext = context;
+    public WeatherAdapter( Weather weatherData) {
+
         this.mWeatherData = weatherData;
+
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == TYPE_ONE) {
-            return TYPE_ONE;
+        if (position == WeatherAdapter.TYPE_ONE) {
+            return WeatherAdapter.TYPE_ONE;
         }
-        if (position == TYPE_TWO) {
-            return TYPE_TWO;
+        if (position == WeatherAdapter.TYPE_TWO) {
+            return WeatherAdapter.TYPE_TWO;
         }
-        if (position == TYPE_THREE) {
-            return TYPE_THREE;
+        if (position == WeatherAdapter.TYPE_THREE) {
+            return WeatherAdapter.TYPE_THREE;
         }
-        if (position == TYPE_FORE) {
-            return TYPE_FORE;
+        if (position == WeatherAdapter.TYPE_FORE) {
+            return WeatherAdapter.TYPE_FORE;
         }
         return super.getItemViewType(position);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
+        mContext = parent.getContext();
         switch (viewType) {
             case TYPE_ONE:
                 return new NowWeatherViewHolder(
@@ -98,7 +99,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             showItemAnim(holder.itemView, position);
         }
 
-        PLog.d(SharedPreferenceUtil.getInstance().getMainAnim() + "");
+
     }
 
     @Override
@@ -135,9 +136,9 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             try {
                 tempFlu.setText(String.format("%s℃", weather.now.tmp));
                 tempMax.setText(
-                    String.format("↑ %s °", weather.dailyForecast.get(0).tmp.max));
+                    String.format("↑ %s ℃", weather.dailyForecast.get(0).tmp.max));
                 tempMin.setText(
-                    String.format("↓ %s °", weather.dailyForecast.get(0).tmp.min));
+                    String.format("↓ %s ℃", weather.dailyForecast.get(0).tmp.min));
 
                 tempPm.setText(String.format("PM2.5: %s μg/m³", Util.safeText(weather.aqi.city.pm25)));
                 tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
@@ -147,11 +148,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             } catch (Exception e) {
                 PLog.e(TAG, e.toString());
             }
-            //itemView.setOnClickListener(v -> {
-            //    if (listener != null) {
-            //        listener.onItemClick(mWeatherData);
-            //    }
-            //});
         }
     }
 

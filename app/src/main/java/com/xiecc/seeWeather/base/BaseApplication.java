@@ -29,7 +29,6 @@ public class BaseApplication extends Application {
         mAppContext = getApplicationContext();
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         if (!BuildConfig.DEBUG) {
-
             FIR.init(this);
         }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();

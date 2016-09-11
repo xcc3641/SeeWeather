@@ -15,12 +15,15 @@ import android.widget.LinearLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.litesuits.orm.db.assit.WhereBuilder;
+import com.trello.rxlifecycle.android.FragmentEvent;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
-import com.xiecc.seeWeather.component.OrmLite;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.main.adapter.MultiCityAdapter;
@@ -31,10 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.Observer;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -57,6 +56,7 @@ public class MultiCityFragment extends BaseFragment {
 
     private View view;
     private String errorCity;
+    Observable<Weather> resumeOb;
 
     /**
      * 加载数据操作,在视图创建之前初始化
@@ -96,7 +96,7 @@ public class MultiCityFragment extends BaseFragment {
 
     private void initView() {
         weatherArrayList = new ArrayList<>();
-        mAdatper = new MultiCityAdapter(getActivity(), weatherArrayList);
+        mAdatper = new MultiCityAdapter(weatherArrayList);
         mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerview.setAdapter(mAdatper);
         mAdatper.setOnMultiCityLongClick(new MultiCityAdapter.onMultiCityLongClick() {
@@ -152,46 +152,47 @@ public class MultiCityFragment extends BaseFragment {
 
     private void multiLoad() {
         weatherArrayList.clear();
-        Observable.defer(new Func0<Observable<CityORM>>() {
-            @Override
-            public Observable<CityORM> call() {
 
-                return Observable.from(OrmLite.getInstance().query(CityORM.class));
-            }
-        })
-            .doOnRequest(new Action1<Long>() {
-                @Override
-                public void call(Long aLong) {
-                    mSwiprefresh.setRefreshing(true);
-                }
-            })
-            .doOnTerminate(new Action0() {
-                @Override
-                public void call() {
-                    mSwiprefresh.setRefreshing(false);
-                }
-            })
-            .map(new Func1<CityORM, String>() {
-                @Override
-                public String call(CityORM cityORM) {
-                    errorCity = cityORM.getName();
-                    return Util.replaceCity(cityORM.getName());
-                }
-            })
+        //Observable.create(new Observable.OnSubscribe<CityORM>() {
+        //
+        //    @Override
+        //    public void call(Subscriber<? super CityORM> subscriber) {
+        //        try {
+        //            ArrayList<CityORM> list = OrmLite.getInstance().query(CityORM.class);
+        //            for (CityORM c : list) {
+        //                subscriber.onNext(c);
+        //            }
+        //            subscriber.onCompleted();
+        //        } catch (Exception e) {
+        //            subscriber.onError(e);
+        //        }
+        //    }
+        //})
+            Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))
+            .doOnRequest(aLong -> mSwiprefresh.setRefreshing(true))
+            .map(cityORM -> Util.replaceCity(cityORM.getName()))
             .distinct()
+            .flatMap(s -> {
+                return RetrofitSingleton.getInstance()
+                    .getApiService()
+                    .mWeatherAPI(s, C.KEY)
+                    .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+                    .compose(RxUtils.rxSchedulerHelper());
+                // TODO: 16/9/11 这里其实可以优化下
+            })
+            .compose(this.bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+            .filter(weather -> !C.UNKNOW_CITY.equals(weather.status))
             .take(3)
-            .flatMap(new Func1<String, Observable<Weather>>() {
-                @Override
-                public Observable<Weather> call(String s) {
-                    return RetrofitSingleton.getInstance().fetchWeather(s);
-                }
+            .doOnTerminate(() -> {
+                // 因为 flatmap 换了新的流,所以得在这里
+                mSwiprefresh.setRefreshing(false);
             })
             .subscribe(new Observer<Weather>() {
                 @Override
                 public void onCompleted() {
                     mAdatper.notifyDataSetChanged();
                     PLog.d("complete" + weatherArrayList.size() + "");
-                    if (weatherArrayList.isEmpty()) {
+                    if (mAdatper.isEmpty()) {
                         linearLayout.setVisibility(View.VISIBLE);
                     } else {
                         linearLayout.setVisibility(View.GONE);
@@ -200,7 +201,9 @@ public class MultiCityFragment extends BaseFragment {
 
                 @Override
                 public void onError(Throwable e) {
-                    linearLayout.setVisibility(View.VISIBLE);
+                    if (mAdatper.isEmpty() && linearLayout != null) {
+                        linearLayout.setVisibility(View.VISIBLE);
+                    }
                     RetrofitSingleton.disposeFailureInfo(e);
                 }
 
