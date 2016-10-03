@@ -118,6 +118,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onPageSelected(int position) {
+
                 if (position == 1) {
                     fab.setImageResource(R.drawable.ic_add_24dp);
                     fab.setBackgroundTintList(

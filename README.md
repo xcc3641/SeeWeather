@@ -4,11 +4,7 @@
 
 
 从15年10月上线，到目前经历两次重大改版，一次代码的重构，一次界面的大幅度改动，目的都是为了你们。
-在开源的过程中，收到了很多来自有趣的你们的邮件。
-
-我也曾遇到过棘手的问题无处咨询又谷歌不到。那个时候的我，也可能是现在的你。所以我希望能够帮助到你。
-
-
+在开源的过程中，收到了很多来自有趣的你们的邮件。我也曾遇到过棘手的问题无处咨询又谷歌不到。那个时候的我，也可能是现在的你。所以我希望能够帮助到你。
 
 - **开源不易，希望能给个Star鼓励**
 - 项目地址：https://github.com/xcc3641/SeeWeather
@@ -23,8 +19,6 @@
 - 卡片展现（当前天气情况，未来几小时天气情况，生活建议，一周七天概况）
 - 缓存数据，减少网络请求，保证离线查看
 - 内置两套图标（设置里更改）
-- 彩蛋（自动夜间状态）
-- 定位服务
 
 
 ----
@@ -60,25 +54,12 @@ Fir.im: http://fir.im/seeWeather
 
 豌豆荚：http://www.wandoujia.com/apps/com.xiecc.seeWeather
 
-魅族应用中心： http://developer.meizu.com/console/apps/detail/6530883
-
 v2.2
 - 新增 多城市管理
 - 新增 Bug反馈和意见
 - 改版 首页UI 更丰富
 - 美化 关于页面
 - 美化 部分图标
-
-v2.1.6
-- 更新 RxUtil
-- 优化 网络和缓存逻辑
-- 更多的封装
-
-v2.1.3
-- 修复 城市列表卡顿
-- 更新 lambda
-- 新增 bugly
-- 修复 高德地图未注销监听器导致的内存泄露
 
 v2.1
 - 修复 定位逻辑
@@ -168,7 +149,7 @@ Interceptor cacheInterceptor = chain -> {
 builder.cache(cache).addInterceptor(cacheInterceptor);
 ```
 设置好缓存地址，设置好 header 即可实现缓存。
-- - -
+
 
 
 
@@ -248,7 +229,9 @@ private void load() {
 
 ##### RxBus
 
-具体的逻辑分析在这里[RxBus 的简单实现](http://brucezz.github.io/articles/2016/06/02/a-simple-rxbus-implementation/)
+具体的逻辑分析在这里 [RxBus 的简单实现](http://brucezz.github.io/articles/2016/06/02/a-simple-rxbus-implementation/)
+
+深入分析理解可以看我的这篇文章:[从 RxBus 这辆兰博基尼深入进去](http://imxie.cc/2016/06/02/deep-understanding-of-RxBus/)
 
 感谢 Brucezz
 
@@ -296,7 +279,7 @@ private void load() {
 ![][image-3]
 
 ### 感谢
-感谢开源，学习到了前辈们优秀的代码
+感谢开源，学习到了前辈们优秀的代码：
 - [@张鸿洋][7]
 - [@扔物线][8]
 - [@drakeet][9]
@@ -306,39 +289,41 @@ private void load() {
 - [@Jude95][13]
 - [@泡在网上编代码][14]
 
-特别感谢**简书猿圈**
+感谢优秀的设计师提供素材：
+- 多城市卡片 by [YujunZhu](http://yujunzhu.zcool.com.cn/)
 
 ### 关于作者
 
+谢三弟
+
 ![][image-4]
 
-简书：http://www.jianshu.com/users/3372b4a3b9e5/latest\_articles
+- [简书](http://www.jianshu.com/users/3372b4a3b9e5/latest_articles)
+- [个人博客](http://imxie.cc/)
+- [知乎](https://www.zhihu.com/people/xcc3641.github.io)
 
-知乎：https://www.zhihu.com/people/xcc3641.github.io
 
-微博：http://weibo.com/xcc3641
-
-个人博客： http://IMXIE.CC
-
-<!-- 
 ### 请我喝杯咖啡
 
 ----
 
 ![][image-5]
----- -->
+
 
 ### LICENSE
 
-```
-Copyright 2016 HugoXie  Licensed under the Apache License, Version 2.0 (the \"License\")
+```License
+Copyright 2016 HugoXie  
+Licensed under the Apache License, Version 2.0 (the \"License\")
 
 you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 ```
 
-图片来源于网络，版权属于原作者。
+
+
+__软件中图片素材均来源于网络，版权属于原作者。__
 
 
 

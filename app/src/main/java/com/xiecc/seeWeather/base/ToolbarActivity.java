@@ -6,6 +6,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import com.xiecc.seeWeather.R;
 
@@ -38,7 +39,12 @@ public abstract class ToolbarActivity extends BaseActivity {
             throw new IllegalStateException(
                 "The subclass of ToolbarActivity must contain a toolbar.");
         }
-        mToolbar.setOnClickListener(v -> onToolbarClick());
+        mToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onToolbarClick();
+            }
+        });
         setSupportActionBar(mToolbar);
         if (canBack()) {
             ActionBar actionBar = getSupportActionBar();

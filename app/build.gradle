@@ -15,8 +15,6 @@ android {
         versionCode app.versionCode
         versionName app.versionName
         resConfigs "zh"
-
-
     }
     buildTypes {
         release {
@@ -36,22 +34,20 @@ android {
     lintOptions {
         disable 'InvalidPackage', 'MissingTranslation', 'ExtraTranslation'
     }
-    lintOptions {
-        abortOnError false
-    }
+
     packagingOptions {
 
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 
+
 }
 
 retrolambda {
     //指定将源码编译的级别，使用下列代码，会将代码编译到兼容1.6的字节码格式
-    javaVersion JavaVersion.VERSION_1_6
+    javaVersion JavaVersion.VERSION_1_7
 }
 dependencies {
-
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     // 默认 UI
@@ -59,8 +55,6 @@ dependencies {
     compile 'com.android.support:design:24.2.0'
     compile 'com.android.support:cardview-v7:24.2.0'
     compile 'com.android.support:support-v4:24.2.0'
-
-
     // Rx
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
@@ -77,18 +71,12 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
     compile 'com.squareup.okhttp3:okhttp:3.0.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
-
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
     compile 'com.jakewharton:butterknife:7.0.1'
-
-
     debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
     releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
-
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-
-
 }
 

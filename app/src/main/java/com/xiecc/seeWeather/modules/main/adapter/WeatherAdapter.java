@@ -34,10 +34,9 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
     private Weather mWeatherData;
 
-    public WeatherAdapter( Weather weatherData) {
+    public WeatherAdapter(Weather weatherData) {
 
         this.mWeatherData = weatherData;
-
     }
 
     @Override
@@ -98,8 +97,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         if (SharedPreferenceUtil.getInstance().getMainAnim()) {
             showItemAnim(holder.itemView, position);
         }
-
-
     }
 
     @Override
@@ -127,12 +124,12 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         @Bind(R.id.cardView)
         CardView cardView;
 
-        public NowWeatherViewHolder(View itemView) {
+        NowWeatherViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(Weather weather) {
+        void bind(Weather weather) {
             try {
                 tempFlu.setText(String.format("%s℃", weather.now.tmp));
                 tempMax.setText(
@@ -154,14 +151,14 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     /**
      * 当日小时预告
      */
-    class HoursWeatherViewHolder extends RecyclerView.ViewHolder {
+    private class HoursWeatherViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout itemHourInfoLinearlayout;
         private TextView[] mClock = new TextView[mWeatherData.hourlyForecast.size()];
         private TextView[] mTemp = new TextView[mWeatherData.hourlyForecast.size()];
         private TextView[] mHumidity = new TextView[mWeatherData.hourlyForecast.size()];
         private TextView[] mWind = new TextView[mWeatherData.hourlyForecast.size()];
 
-        public HoursWeatherViewHolder(View itemView) {
+        HoursWeatherViewHolder(View itemView) {
             super(itemView);
             itemHourInfoLinearlayout = (LinearLayout) itemView.findViewById(R.id.item_hour_info_linearlayout);
 
@@ -175,7 +172,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
 
-        public void bind(Weather weather) {
+        void bind(Weather weather) {
 
             try {
                 for (int i = 0; i < weather.hourlyForecast.size(); i++) {
@@ -221,12 +218,12 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         @Bind(R.id.flu_txt)
         TextView fluTxt;
 
-        public SuggestionViewHolder(View itemView) {
+        SuggestionViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(Weather weather) {
+        void bind(Weather weather) {
             try {
 
                 clothBrief.setText(String.format("穿衣指数---%s", weather.suggestion.drsg.brf));
@@ -256,7 +253,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         private TextView[] forecastTxt = new TextView[mWeatherData.dailyForecast.size()];
         private ImageView[] forecastIcon = new ImageView[mWeatherData.dailyForecast.size()];
 
-        public ForecastViewHolder(View itemView) {
+        ForecastViewHolder(View itemView) {
             super(itemView);
             forecastLinear = (LinearLayout) itemView.findViewById(R.id.forecast_linear);
             for (int i = 0; i < mWeatherData.dailyForecast.size(); i++) {
@@ -269,7 +266,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
 
-        public void bind(Weather weather) {
+        void bind(Weather weather) {
             try {
                 //今日 明日
                 forecastDate[0].setText("今日");
@@ -304,7 +301,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
         }
     }
 
-    public interface OnItemClickListener {
+    interface OnItemClickListener {
         void onItemClick(Weather mWeather);
     }
 
