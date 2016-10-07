@@ -1,7 +1,6 @@
 package com.xiecc.seeWeather.modules.launch;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,9 +33,7 @@ public class FirstActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-
-            Intent i = new Intent(FirstActivity.this, MainActivity.class);
-            FirstActivity.this.startActivity(i);
+            MainActivity.launch(FirstActivity.this);
             //activity切换的淡入淡出效果
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             FirstActivity.this.finish();

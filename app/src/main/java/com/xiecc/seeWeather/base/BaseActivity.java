@@ -13,8 +13,6 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 public class BaseActivity extends RxAppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
 
-
-
     /**
      * 设置状态栏颜色
      * 也就是所谓沉浸式状态栏
@@ -85,4 +83,5 @@ public class BaseActivity extends RxAppCompatActivity {
         activity.getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
         activity.recreate();
     }
+
 }

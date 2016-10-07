@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.main.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -65,7 +66,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startService(new Intent(this, AutoUpdateService.class));
     }
 
-
+    public static void launch(Context context) {
+        context.startActivity(new Intent(context, MainActivity.class));
+    }
 
     @Override
     protected void onStart() {
@@ -241,15 +244,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 public void onNext(Void aVoid) {
                     switch (item.getItemId()) {
                         case R.id.nav_set:
-                            Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
-                            startActivity(intentSetting);
+                            SettingActivity.launch(MainActivity.this);
                             break;
                         case R.id.nav_about:
-                            startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                            AboutActivity.launch(MainActivity.this);
                             break;
                         case R.id.nav_city:
-                            Intent intentCity = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                            startActivity(intentCity);
+                            ChoiceCityActivity.launch(MainActivity.this);
                             break;
                         case R.id.nav_multi_cities:
                             viewPager.setCurrentItem(1);

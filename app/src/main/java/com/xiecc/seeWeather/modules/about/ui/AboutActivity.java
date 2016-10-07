@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.about.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -102,5 +103,8 @@ public class AboutActivity extends BaseActivity {
         intent.setAction(Intent.ACTION_VIEW);           //指定Action
         intent.setData(uri);                            //设置Uri
         startActivity(intent);        //启动Activity
+    }
+    public static void launch(Context context) {
+        context.startActivity(new Intent(context, AboutActivity.class));
     }
 }

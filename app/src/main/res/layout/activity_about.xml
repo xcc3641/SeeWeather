@@ -25,7 +25,7 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleGravity="center_horizontal"
-            app:expandedTitleMarginTop="162dp"
+            app:expandedTitleMarginTop="220dp"
             app:expandedTitleTextAppearance="@style/textToolbarTitle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
             <!-- contentScrim 这个属性是设置折叠后Toolbar的颜色-->

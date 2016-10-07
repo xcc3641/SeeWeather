@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.city.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import rx.functions.Action0;
 
 /**
  * Created by hugo on 2016/2/19 0019.
+ * todo 需要统一 Activity 退出的效果
  */
 public class ChoiceCityActivity extends ToolbarActivity {
 
@@ -116,7 +118,9 @@ public class ChoiceCityActivity extends ToolbarActivity {
                     SharedPreferenceUtil.getInstance().setCityName(city);
                     RxBus.getDefault().post(new ChangeCityEvent());
                 }
-                finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                //finish();
+                quit();
             }
         });
     }
@@ -212,11 +216,16 @@ public class ChoiceCityActivity extends ToolbarActivity {
     public void onBackPressed() {
         //super.onBackPressed();  http://www.eoeandroid.com/thread-275312-1-1.html 这里的坑
         if (currentLevel == LEVEL_PROVINCE) {
-            finish();
+            //finish();
+            quit();
         } else {
             queryProvinces();
             mRecyclerview.smoothScrollToPosition(0);
         }
+    }
+
+    public static void launch(Context context) {
+        context.startActivity(new Intent(context, ChoiceCityActivity.class));
     }
 
     @Override
@@ -239,5 +248,10 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 SharedPreferenceUtil.getInstance().putBoolean("Tips", false);
             }
         }).show();
+    }
+
+    private void quit() {
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        ChoiceCityActivity.this.finish();
     }
 }
