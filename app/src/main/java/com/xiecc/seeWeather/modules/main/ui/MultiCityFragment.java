@@ -152,23 +152,7 @@ public class MultiCityFragment extends BaseFragment {
 
     private void multiLoad() {
         weatherArrayList.clear();
-
-        //Observable.create(new Observable.OnSubscribe<CityORM>() {
-        //
-        //    @Override
-        //    public void call(Subscriber<? super CityORM> subscriber) {
-        //        try {
-        //            ArrayList<CityORM> list = OrmLite.getInstance().query(CityORM.class);
-        //            for (CityORM c : list) {
-        //                subscriber.onNext(c);
-        //            }
-        //            subscriber.onCompleted();
-        //        } catch (Exception e) {
-        //            subscriber.onError(e);
-        //        }
-        //    }
-        //})
-            Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))
+        Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))
             .doOnRequest(aLong -> mSwiprefresh.setRefreshing(true))
             .map(cityORM -> Util.replaceCity(cityORM.getName()))
             .distinct()

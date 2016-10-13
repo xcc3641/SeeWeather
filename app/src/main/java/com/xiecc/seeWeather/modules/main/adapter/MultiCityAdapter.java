@@ -39,8 +39,6 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         this.onMultiCityLongClick = onMultiCityLongClick;
     }
 
-
-
     public MultiCityAdapter(List<Weather> weatherList) {
         mWeatherList = weatherList;
     }
@@ -91,14 +89,12 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
 
         public void invoke(Weather mWeather) {
 
-
             try {
                 mDialogCity.setText(Util.safeText(mWeather.basic.city));
                 mDialogTemp.setText(String.format("%s℃", mWeather.now.tmp));
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 PLog.e(e.getMessage());
             }
-
 
             Glide.with(mContext).load(SharedPreferenceUtil.getInstance().getInt(mWeather.now.cond.txt, R.mipmap.none
             )).asBitmap().into(new SimpleTarget<Bitmap>() {
@@ -110,6 +106,9 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
             });
 
             int code = Integer.valueOf(mWeather.now.cond.code);
+
+            // TODO: 2016/10/13 新增三个城市卡片 需要更新
+
             if (code == 100) {
                 mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_sunny));
             } else if (code >= 300 && code < 408) {
