@@ -29,5 +29,6 @@ public class StatusBarUtil {
         toolLayoutParams.height = EnvUtil.getStatusBarHeight() + EnvUtil.getActionBarSize(context);
         toolbar.setLayoutParams(toolLayoutParams);
         toolbar.setPadding(0, EnvUtil.getStatusBarHeight(), 0, 0);
+        toolbar.requestLayout();
     }
 }

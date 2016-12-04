@@ -3,6 +3,7 @@ package com.xiecc.seeWeather.modules.main.adapter;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.common.PLog;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +42,10 @@ public class CardCityUIHelper {
     void applyStatus(int code, String city, View view) {
         if (code >= 300 && code < 408) {
             code = RAINY_CODE;
-        } else if (code != 100) {
+        } else if (code > 100 && code < 300) {
             code = CLOUDY_CODE;
+        } else {
+            code = SUNNY_CODE;
         }
         if (!city.matches(String.format("(?:%s|%s|%s)", SU_ZHOU, SHANG_HAI, BEI_JING))) {
             city = Other;

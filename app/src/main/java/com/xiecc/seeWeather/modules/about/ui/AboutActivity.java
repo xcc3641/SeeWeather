@@ -55,8 +55,11 @@ public class AboutActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-        mToolbarLayout.setTitle("就看天气");
         mTvVersion.setText(String.format("当前版本: %s (Build %s)", Util.getVersion(this), Util.getVersionCode(this)));
+        mToolbarLayout.setTitleEnabled(false);
+        // TODO: 2016/12/4 这里有个 bug
+        //mToolbarLayout.setTitle(getString(R.string.app_name));
+        mToolbar.setTitle(getString(R.string.app_name));
     }
 
     @Override
