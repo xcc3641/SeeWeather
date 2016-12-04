@@ -5,19 +5,19 @@ package com.xiecc.seeWeather.common.utils;
  *
  * Email: Hugo3641@gamil.com
  * GitHub: https://github.com/xcc3641
- * Info: 来源 brucezz 双击退出
+ * Info: 
  */
 public class DoubleClickExit {
     /**
      * 双击退出检测, 阈值 1000ms
      */
-    public static long lastClick = 0L;
+    public static long mLastClick = 0L;
     private static final int THRESHOLD = 2000;// 1000ms
 
     public static boolean check() {
         long now = System.currentTimeMillis();
-        boolean b = now - lastClick < THRESHOLD;
-        lastClick = now;
+        boolean b = now - mLastClick < THRESHOLD;
+        mLastClick = now;
         return b;
     }
 }

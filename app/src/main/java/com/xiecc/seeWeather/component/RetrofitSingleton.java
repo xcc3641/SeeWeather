@@ -31,14 +31,14 @@ import rx.Observable;
  */
 public class RetrofitSingleton {
 
-    private static ApiInterface apiService = null;
-    private static Retrofit retrofit = null;
-    private static OkHttpClient okHttpClient = null;
+    private static ApiInterface sApiService = null;
+    private static Retrofit sRetrofit = null;
+    private static OkHttpClient sOkHttpClient = null;
 
     private void init() {
         initOkHttp();
         initRetrofit();
-        apiService = retrofit.create(ApiInterface.class);
+        sApiService = sRetrofit.create(ApiInterface.class);
     }
 
     private RetrofitSingleton() {
@@ -62,17 +62,17 @@ public class RetrofitSingleton {
             builder.addInterceptor(loggingInterceptor);
         }
         // 缓存 http://www.jianshu.com/p/93153b34310e
-        File cacheFile = new File(BaseApplication.cacheDir, "/NetCache");
+        File cacheFile = new File(BaseApplication.getAppCacheDir(), "/NetCache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
         Interceptor cacheInterceptor = chain -> {
             Request request = chain.request();
-            if (!Util.isNetworkConnected(BaseApplication.getmAppContext())) {
+            if (!Util.isNetworkConnected(BaseApplication.getAppContext())) {
                 request = request.newBuilder()
                     .cacheControl(CacheControl.FORCE_CACHE)
                     .build();
             }
             Response response = chain.proceed(request);
-            if (Util.isNetworkConnected(BaseApplication.getmAppContext())) {
+            if (Util.isNetworkConnected(BaseApplication.getAppContext())) {
                 int maxAge = 0;
                 // 有网络时 设置缓存超时时间0个小时
                 response.newBuilder()
@@ -94,13 +94,13 @@ public class RetrofitSingleton {
         builder.writeTimeout(20, TimeUnit.SECONDS);
         //错误重连
         builder.retryOnConnectionFailure(true);
-        okHttpClient = builder.build();
+        sOkHttpClient = builder.build();
     }
 
     private static void initRetrofit() {
-        retrofit = new Retrofit.Builder()
+        sRetrofit = new Retrofit.Builder()
             .baseUrl(ApiInterface.HOST)
-            .client(okHttpClient)
+            .client(sOkHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
             .build();
@@ -113,18 +113,18 @@ public class RetrofitSingleton {
         } else if (t.toString().contains("API没有")) {
             OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", Util.replaceInfo(t.getMessage())));
             PLog.w(Util.replaceInfo(t.getMessage()));
-            ToastUtil.showShort("错误: "+t.getMessage());
+            ToastUtil.showShort("错误: " + t.getMessage());
         }
         PLog.w(t.getMessage());
     }
 
-    public ApiInterface getApiService(){
-        return apiService;
+    public ApiInterface getApiService() {
+        return sApiService;
     }
 
     public Observable<Weather> fetchWeather(String city) {
 
-        return apiService.mWeatherAPI(city, C.KEY)
+        return sApiService.mWeatherAPI(city, C.KEY)
             .flatMap(weatherAPI -> {
                 String status = weatherAPI.mHeWeatherDataService30s.get(0).status;
                 if ("no more requests".equals(status)) {
@@ -139,6 +139,6 @@ public class RetrofitSingleton {
     }
 
     public Observable<VersionAPI> fetchVersion() {
-        return apiService.mVersionAPI(C.API_TOKEN).compose(RxUtils.rxSchedulerHelper());
+        return sApiService.mVersionAPI(C.API_TOKEN).compose(RxUtils.rxSchedulerHelper());
     }
 }

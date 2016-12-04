@@ -19,7 +19,7 @@ public class SharedPreferenceUtil {
     public static final String CLEAR_CACHE = "clear_cache";//清空缓存
     public static final String AUTO_UPDATE = "change_update_time"; //自动更新时长
     public static final String NOTIFICATION_MODEL = "notification_model";
-    public static final String ANIM_STRAT = "animation_start";
+    public static final String ANIM_START = "animation_start";
 
     public static int ONE_HOUR = 1000 * 60 * 60;
 
@@ -34,7 +34,7 @@ public class SharedPreferenceUtil {
     }
 
     private SharedPreferenceUtil() {
-        mPrefs = BaseApplication.getmAppContext().getSharedPreferences("setting", Context.MODE_PRIVATE);
+        mPrefs = BaseApplication.getAppContext().getSharedPreferences("setting", Context.MODE_PRIVATE);
     }
 
     public SharedPreferenceUtil putInt(String key, int value) {
@@ -112,10 +112,10 @@ public class SharedPreferenceUtil {
     // 首页 Item 动画效果 默认关闭
 
     public void setMainAnim(boolean b) {
-        mPrefs.edit().putBoolean(ANIM_STRAT, b).apply();
+        mPrefs.edit().putBoolean(ANIM_START, b).apply();
     }
 
     public boolean getMainAnim() {
-        return mPrefs.getBoolean(ANIM_STRAT, false);
+        return mPrefs.getBoolean(ANIM_START, false);
     }
 }

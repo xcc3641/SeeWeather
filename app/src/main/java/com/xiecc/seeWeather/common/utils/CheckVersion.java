@@ -8,9 +8,6 @@ import android.support.v7.app.AlertDialog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
 
-/**
- * Created by hugo on 2016/2/21 0021.
- */
 public class CheckVersion {
 
     public static void checkVersion(Context context) {

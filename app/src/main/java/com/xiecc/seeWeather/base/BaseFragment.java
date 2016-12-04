@@ -15,13 +15,13 @@ import com.trello.rxlifecycle.components.support.RxFragment;
  */
 public abstract class BaseFragment extends RxFragment {
 
-    protected boolean isCreateView = false;
+    protected boolean mIsCreateView = false;
 
     //此方法在控件初始化前调用，所以不能在此方法中直接操作控件会出现空指针
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isCreateView) {
+        if (isVisibleToUser && mIsCreateView) {
             lazyLoad();
         }
     }

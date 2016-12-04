@@ -53,24 +53,21 @@ import rx.functions.Action1;
 public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     @Bind(R.id.recyclerview)
-    RecyclerView mRecyclerview;
+    RecyclerView mRecyclerView;
     @Bind(R.id.swiprefresh)
-    SwipeRefreshLayout mSwiprefresh;
+    SwipeRefreshLayout mRefreshLayout;
     @Bind(R.id.progressBar)
     ProgressBar mProgressBar;
     @Bind(R.id.iv_erro)
-    ImageView mIvErro;
+    ImageView mIvError;
 
     private static Weather mWeather = new Weather();
     private WeatherAdapter mAdapter;
-    private Observer<Weather> observer;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     public AMapLocationClientOption mLocationOption = null;
 
     private View view;
-
-    //private boolean isFirst = true;
 
     @Override
     public void onAttach(Context context) {
@@ -84,7 +81,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             view = inflater.inflate(R.layout.content_main, container, false);
             ButterKnife.bind(this, view);
         }
-        isCreateView = true;
+        mIsCreateView = true;
         PLog.d("onCreateView");
         return view;
     }
@@ -110,12 +107,12 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         super.onCreate(savedInstanceState);
 
         PLog.d("onCreate");
-        RxBus.getDefault().toObserverable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+        RxBus.getDefault().toObservable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
             new SimpleSubscriber<ChangeCityEvent>() {
                 @Override
                 public void onNext(ChangeCityEvent changeCityEvent) {
-                    if (mSwiprefresh != null) {
-                        mSwiprefresh.setRefreshing(true);
+                    if (mRefreshLayout != null) {
+                        mRefreshLayout.setRefreshing(true);
                     }
                     load();
                     PLog.d("MainRxBus");
@@ -124,18 +121,18 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     }
 
     private void initView() {
-        if (mSwiprefresh != null) {
-            mSwiprefresh.setColorSchemeResources(android.R.color.holo_blue_bright,
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-            mSwiprefresh.setOnRefreshListener(
-                () -> mSwiprefresh.postDelayed(this::load, 1000));
+            mRefreshLayout.setOnRefreshListener(
+                () -> mRefreshLayout.postDelayed(this::load, 1000));
         }
 
-        mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new WeatherAdapter(mWeather);
-        mRecyclerview.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void load() {
@@ -143,21 +140,21 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             .doOnRequest(new Action1<Long>() {
                 @Override
                 public void call(Long aLong) {
-                    mSwiprefresh.setRefreshing(true);
+                    mRefreshLayout.setRefreshing(true);
                 }
             })
             .doOnError(throwable -> {
-                mIvErro.setVisibility(View.VISIBLE);
-                mRecyclerview.setVisibility(View.GONE);
+                mIvError.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
                 SharedPreferenceUtil.getInstance().setCityName("北京");
                 safeSetTitle("找不到城市啦");
             })
             .doOnNext(weather -> {
-                mIvErro.setVisibility(View.GONE);
-                mRecyclerview.setVisibility(View.VISIBLE);
+                mIvError.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
             })
             .doOnTerminate(() -> {
-                mSwiprefresh.setRefreshing(false);
+                mRefreshLayout.setRefreshing(false);
                 mProgressBar.setVisibility(View.GONE);
             }).subscribe(new Subscriber<Weather>() {
             @Override
@@ -202,9 +199,9 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
      * 高德定位
      */
     private void location() {
-        mSwiprefresh.setRefreshing(true);
+        mRefreshLayout.setRefreshing(true);
         //初始化定位
-        mLocationClient = new AMapLocationClient(BaseApplication.getmAppContext());
+        mLocationClient = new AMapLocationClient(BaseApplication.getAppContext());
         //设置定位回调监听
         mLocationClient.setLocationListener(this);
         mLocationOption = new AMapLocationClientOption();

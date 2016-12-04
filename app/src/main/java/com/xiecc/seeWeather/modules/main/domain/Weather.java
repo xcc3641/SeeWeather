@@ -28,16 +28,6 @@ public class Weather implements Serializable {
     @SerializedName("hourly_forecast") public List<HourlyForecastEntity> hourlyForecast;
 
     public static class AqiEntity implements Serializable {
-        /**
-         * aqi : 99
-         * co : 1
-         * no2 : 87
-         * o3 : 36
-         * pm10 : 106
-         * pm25 : 74
-         * qlty : 良
-         * so2 : 16
-         */
 
         @SerializedName("city") public CityEntity city;
 

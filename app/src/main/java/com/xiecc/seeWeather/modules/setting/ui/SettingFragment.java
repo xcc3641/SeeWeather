@@ -47,19 +47,17 @@ public class SettingFragment extends PreferenceFragment
     private CheckBoxPreference mNotificationType;
     private CheckBoxPreference mAnimationOnOff;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting);
         mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
 
-
         mChangeIcons = findPreference(SharedPreferenceUtil.CHANGE_ICONS);
         mChangeUpdate = findPreference(SharedPreferenceUtil.AUTO_UPDATE);
         mClearCache = findPreference(SharedPreferenceUtil.CLEAR_CACHE);
 
-        mAnimationOnOff = (CheckBoxPreference) findPreference(SharedPreferenceUtil.ANIM_STRAT);
+        mAnimationOnOff = (CheckBoxPreference) findPreference(SharedPreferenceUtil.ANIM_START);
         mNotificationType = (CheckBoxPreference) findPreference(SharedPreferenceUtil.NOTIFICATION_MODEL);
 
         if (SharedPreferenceUtil.getInstance().getNotificationModel() != Notification.FLAG_ONGOING_EVENT) {
@@ -74,7 +72,7 @@ public class SettingFragment extends PreferenceFragment
 
         mChangeUpdate.setSummary(
             mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
-        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/NetCache"));
+        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.getAppCacheDir() + "/NetCache"));
 
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
@@ -91,7 +89,7 @@ public class SettingFragment extends PreferenceFragment
         } else if (mClearCache == preference) {
 
             ImageLoader.clear(getActivity());
-            Observable.just(FileUtil.delete(new File(BaseApplication.cacheDir + "/NetCache")))
+            Observable.just(FileUtil.delete(new File(BaseApplication.getAppCacheDir() + "/NetCache")))
                 .filter(new Func1<Boolean, Boolean>() {
                     @Override
                     public Boolean call(Boolean aBoolean) {
@@ -100,7 +98,7 @@ public class SettingFragment extends PreferenceFragment
                 }).compose(RxUtils.rxSchedulerHelper()).subscribe(new SimpleSubscriber<Boolean>() {
                 @Override
                 public void onNext(Boolean aBoolean) {
-                    mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.cacheDir + "/NetCache"));
+                    mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.getAppCacheDir() + "/NetCache"));
                     Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
                 }
             });

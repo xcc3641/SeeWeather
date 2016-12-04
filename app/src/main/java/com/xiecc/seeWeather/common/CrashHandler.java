@@ -14,21 +14,21 @@ import java.io.Writer;
  */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
-    private static Thread.UncaughtExceptionHandler defaultHandler = null;
+    private static Thread.UncaughtExceptionHandler mDefaultHandler = null;
 
-    private Context context = null;
+    private Context mContext = null;
 
     private final String TAG = CrashHandler.class.getSimpleName();
 
     public CrashHandler(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
     /**
      * 初始化,设置该CrashHandler为程序的默认处理器
      */
     public static void init(CrashHandler crashHandler) {
-        defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+        mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(crashHandler);
     }
 
@@ -43,7 +43,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         SharedPreferenceUtil.getInstance().setCityName("北京");
         OrmLite.getInstance().deleteDatabase();
         // 调用系统错误机制
-        defaultHandler.uncaughtException(thread, ex);
+        mDefaultHandler.uncaughtException(thread, ex);
     }
 
     /**
@@ -62,7 +62,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     public String collectCrashDeviceInfo() {
 
-        String versionName = Util.getVersion(context);
+        String versionName = Util.getVersion(mContext);
         String model = android.os.Build.MODEL;
         String androidVersion = android.os.Build.VERSION.RELEASE;
         String manufacturer = android.os.Build.MANUFACTURER;

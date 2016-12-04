@@ -19,29 +19,26 @@ import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.Util;
 
-/**
- * Created by hugo on 2016/2/20 0020.
- */
 public class AboutActivity extends BaseActivity {
     @Bind(R.id.toolbar)
-    Toolbar toolbar;
+    Toolbar mToolbar;
     @Bind(R.id.toolbar_layout)
-    CollapsingToolbarLayout toolbarLayout;
+    CollapsingToolbarLayout mToolbarLayout;
     @Bind(R.id.tv_version)
-    TextView tvVersion;
+    TextView mTvVersion;
 
     @Bind(R.id.bt_code)
-    Button btCode;
+    Button mBtCode;
     @Bind(R.id.bt_blog)
-    Button btBlog;
+    Button mBtBlog;
     @Bind(R.id.bt_pay)
-    Button btPay;
+    Button mBtPay;
     @Bind(R.id.bt_share)
-    Button btShare;
+    Button mBtShare;
     @Bind(R.id.bt_update)
-    Button btUpdate;
+    Button mBtUpdate;
     @Bind(R.id.bt_bug)
-    Button btBug;
+    Button mBtBug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +49,11 @@ public class AboutActivity extends BaseActivity {
     }
 
     private void initView() {
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-        toolbarLayout.setTitle("就看天气");
-        tvVersion.setText(String.format("当前版本: %s (Build %s)", Util.getVersion(this), Util.getVersionCode(this)));
+        mToolbarLayout.setTitle("就看天气");
+        mTvVersion.setText(String.format("当前版本: %s (Build %s)", Util.getVersion(this), Util.getVersionCode(this)));
     }
 
     @Override
@@ -104,6 +101,7 @@ public class AboutActivity extends BaseActivity {
         intent.setData(uri);                            //设置Uri
         startActivity(intent);        //启动Activity
     }
+
     public static void launch(Context context) {
         context.startActivity(new Intent(context, AboutActivity.class));
     }

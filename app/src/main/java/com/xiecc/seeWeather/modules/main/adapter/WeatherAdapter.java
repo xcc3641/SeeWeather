@@ -10,18 +10,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.BaseViewHolder;
 import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 
-/**
- * Created by hugo on 2016/1/31 0031.
- */
 public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHolder> {
     private static String TAG = WeatherAdapter.class.getSimpleName();
 
@@ -35,7 +32,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     private Weather mWeatherData;
 
     public WeatherAdapter(Weather weatherData) {
-
         this.mWeatherData = weatherData;
     }
 
@@ -107,7 +103,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     /**
      * 当前天气情况
      */
-    class NowWeatherViewHolder extends RecyclerView.ViewHolder {
+    class NowWeatherViewHolder extends BaseViewHolder<Weather> {
 
         @Bind(R.id.weather_icon)
         ImageView weatherIcon;
@@ -126,10 +122,9 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
         NowWeatherViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
 
-        void bind(Weather weather) {
+        protected void bind(Weather weather) {
             try {
                 tempFlu.setText(String.format("%s℃", weather.now.tmp));
                 tempMax.setText(
@@ -151,8 +146,8 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     /**
      * 当日小时预告
      */
-    private class HoursWeatherViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout itemHourInfoLinearlayout;
+    private class HoursWeatherViewHolder extends BaseViewHolder<Weather> {
+        private LinearLayout itemHourInfoLayout;
         private TextView[] mClock = new TextView[mWeatherData.hourlyForecast.size()];
         private TextView[] mTemp = new TextView[mWeatherData.hourlyForecast.size()];
         private TextView[] mHumidity = new TextView[mWeatherData.hourlyForecast.size()];
@@ -160,7 +155,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
         HoursWeatherViewHolder(View itemView) {
             super(itemView);
-            itemHourInfoLinearlayout = (LinearLayout) itemView.findViewById(R.id.item_hour_info_linearlayout);
+            itemHourInfoLayout = (LinearLayout) itemView.findViewById(R.id.item_hour_info_linearlayout);
 
             for (int i = 0; i < mWeatherData.hourlyForecast.size(); i++) {
                 View view = View.inflate(mContext, R.layout.item_hour_info_line, null);
@@ -168,11 +163,11 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                 mTemp[i] = (TextView) view.findViewById(R.id.one_temp);
                 mHumidity[i] = (TextView) view.findViewById(R.id.one_humidity);
                 mWind[i] = (TextView) view.findViewById(R.id.one_wind);
-                itemHourInfoLinearlayout.addView(view);
+                itemHourInfoLayout.addView(view);
             }
         }
 
-        void bind(Weather weather) {
+        protected void bind(Weather weather) {
 
             try {
                 for (int i = 0; i < weather.hourlyForecast.size(); i++) {
@@ -191,7 +186,6 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     );
                 }
             } catch (Exception e) {
-                //Snackbar.make(holder.itemView, R.string.api_error, Snackbar.LENGTH_SHORT).show();
                 PLog.e(e.toString());
             }
         }
@@ -200,7 +194,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     /**
      * 当日建议
      */
-    class SuggestionViewHolder extends RecyclerView.ViewHolder {
+    class SuggestionViewHolder extends BaseViewHolder<Weather> {
         @Bind(R.id.cloth_brief)
         TextView clothBrief;
         @Bind(R.id.cloth_txt)
@@ -220,12 +214,10 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
 
         SuggestionViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
 
-        void bind(Weather weather) {
+        protected void bind(Weather weather) {
             try {
-
                 clothBrief.setText(String.format("穿衣指数---%s", weather.suggestion.drsg.brf));
                 clothTxt.setText(weather.suggestion.drsg.txt);
 
@@ -246,7 +238,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
     /**
      * 未来天气
      */
-    class ForecastViewHolder extends RecyclerView.ViewHolder {
+    class ForecastViewHolder extends BaseViewHolder<Weather> {
         private LinearLayout forecastLinear;
         private TextView[] forecastDate = new TextView[mWeatherData.dailyForecast.size()];
         private TextView[] forecastTemp = new TextView[mWeatherData.dailyForecast.size()];
@@ -266,7 +258,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
 
-        void bind(Weather weather) {
+        protected void bind(Weather weather) {
             try {
                 //今日 明日
                 forecastDate[0].setText("今日");
@@ -299,15 +291,5 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                 PLog.e(e.toString());
             }
         }
-    }
-
-    interface OnItemClickListener {
-        void onItemClick(Weather mWeather);
-    }
-
-    private OnItemClickListener listener;
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
     }
 }

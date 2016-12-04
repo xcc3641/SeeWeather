@@ -7,9 +7,6 @@ import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
-/**
- * Created by hugo on 2015/12/16.
- */
 public class BaseActivity extends RxAppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
 
@@ -83,5 +80,4 @@ public class BaseActivity extends RxAppCompatActivity {
         activity.getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
         activity.recreate();
     }
-
 }

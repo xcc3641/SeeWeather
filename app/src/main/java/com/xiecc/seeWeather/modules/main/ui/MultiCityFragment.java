@@ -19,7 +19,6 @@ import com.trello.rxlifecycle.android.FragmentEvent;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
 import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.Util;
@@ -45,18 +44,16 @@ import rx.Observer;
 public class MultiCityFragment extends BaseFragment {
 
     @Bind(R.id.recyclerview)
-    RecyclerView mRecyclerview;
+    RecyclerView mRecyclerView;
     @Bind(R.id.swiprefresh)
-    SwipeRefreshLayout mSwiprefresh;
+    SwipeRefreshLayout mRefreshLayout;
     @Bind(R.id.empty)
-    LinearLayout linearLayout;
+    LinearLayout mLayout;
 
-    private MultiCityAdapter mAdatper;
-    private List<Weather> weatherArrayList;
+    private MultiCityAdapter mAdapter;
+    private List<Weather> mWeathers;
 
     private View view;
-    private String errorCity;
-    Observable<Weather> resumeOb;
 
     /**
      * 加载数据操作,在视图创建之前初始化
@@ -79,7 +76,7 @@ public class MultiCityFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RxBus.getDefault().toObserverable(MultiUpdate.class).subscribe(new SimpleSubscriber<MultiUpdate>() {
+        RxBus.getDefault().toObservable(MultiUpdate.class).subscribe(new SimpleSubscriber<MultiUpdate>() {
             @Override
             public void onNext(MultiUpdate multiUpdate) {
                 multiLoad();
@@ -95,11 +92,11 @@ public class MultiCityFragment extends BaseFragment {
     }
 
     private void initView() {
-        weatherArrayList = new ArrayList<>();
-        mAdatper = new MultiCityAdapter(weatherArrayList);
-        mRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerview.setAdapter(mAdatper);
-        mAdatper.setOnMultiCityLongClick(new MultiCityAdapter.onMultiCityLongClick() {
+        mWeathers = new ArrayList<>();
+        mAdapter = new MultiCityAdapter(mWeathers);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnMultiCityLongClick(new MultiCityAdapter.onMultiCityLongClick() {
             @Override
             public void longClick(String city) {
                 new AlertDialog.Builder(getActivity()).setMessage("是否删除该城市?")
@@ -123,17 +120,17 @@ public class MultiCityFragment extends BaseFragment {
             }
         });
 
-        if (mSwiprefresh != null) {
-            mSwiprefresh.setColorSchemeResources(
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light,
                 android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright
             );
-            mSwiprefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    mSwiprefresh.postDelayed(new Runnable() {
+                    mRefreshLayout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             multiLoad();
@@ -151,49 +148,44 @@ public class MultiCityFragment extends BaseFragment {
     }
 
     private void multiLoad() {
-        weatherArrayList.clear();
+        mWeathers.clear();
         Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))
-            .doOnRequest(aLong -> mSwiprefresh.setRefreshing(true))
+            .doOnRequest(aLong -> mRefreshLayout.setRefreshing(true))
             .map(cityORM -> Util.replaceCity(cityORM.getName()))
             .distinct()
-            .flatMap(s -> {
-                return RetrofitSingleton.getInstance()
-                    .getApiService()
-                    .mWeatherAPI(s, C.KEY)
-                    .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-                    .compose(RxUtils.rxSchedulerHelper());
-                // TODO: 16/9/11 这里其实可以优化下
-            })
+            .flatMap(s -> RetrofitSingleton.getInstance()
+                .getApiService()
+                .mWeatherAPI(s, C.KEY)
+                .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+                .compose(RxUtils.rxSchedulerHelper()))
             .compose(this.bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-            .filter(weather -> !C.UNKNOW_CITY.equals(weather.status))
+            .filter(weather -> !C.UNKNOWN_CITY.equals(weather.status))
             .take(3)
             .doOnTerminate(() -> {
-                // 因为 flatmap 换了新的流,所以得在这里
-                mSwiprefresh.setRefreshing(false);
+                mRefreshLayout.setRefreshing(false);
             })
             .subscribe(new Observer<Weather>() {
                 @Override
                 public void onCompleted() {
-                    mAdatper.notifyDataSetChanged();
-                    PLog.d("complete" + weatherArrayList.size() + "");
-                    if (mAdatper.isEmpty()) {
-                        linearLayout.setVisibility(View.VISIBLE);
+                    mAdapter.notifyDataSetChanged();
+                    if (mAdapter.isEmpty()) {
+                        mLayout.setVisibility(View.VISIBLE);
                     } else {
-                        linearLayout.setVisibility(View.GONE);
+                        mLayout.setVisibility(View.GONE);
                     }
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    if (mAdatper.isEmpty() && linearLayout != null) {
-                        linearLayout.setVisibility(View.VISIBLE);
+                    if (mAdapter.isEmpty() && mLayout != null) {
+                        mLayout.setVisibility(View.VISIBLE);
                     }
                     RetrofitSingleton.disposeFailureInfo(e);
                 }
 
                 @Override
                 public void onNext(Weather weather) {
-                    weatherArrayList.add(weather);
+                    mWeathers.add(weather);
                 }
             });
     }

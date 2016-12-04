@@ -6,9 +6,6 @@ import android.os.Bundle;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.ToolbarActivity;
 
-/**
- * Created by hugo on 2016/2/19 0019.
- */
 public class SettingActivity extends ToolbarActivity {
 
     @Override

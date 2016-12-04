@@ -6,9 +6,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
 
-/**
- * Created by hugo on 2016/2/16 0016.
- */
 public interface ApiInterface {
 
     String HOST = "https://api.heweather.com/x3/";

@@ -12,7 +12,7 @@ import rx.android.MainThreadSubscription;
  *
  * Email: Hugo3641@gamil.com
  * GitHub: https://github.com/xcc3641
- * Info: 这个是 brucezz 给抽屉写的关闭后操作的动画.主要是,在抽屉执行动画时候执行跳转逻辑会卡顿
+ * Info:
  */
 public class RxDrawer {
 

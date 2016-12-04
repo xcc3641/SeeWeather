@@ -31,9 +31,9 @@ public class AutoUpdateService extends Service {
     // http://blog.csdn.net/lzyzsd/article/details/45033611
     // 在生命周期的某个时刻取消订阅。一个很常见的模式就是使用CompositeSubscription来持有所有的Subscriptions，然后在onDestroy()或者onDestroyView()里取消所有的订阅
     private CompositeSubscription mCompositeSubscription;
-    private Subscription mNetSubcription;
+    private Subscription mNetSubscription;
 
-    private boolean isUnsubscribed = true;
+    private boolean mIsUnSubscribed = true;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -51,16 +51,16 @@ public class AutoUpdateService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         synchronized (this) {
             unSubscribed();
-            if (isUnsubscribed) {
+            if (mIsUnSubscribed) {
                 unSubscribed();
                 if (mSharedPreferenceUtil.getAutoUpdate() != 0) {
-                    mNetSubcription = Observable.interval(mSharedPreferenceUtil.getAutoUpdate(), TimeUnit.HOURS)
+                    mNetSubscription = Observable.interval(mSharedPreferenceUtil.getAutoUpdate(), TimeUnit.HOURS)
                         .subscribe(aLong -> {
-                            isUnsubscribed = false;
+                            mIsUnSubscribed = false;
                             //PLog.i(TAG, SystemClock.elapsedRealtime() + " 当前设置" + mSharedPreferenceUtil.getAutoUpdate());
                             fetchDataByNetWork();
                         });
-                    mCompositeSubscription.add(mNetSubcription);
+                    mCompositeSubscription.add(mNetSubscription);
                 }
             }
         }
@@ -68,8 +68,8 @@ public class AutoUpdateService extends Service {
     }
 
     private void unSubscribed() {
-        isUnsubscribed = true;
-        mCompositeSubscription.remove(mNetSubcription);
+        mIsUnSubscribed = true;
+        mCompositeSubscription.remove(mNetSubscription);
     }
 
     @Override
@@ -83,9 +83,7 @@ public class AutoUpdateService extends Service {
             cityName = Util.replaceCity(cityName);
         }
         RetrofitSingleton.getInstance().fetchWeather(cityName)
-            .subscribe(weather -> {
-                normalStyleNotification(weather);
-            });
+            .subscribe(this::normalStyleNotification);
     }
 
     private void normalStyleNotification(Weather weather) {

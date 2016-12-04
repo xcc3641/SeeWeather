@@ -63,7 +63,7 @@ public class FileSizeUtil {
             e.printStackTrace();
             PLog.e("获取文件大小失败!");
         }
-        return Formatter.formatFileSize(BaseApplication.getmAppContext(),blockSize);
+        return Formatter.formatFileSize(BaseApplication.getAppContext(),blockSize);
     }
 
 

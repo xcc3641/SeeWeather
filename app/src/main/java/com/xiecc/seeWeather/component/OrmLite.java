@@ -19,11 +19,11 @@ import rx.Observable;
  */
 public class OrmLite {
 
-    static LiteOrm liteOrm;
+    static LiteOrm sLiteOrm;
 
     public static LiteOrm getInstance() {
         getOrmHolder();
-        return liteOrm;
+        return sLiteOrm;
     }
 
     private static OrmLite getOrmHolder() {
@@ -31,11 +31,11 @@ public class OrmLite {
     }
 
     private OrmLite() {
-        if (liteOrm == null) {
-            liteOrm = LiteOrm.newSingleInstance(BaseApplication.getmAppContext(), C.ORM_NAME);
+        if (sLiteOrm == null) {
+            sLiteOrm = LiteOrm.newSingleInstance(BaseApplication.getAppContext(), C.ORM_NAME);
 
         }
-        liteOrm.setDebugged(BuildConfig.DEBUG);
+        sLiteOrm.setDebugged(BuildConfig.DEBUG);
     }
 
     private static class OrmHolder {

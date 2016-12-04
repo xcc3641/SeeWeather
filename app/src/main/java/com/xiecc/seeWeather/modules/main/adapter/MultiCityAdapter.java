@@ -17,19 +17,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.BaseViewHolder;
 import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import java.util.List;
 
-/**
- * Created by HugoXie on 16/7/9.
- *
- * Email: Hugo3641@gamil.com
- * GitHub: https://github.com/xcc3641
- * Info:
- */
 public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.MultiCityViewHolder> {
     private Context mContext;
     private List<Weather> mWeatherList;
@@ -52,13 +46,10 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
     @Override
     public void onBindViewHolder(MultiCityViewHolder holder, int position) {
 
-        holder.invoke(mWeatherList.get(position));
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                onMultiCityLongClick.longClick(mWeatherList.get(holder.getAdapterPosition()).basic.city);
-                return true;
-            }
+        holder.bind(mWeatherList.get(position));
+        holder.itemView.setOnLongClickListener(v -> {
+            onMultiCityLongClick.longClick(mWeatherList.get(holder.getAdapterPosition()).basic.city);
+            return true;
         });
     }
 
@@ -71,7 +62,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         return 0 == mWeatherList.size();
     }
 
-    class MultiCityViewHolder extends RecyclerView.ViewHolder {
+    class MultiCityViewHolder extends BaseViewHolder<Weather> {
 
         @Bind(R.id.dialog_city)
         TextView mDialogCity;
@@ -84,28 +75,31 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
 
         public MultiCityViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
 
-        public void invoke(Weather mWeather) {
+        @Override
+        protected void bind(Weather weather) {
 
             try {
-                mDialogCity.setText(Util.safeText(mWeather.basic.city));
-                mDialogTemp.setText(String.format("%s℃", mWeather.now.tmp));
+                mDialogCity.setText(Util.safeText(weather.basic.city));
+                mDialogTemp.setText(String.format("%s℃", weather.now.tmp));
             } catch (NullPointerException e) {
                 PLog.e(e.getMessage());
             }
 
-            Glide.with(mContext).load(SharedPreferenceUtil.getInstance().getInt(mWeather.now.cond.txt, R.mipmap.none
-            )).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    mDialogIcon.setImageBitmap(resource);
-                    mDialogIcon.setColorFilter(Color.WHITE);
-                }
-            });
+            Glide.with(mContext)
+                .load(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none
+                ))
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        mDialogIcon.setImageBitmap(resource);
+                        mDialogIcon.setColorFilter(Color.WHITE);
+                    }
+                });
 
-            int code = Integer.valueOf(mWeather.now.cond.code);
+            int code = Integer.valueOf(weather.now.cond.code);
 
             // TODO: 2016/10/13 新增三个城市卡片 需要更新
 
@@ -117,7 +111,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                 mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_cloudy));
             }
 
-            PLog.d(mWeather.now.cond.txt + " " + mWeather.now.cond.code);
+            PLog.d(weather.now.cond.txt + " " + weather.now.cond.code);
         }
     }
 

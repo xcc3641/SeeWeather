@@ -2,9 +2,6 @@ package com.xiecc.seeWeather.modules.about.domain;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by hugo on 2016/2/21 0021.
- */
 public class VersionAPI {
 
     @SerializedName("name") public String name;
@@ -16,9 +13,7 @@ public class VersionAPI {
     @SerializedName("install_url") public String installUrl;
     @SerializedName("direct_install_url") public String directInstallUrl;
     @SerializedName("update_url") public String updateUrl;
-    /**
-     * fsize : 2626655
-     */
+
     @SerializedName("binary") public BinaryEntity binary;
 
     public static class BinaryEntity {
