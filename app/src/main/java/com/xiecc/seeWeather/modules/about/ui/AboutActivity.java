@@ -17,6 +17,7 @@ import butterknife.OnClick;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.StatusBarUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 
 public class AboutActivity extends BaseActivity {
@@ -45,6 +46,8 @@ public class AboutActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
+        StatusBarUtil.setImmersiveStatusBar(this);
+        StatusBarUtil.setImmersiveStatusBarToolbar(mToolbar,this);
         initView();
     }
 
