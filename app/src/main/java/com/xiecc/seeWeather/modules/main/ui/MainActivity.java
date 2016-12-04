@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -173,9 +174,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (mNavView != null) {
             mNavView.setNavigationItemSelectedListener(this);
             //navigationView.setItemIconTintList(null);
-            View headerLayout = mNavView.inflateHeaderView(R.layout.nav_header_main);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
+            mNavView.inflateHeaderView(R.layout.nav_header_main);
+            ActionBarDrawerToggle toggle =
+                new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
+                    R.string.navigation_drawer_close);
             mDrawerLayout.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -237,7 +239,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * @return true to display the item as the selected item
      */
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         RxDrawer.close(mDrawerLayout).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(
             new SimpleSubscriber<Void>() {
                 @Override

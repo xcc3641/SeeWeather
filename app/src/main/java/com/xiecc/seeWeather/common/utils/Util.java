@@ -80,7 +80,7 @@ public class Util {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
         c.setTime(format.parse(pTime));
-        int dayForWeek = 0;
+        int dayForWeek;
         String week = "";
         dayForWeek = c.get(Calendar.DAY_OF_WEEK);
         switch (dayForWeek) {

@@ -18,7 +18,6 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> fragments = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
-    private TabLayout mTabLayout;
 
     public HomePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -26,7 +25,6 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
 
     public HomePagerAdapter(FragmentManager fm, TabLayout tabLayout) {
         super(fm);
-        mTabLayout = tabLayout;
     }
 
     public void addTab(Fragment fragment, String title) {

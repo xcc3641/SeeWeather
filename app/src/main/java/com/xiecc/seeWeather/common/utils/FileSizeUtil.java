@@ -8,9 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.text.DecimalFormat;
 
-/**
- * Created by hugo on 2016/2/19 0019.
- */
 public class FileSizeUtil {
     public static final int SIZETYPE_B = 1;//获取文件大小单位为B的double值
     public static final int SIZETYPE_KB = 2;//获取文件大小单位为KB的double值
@@ -75,7 +72,7 @@ public class FileSizeUtil {
     private static long getFileSize(File file) throws Exception {
         long size = 0;
         if (file.exists()) {
-            FileInputStream fis = null;
+            FileInputStream fis;
             fis = new FileInputStream(file);
             size = fis.available();
         }

@@ -32,9 +32,6 @@ import java.io.File;
 import rx.Observable;
 import rx.functions.Func1;
 
-/**
- * Created by hugo on 2016/2/19 0019.
- */
 public class SettingFragment extends PreferenceFragment
     implements Preference.OnPreferenceClickListener,
     Preference.OnPreferenceChangeListener {

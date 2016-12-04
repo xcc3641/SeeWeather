@@ -12,9 +12,6 @@ import com.xiecc.seeWeather.base.BaseViewHolder;
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
 import java.util.ArrayList;
 
-/**
- * Created by hugo on 2016/2/19 0019.
- */
 public class CityAdapter extends AnimRecyclerViewAdapter<CityAdapter.CityViewHolder> {
 
     private Context mContext;

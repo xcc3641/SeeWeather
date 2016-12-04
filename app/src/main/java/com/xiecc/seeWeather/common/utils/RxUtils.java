@@ -1,12 +1,8 @@
 package com.xiecc.seeWeather.common.utils;
 
-import com.xiecc.seeWeather.common.PLog;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.plugins.RxJavaErrorHandler;
-import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
 
 /**
@@ -33,21 +29,4 @@ public class RxUtils {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    /**
-     * 自定义处理 Rx 错误线程
-     */
-    public static void unifiedErrorHandler() {
-        RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
-            @Override
-            public void handleError(Throwable e) {
-                PLog.e(e.toString());
-            }
-        });
-    }
-
-    public static void unsubscribe(Subscription subscription) {
-        if (subscription != null && !subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
-        }
-    }
 }
