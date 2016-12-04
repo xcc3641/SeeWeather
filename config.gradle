@@ -1,13 +1,12 @@
 ext {
-    // thanks for brucezz
     android = [
         compileSdkVersion: 23,
-        buildToolsVersion: "24.0.2",
+        buildToolsVersion: "25.0.1",
         applicationId    : "com.xiecc.seeWeather",
         minSdkVersion    : 19, // Android 4.4 Kitkat
         targetSdkVersion : 23,
-        versionCode      : 19,
-        versionName      : "2.2.6",
+        versionCode      : 34,
+        versionName      : "2.2.7",
         resConfigs       : "zh"
     ]
 
