@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.modules.main.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -100,16 +98,8 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                 });
 
             int code = Integer.valueOf(weather.now.cond.code);
-
-            // TODO: 2016/10/13 新增三个城市卡片 需要更新
-
-            if (code == 100) {
-                mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_sunny));
-            } else if (code >= 300 && code < 408) {
-                mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_rainy));
-            } else {
-                mCardView.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.dialog_bg_cloudy));
-            }
+            CardCityUIHelper cardCityUIHelper = new CardCityUIHelper();
+            cardCityUIHelper.applyStatus(code, weather.basic.city, mCardView);
 
             PLog.d(weather.now.cond.txt + " " + weather.now.cond.code);
         }
