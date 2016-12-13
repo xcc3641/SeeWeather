@@ -1,4 +1,3 @@
-#built application files
 *.apk
 *.ap_
 
@@ -45,4 +44,3 @@ build/
 
 # iml files
 *.iml
-
