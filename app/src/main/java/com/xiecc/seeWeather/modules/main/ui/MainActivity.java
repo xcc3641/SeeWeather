@@ -17,7 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -25,13 +24,7 @@ import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
-import com.xiecc.seeWeather.common.utils.DoubleClickExit;
-import com.xiecc.seeWeather.common.utils.RxDrawer;
-import com.xiecc.seeWeather.common.utils.RxUtils;
-import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
-import com.xiecc.seeWeather.common.utils.ToastUtil;
+import com.xiecc.seeWeather.common.utils.*;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
@@ -113,7 +106,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mHomePagerAdapter.addTab(new MultiCityFragment(), "多城市");
         mViewPager.setAdapter(mHomePagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager, false);
-        //mViewPager.setOffscreenPageLimit(2);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -123,32 +115,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onPageSelected(int position) {
 
-                if (position == 1) {
-                    mFab.setImageResource(R.drawable.ic_add_24dp);
-                    mFab.setBackgroundTintList(
-                        ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
-                    mFab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                            intent.putExtra(C.MULTI_CHECK, true);
-                            CircularAnimUtil.startActivity(MainActivity.this, intent, mFab,
-                                R.color.colorPrimary);
+                mFab.post(() -> mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+                    @Override
+                    public void onHidden(FloatingActionButton fab) {
+                        if (position == 1) {
+                            mFab.setImageResource(R.drawable.ic_add_24dp);
+                            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
+                            mFab.setOnClickListener(v -> {
+                                Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
+                                intent.putExtra(C.MULTI_CHECK, true);
+                                CircularAnimUtil.startActivity(MainActivity.this, intent, mFab,
+                                        R.color.colorPrimary);
+                            });
+                        } else {
+                            mFab.setImageResource(R.drawable.ic_favorite);
+                            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+                            mFab.setOnClickListener(v -> showFabDialog());
                         }
-                    });
-                    if (!mFab.isShown()) {
-                        mFab.show();
+                        fab.show();
                     }
-                } else {
-                    mFab.setImageResource(R.drawable.ic_favorite);
-                    mFab.setBackgroundTintList(
-                        ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
-                    mFab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showFabDialog();
-                        }
-                    });
+                }));
+                if (!mFab.isShown()) {
+                    mFab.show();
                 }
             }
 
@@ -157,10 +145,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
         });
-
-        // Glide 加载本地 GIF 图的方法
-        //GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(mErroImageView);
-        //Glide.with(this).load(R.raw.loading).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewTarget);
 
         //mFab
         mFab.setOnClickListener(v -> showFabDialog());
@@ -176,8 +160,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             //navigationView.setItemIconTintList(null);
             mNavView.inflateHeaderView(R.layout.nav_header_main);
             ActionBarDrawerToggle toggle =
-                new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
-                    R.string.navigation_drawer_close);
+                    new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
+                            R.string.navigation_drawer_close);
             mDrawerLayout.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -221,15 +205,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showFabDialog() {
         new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
-            .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-            .setPositiveButton("好嘞", (dialog, which) -> {
-                Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);           //指定Action
-                intent.setData(uri);                            //设置Uri
-                MainActivity.this.startActivity(intent);        //启动Activity
-            })
-            .show();
+                .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
+                .setPositiveButton("好嘞", (dialog, which) -> {
+                    Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);           //指定Action
+                    intent.setData(uri);                            //设置Uri
+                    MainActivity.this.startActivity(intent);        //启动Activity
+                })
+                .show();
     }
 
     /**
@@ -241,25 +225,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         RxDrawer.close(mDrawerLayout).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(
-            new SimpleSubscriber<Void>() {
-                @Override
-                public void onNext(Void aVoid) {
-                    switch (item.getItemId()) {
-                        case R.id.nav_set:
-                            SettingActivity.launch(MainActivity.this);
-                            break;
-                        case R.id.nav_about:
-                            AboutActivity.launch(MainActivity.this);
-                            break;
-                        case R.id.nav_city:
-                            ChoiceCityActivity.launch(MainActivity.this);
-                            break;
-                        case R.id.nav_multi_cities:
-                            mViewPager.setCurrentItem(1);
-                            break;
+                new SimpleSubscriber<Void>() {
+                    @Override
+                    public void onNext(Void aVoid) {
+                        switch (item.getItemId()) {
+                            case R.id.nav_set:
+                                SettingActivity.launch(MainActivity.this);
+                                break;
+                            case R.id.nav_about:
+                                AboutActivity.launch(MainActivity.this);
+                                break;
+                            case R.id.nav_city:
+                                ChoiceCityActivity.launch(MainActivity.this);
+                                break;
+                            case R.id.nav_multi_cities:
+                                mViewPager.setCurrentItem(1);
+                                break;
+                        }
                     }
-                }
-            });
+                });
         return false;
     }
 
@@ -280,9 +264,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void hideOrShowToolbar() {
         mTabLayout.animate()
-            .translationY(mIsHidden ? 0 : -mTabLayout.getHeight())
-            .setInterpolator(new DecelerateInterpolator(2))
-            .start();
+                .translationY(mIsHidden ? 0 : -mTabLayout.getHeight())
+                .setInterpolator(new DecelerateInterpolator(2))
+                .start();
         mIsHidden = !mIsHidden;
     }
 
