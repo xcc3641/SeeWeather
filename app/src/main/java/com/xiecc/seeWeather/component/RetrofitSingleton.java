@@ -11,19 +11,15 @@ import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-import okhttp3.Cache;
-import okhttp3.CacheControl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zk on 2015/12/16.
@@ -68,24 +64,21 @@ public class RetrofitSingleton {
             Request request = chain.request();
             if (!Util.isNetworkConnected(BaseApplication.getAppContext())) {
                 request = request.newBuilder()
-                    .cacheControl(CacheControl.FORCE_CACHE)
-                    .build();
+                        .cacheControl(CacheControl.FORCE_CACHE)
+                        .build();
             }
             Response response = chain.proceed(request);
+            Response.Builder newBuilder = response.newBuilder();
             if (Util.isNetworkConnected(BaseApplication.getAppContext())) {
                 int maxAge = 0;
                 // 有网络时 设置缓存超时时间0个小时
-                response.newBuilder()
-                    .header("Cache-Control", "public, max-age=" + maxAge)
-                    .build();
+                newBuilder.header("Cache-Control", "public, max-age=" + maxAge);
             } else {
                 // 无网络时，设置超时为4周
                 int maxStale = 60 * 60 * 24 * 28;
-                response.newBuilder()
-                    .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-                    .build();
+                newBuilder.header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale);
             }
-            return response;
+            return newBuilder.build();
         };
         builder.cache(cache).addInterceptor(cacheInterceptor);
         //设置超时
@@ -99,16 +92,16 @@ public class RetrofitSingleton {
 
     private static void initRetrofit() {
         sRetrofit = new Retrofit.Builder()
-            .baseUrl(ApiInterface.HOST)
-            .client(sOkHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-            .build();
+                .baseUrl(ApiInterface.HOST)
+                .client(sOkHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
     }
 
     public static void disposeFailureInfo(Throwable t) {
         if (t.toString().contains("GaiException") || t.toString().contains("SocketTimeoutException") ||
-            t.toString().contains("UnknownHostException")) {
+                t.toString().contains("UnknownHostException")) {
             ToastUtil.showShort("网络问题");
         } else if (t.toString().contains("API没有")) {
             OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", Util.replaceInfo(t.getMessage())));
@@ -125,17 +118,17 @@ public class RetrofitSingleton {
     public Observable<Weather> fetchWeather(String city) {
 
         return sApiService.mWeatherAPI(city, C.KEY)
-            .flatMap(weatherAPI -> {
-                String status = weatherAPI.mHeWeatherDataService30s.get(0).status;
-                if ("no more requests".equals(status)) {
-                    return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
-                } else if ("unknown city".equals(status)) {
-                    return Observable.error(new RuntimeException(String.format("API没有%s", city)));
-                }
-                return Observable.just(weatherAPI);
-            })
-            .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-            .compose(RxUtils.rxSchedulerHelper());
+                .flatMap(weatherAPI -> {
+                    String status = weatherAPI.mHeWeatherDataService30s.get(0).status;
+                    if ("no more requests".equals(status)) {
+                        return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
+                    } else if ("unknown city".equals(status)) {
+                        return Observable.error(new RuntimeException(String.format("API没有%s", city)));
+                    }
+                    return Observable.just(weatherAPI);
+                })
+                .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
+                .compose(RxUtils.rxSchedulerHelper());
     }
 
     public Observable<VersionAPI> fetchVersion() {
