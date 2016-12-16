@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -149,7 +148,6 @@ public class CircularAnimUtil {
         });
         anim.start();
 
-        Log.d("animi", "start");
     }
 
 
