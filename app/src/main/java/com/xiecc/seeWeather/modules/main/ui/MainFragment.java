@@ -44,7 +44,7 @@ import rx.functions.Action1;
 
 /**
  * Created by HugoXie on 16/7/9.
- *
+ * <p>
  * Email: Hugo3641@gamil.com
  * GitHub: https://github.com/xcc3641
  * Info:
@@ -91,13 +91,13 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         initView();
         // https://github.com/tbruyelle/RxPermissions
         RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-            .subscribe(granted -> {
-                if (granted) {
-                    location();
-                } else {
-                    load();
-                }
-            });
+                .subscribe(granted -> {
+                    if (granted) {
+                        location();
+                    } else {
+                        load();
+                    }
+                });
         CheckVersion.checkVersion(getActivity());
     }
 
@@ -107,26 +107,26 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
         PLog.d("onCreate");
         RxBus.getDefault().toObservable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-            new SimpleSubscriber<ChangeCityEvent>() {
-                @Override
-                public void onNext(ChangeCityEvent changeCityEvent) {
-                    if (mRefreshLayout != null) {
-                        mRefreshLayout.setRefreshing(true);
+                new SimpleSubscriber<ChangeCityEvent>() {
+                    @Override
+                    public void onNext(ChangeCityEvent changeCityEvent) {
+                        if (mRefreshLayout != null) {
+                            mRefreshLayout.setRefreshing(true);
+                        }
+                        load();
+                        PLog.d("MainRxBus");
                     }
-                    load();
-                    PLog.d("MainRxBus");
-                }
-            });
+                });
     }
 
     private void initView() {
         if (mRefreshLayout != null) {
             mRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
             mRefreshLayout.setOnRefreshListener(
-                () -> mRefreshLayout.postDelayed(this::load, 1000));
+                    () -> mRefreshLayout.postDelayed(this::load, 1000));
         }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -136,26 +136,26 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     private void load() {
         fetchDataByNetWork()
-            .doOnRequest(new Action1<Long>() {
-                @Override
-                public void call(Long aLong) {
-                    mRefreshLayout.setRefreshing(true);
-                }
-            })
-            .doOnError(throwable -> {
-                mIvError.setVisibility(View.VISIBLE);
-                mRecyclerView.setVisibility(View.GONE);
-                SharedPreferenceUtil.getInstance().setCityName("北京");
-                safeSetTitle("找不到城市啦");
-            })
-            .doOnNext(weather -> {
-                mIvError.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-            })
-            .doOnTerminate(() -> {
-                mRefreshLayout.setRefreshing(false);
-                mProgressBar.setVisibility(View.GONE);
-            }).subscribe(new Subscriber<Weather>() {
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long aLong) {
+                        mRefreshLayout.setRefreshing(true);
+                    }
+                })
+                .doOnError(throwable -> {
+                    mIvError.setVisibility(View.VISIBLE);
+                    mRecyclerView.setVisibility(View.GONE);
+                    SharedPreferenceUtil.getInstance().setCityName("北京");
+                    safeSetTitle("找不到城市啦");
+                })
+                .doOnNext(weather -> {
+                    mIvError.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                })
+                .doOnTerminate(() -> {
+                    mRefreshLayout.setRefreshing(false);
+                    mProgressBar.setVisibility(View.GONE);
+                }).subscribe(new Subscriber<Weather>() {
             @Override
             public void onCompleted() {
                 ToastUtil.showShort(getString(R.string.complete));
@@ -190,8 +190,8 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     private Observable<Weather> fetchDataByNetWork() {
         String cityName = SharedPreferenceUtil.getInstance().getCityName();
         return RetrofitSingleton.getInstance()
-            .fetchWeather(cityName)
-            .compose(this.bindToLifecycle());
+                .fetchWeather(cityName)
+                .compose(this.bindToLifecycle());
     }
 
     /**
@@ -267,14 +267,14 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent =
-            PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(getActivity());
         Notification notification = builder.setContentIntent(pendingIntent)
-            .setContentTitle(weather.basic.city)
-            .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
-            // 这里部分 ROM 无法成功
-            .setSmallIcon(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none))
-            .build();
+                .setContentTitle(weather.basic.city)
+                .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
+                // 这里部分 ROM 无法成功
+                .setSmallIcon(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none))
+                .build();
         notification.flags = SharedPreferenceUtil.getInstance().getNotificationModel();
         NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         // tag和id都是可以拿来区分不同的通知的
