@@ -5,12 +5,6 @@
 从15年10月上线，到目前经历两次重大改版，一次代码的重构，一次界面的大幅度改动，目的都是为了你们。
 在开源的过程中，收到了很多来自有趣的你们的邮件。我也曾遇到过棘手的问题无处咨询又谷歌不到。那个时候的我，也可能是现在的你。所以我希望能够帮助到你。
 
-- **开源不易，希望能给个Star鼓励**
-- 项目地址：https://github.com/xcc3641/SeeWeather
-- 项目主页发布issue： https://github.com/xcc3641/SeeWeather/issues
-- 本项目为开源项目，技术交流可以通过邮箱联系：Hugo3641#gmail.com
-
-
 ----
 
 ### 简介
@@ -116,7 +110,6 @@ v2.0
 2. [RxAndroid][3]
 3. [Retrofit][4]
 4. [GLide][5]
-5. ~~[ASimpleCache][6]~~
 
 
 ### 截图
@@ -145,20 +138,13 @@ v2.0
 ![][image-4]
 
 - [简书](http://www.jianshu.com/users/3372b4a3b9e5/latest_articles)
-- [个人博客](http://imxie.cc/)
+- [个人博客](imxie.itscoder.com)
 - [知乎](https://www.zhihu.com/people/xcc3641.github.io)
-
-
-### 请我喝杯咖啡
-
-----
-
-![][image-5]
 
 
 ### LICENSE
 
-```
+```LICENSE
 License Copyright 2016 HugoXie  
 Licensed under the Apache License, Version 2.0 (the \"License\")
 
