@@ -103,8 +103,6 @@ Fir.im: http://fir.im/seeWeather
 
 谢三弟
 
-![][image-4]
-
 - [简书](http://www.jianshu.com/users/3372b4a3b9e5/latest_articles)
 - [个人博客](imxie.itscoder.com)
 - [知乎](https://www.zhihu.com/people/xcc3641.github.io)
@@ -150,5 +148,4 @@ __软件中图片素材均来源于网络，版权属于原作者。__
 
 [image-2]: /images/day.png
 [image-3]: /images/night.png
-[image-4]: http://xcc3641.qiniudn.com/app-%E5%A4%B4%E5%83%8F-1.jpeg
 [image-5]: http://xcc3641.qiniudn.com/app-%E6%94%AF%E4%BB%98%E5%AE%9D.jpg
