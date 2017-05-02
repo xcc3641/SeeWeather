@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
 import com.github.moduth.blockcanary.BlockCanary;
+import com.hugo.watcher.Watcher;
 import com.squareup.leakcanary.LeakCanary;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.common.CrashHandler;
@@ -27,10 +28,12 @@ public class BaseApplication extends Application {
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         if (!BuildConfig.DEBUG) {
             FIR.init(this);
+        }else {
+            Watcher.getInstance().start(this);
         }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);
-        /**
+        /*
          * 如果存在SD卡则将缓存写入SD卡,否则写入手机内存
          */
         if (getApplicationContext().getExternalCacheDir() != null && ExistSDCard()) {
