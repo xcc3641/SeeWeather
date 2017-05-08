@@ -80,7 +80,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             ButterKnife.bind(this, view);
         }
         mIsCreateView = true;
-        PLog.d("onCreateView");
         return view;
     }
 
