@@ -12,11 +12,11 @@ import com.xiecc.seeWeather.base.BaseApplication;
  */
 public class SharedPreferenceUtil {
 
-    public static final String CITY_NAME = "城市";//选择城市
-    public static final String HOUR = "current_hour";//当前小时
+    public static final String CITY_NAME = "city_name"; //选择城市
+    public static final String HOUR = "current_hour"; //当前小时
 
-    public static final String CHANGE_ICONS = "change_icons";//切换图标
-    public static final String CLEAR_CACHE = "clear_cache";//清空缓存
+    public static final String CHANGE_ICONS = "change_icons"; //切换图标
+    public static final String CLEAR_CACHE = "clear_cache"; //清空缓存
     public static final String AUTO_UPDATE = "change_update_time"; //自动更新时长
     public static final String NOTIFICATION_MODEL = "notification_model";
     public static final String ANIM_START = "animation_start";

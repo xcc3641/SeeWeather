@@ -1,7 +1,6 @@
 package com.xiecc.seeWeather.modules.main.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseViewHolder;
 import com.xiecc.seeWeather.common.PLog;
@@ -105,20 +104,18 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
      */
     class NowWeatherViewHolder extends BaseViewHolder<Weather> {
 
-        @Bind(R.id.weather_icon)
+        @BindView(R.id.weather_icon)
         ImageView weatherIcon;
-        @Bind(R.id.temp_flu)
+        @BindView(R.id.temp_flu)
         TextView tempFlu;
-        @Bind(R.id.temp_max)
+        @BindView(R.id.temp_max)
         TextView tempMax;
-        @Bind(R.id.temp_min)
+        @BindView(R.id.temp_min)
         TextView tempMin;
-        @Bind(R.id.temp_pm)
+        @BindView(R.id.temp_pm)
         TextView tempPm;
-        @Bind(R.id.temp_quality)
+        @BindView(R.id.temp_quality)
         TextView tempQuality;
-        @Bind(R.id.cardView)
-        CardView cardView;
 
         NowWeatherViewHolder(View itemView) {
             super(itemView);
@@ -195,21 +192,21 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
      * 当日建议
      */
     class SuggestionViewHolder extends BaseViewHolder<Weather> {
-        @Bind(R.id.cloth_brief)
+        @BindView(R.id.cloth_brief)
         TextView clothBrief;
-        @Bind(R.id.cloth_txt)
+        @BindView(R.id.cloth_txt)
         TextView clothTxt;
-        @Bind(R.id.sport_brief)
+        @BindView(R.id.sport_brief)
         TextView sportBrief;
-        @Bind(R.id.sport_txt)
+        @BindView(R.id.sport_txt)
         TextView sportTxt;
-        @Bind(R.id.travel_brief)
+        @BindView(R.id.travel_brief)
         TextView travelBrief;
-        @Bind(R.id.travel_txt)
+        @BindView(R.id.travel_txt)
         TextView travelTxt;
-        @Bind(R.id.flu_brief)
+        @BindView(R.id.flu_brief)
         TextView fluBrief;
-        @Bind(R.id.flu_txt)
+        @BindView(R.id.flu_txt)
         TextView fluTxt;
 
         SuggestionViewHolder(View itemView) {

@@ -1,6 +1,5 @@
 package com.xiecc.seeWeather.modules.main.ui;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.litesuits.orm.db.assit.WhereBuilder;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -31,6 +30,7 @@ import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import rx.Observable;
 import rx.Observer;
 
@@ -43,11 +43,11 @@ import rx.Observer;
  */
 public class MultiCityFragment extends BaseFragment {
 
-    @Bind(R.id.recyclerview)
+    @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
-    @Bind(R.id.swiprefresh)
+    @BindView(R.id.swiprefresh)
     SwipeRefreshLayout mRefreshLayout;
-    @Bind(R.id.empty)
+    @BindView(R.id.empty)
     LinearLayout mLayout;
 
     private MultiCityAdapter mAdapter;
@@ -96,29 +96,19 @@ public class MultiCityFragment extends BaseFragment {
         mAdapter = new MultiCityAdapter(mWeathers);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnMultiCityLongClick(new MultiCityAdapter.onMultiCityLongClick() {
-            @Override
-            public void longClick(String city) {
-                new AlertDialog.Builder(getActivity()).setMessage("是否删除该城市?")
-                    .setPositiveButton("删除", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
-                            OrmLite.OrmTest(CityORM.class);
+        mAdapter.setOnMultiCityLongClick(city -> new AlertDialog.Builder(getActivity()).setMessage("是否删除该城市?")
+            .setPositiveButton("删除", (dialog, which) -> {
+                OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
+                OrmLite.OrmTest(CityORM.class);
+                multiLoad();
+                Snackbar.make(getView(), String.format(Locale.CHINA,"已经将%s删掉了 Ծ‸ Ծ",city), Snackbar.LENGTH_LONG)
+                    .setAction("撤销",
+                        v -> {
+                            OrmLite.getInstance().save(new CityORM(city));
                             multiLoad();
-                            Snackbar.make(getView(), "已经将" + city + "删掉了 Ծ‸ Ծ", Snackbar.LENGTH_LONG).setAction("撤销",
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        OrmLite.getInstance().save(new CityORM(city));
-                                        multiLoad();
-                                    }
-                                }).show();
-                        }
-                    })
-                    .show();
-            }
-        });
+                        }).show();
+            })
+            .show());
 
         if (mRefreshLayout != null) {
             mRefreshLayout.setColorSchemeResources(
@@ -127,24 +117,8 @@ public class MultiCityFragment extends BaseFragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright
             );
-            mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    mRefreshLayout.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            multiLoad();
-                        }
-                    }, 1000);
-                }
-            });
+            mRefreshLayout.setOnRefreshListener(() -> mRefreshLayout.postDelayed(this::multiLoad, 1000));
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     private void multiLoad() {

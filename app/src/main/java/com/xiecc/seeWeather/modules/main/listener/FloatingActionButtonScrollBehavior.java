@@ -12,7 +12,6 @@ import android.view.View;
  *
  * Email: Hugo3641@gamil.com
  * GitHub: https://github.com/xcc3641
- * Info:
  */
 public class FloatingActionButtonScrollBehavior extends FloatingActionButton.Behavior {
 

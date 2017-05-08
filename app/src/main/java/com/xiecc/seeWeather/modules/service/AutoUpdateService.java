@@ -28,8 +28,6 @@ public class AutoUpdateService extends Service {
 
     private final String TAG = AutoUpdateService.class.getSimpleName();
     private SharedPreferenceUtil mSharedPreferenceUtil;
-    // http://blog.csdn.net/lzyzsd/article/details/45033611
-    // 在生命周期的某个时刻取消订阅。一个很常见的模式就是使用CompositeSubscription来持有所有的Subscriptions，然后在onDestroy()或者onDestroyView()里取消所有的订阅
     private CompositeSubscription mCompositeSubscription;
     private Subscription mNetSubscription;
 

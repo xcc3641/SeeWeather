@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -40,7 +40,6 @@ import com.xiecc.seeWeather.modules.main.domain.Weather;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -51,13 +50,13 @@ import rx.functions.Action1;
  */
 public class MainFragment extends BaseFragment implements AMapLocationListener {
 
-    @Bind(R.id.recyclerview)
+    @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
-    @Bind(R.id.swiprefresh)
+    @BindView(R.id.swiprefresh)
     SwipeRefreshLayout mRefreshLayout;
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar mProgressBar;
-    @Bind(R.id.iv_erro)
+    @BindView(R.id.iv_erro)
     ImageView mIvError;
 
     private static Weather mWeather = new Weather();
@@ -105,7 +104,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PLog.d("onCreate");
         RxBus.getDefault().toObservable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new SimpleSubscriber<ChangeCityEvent>() {
                     @Override
@@ -114,7 +112,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
                             mRefreshLayout.setRefreshing(true);
                         }
                         load();
-                        PLog.d("MainRxBus");
                     }
                 });
     }
@@ -136,12 +133,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     private void load() {
         fetchDataByNetWork()
-                .doOnRequest(new Action1<Long>() {
-                    @Override
-                    public void call(Long aLong) {
-                        mRefreshLayout.setRefreshing(true);
-                    }
-                })
+                .doOnRequest(aLong -> mRefreshLayout.setRefreshing(true))
                 .doOnError(throwable -> {
                     mIvError.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
@@ -208,7 +200,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
-        //设置是否只定位一次,默认为false
+        //设置是否只定位一次,默认为false\
         mLocationOption.setOnceLocation(false);
         //设置是否强制刷新WIFI，默认为强制刷新
         mLocationOption.setWifiActiveScan(true);
@@ -240,12 +232,6 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             }
             load();
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     @Override

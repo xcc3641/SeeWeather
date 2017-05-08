@@ -29,20 +29,21 @@ import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.ui.MainActivity;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import java.io.File;
+import java.util.Locale;
 import rx.Observable;
-import rx.functions.Func1;
 
 public class SettingFragment extends PreferenceFragment
     implements Preference.OnPreferenceClickListener,
     Preference.OnPreferenceChangeListener {
     private static String TAG = SettingFragment.class.getSimpleName();
-    //private SettingActivity mActivity;
     private SharedPreferenceUtil mSharedPreferenceUtil;
     private Preference mChangeIcons;
     private Preference mChangeUpdate;
     private Preference mClearCache;
     private CheckBoxPreference mNotificationType;
     private CheckBoxPreference mAnimationOnOff;
+
+    private static final String NET_CACHE = BaseApplication.getAppCacheDir() + File.separator + "NetCache";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class SettingFragment extends PreferenceFragment
 
         mChangeUpdate.setSummary(
             mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
-        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.getAppCacheDir() + "/NetCache"));
+        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(NET_CACHE));
 
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
@@ -86,19 +87,16 @@ public class SettingFragment extends PreferenceFragment
         } else if (mClearCache == preference) {
 
             ImageLoader.clear(getActivity());
-            Observable.just(FileUtil.delete(new File(BaseApplication.getAppCacheDir() + "/NetCache")))
-                .filter(new Func1<Boolean, Boolean>() {
+            Observable.just(FileUtil.delete(new File(NET_CACHE)))
+                .filter(aBoolean -> aBoolean)
+                .compose(RxUtils.rxSchedulerHelper())
+                .subscribe(new SimpleSubscriber<Boolean>() {
                     @Override
-                    public Boolean call(Boolean aBoolean) {
-                        return aBoolean;
+                    public void onNext(Boolean aBoolean) {
+                        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(NET_CACHE));
+                        Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
                     }
-                }).compose(RxUtils.rxSchedulerHelper()).subscribe(new SimpleSubscriber<Boolean>() {
-                @Override
-                public void onNext(Boolean aBoolean) {
-                    mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(BaseApplication.getAppCacheDir() + "/NetCache"));
-                    Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
-                }
-            });
+                });
         } else if (mChangeUpdate == preference) {
             showUpdateDialog();
         }
@@ -154,9 +152,6 @@ public class SettingFragment extends PreferenceFragment
             Snackbar.make(getView(), "切换成功,重启应用生效",
                 Snackbar.LENGTH_INDEFINITE).setAction("重启",
                 v1 -> {
-
-                    //Intent intent =
-                    //    getActivity().getPackageManager().getLaunchIntentForPackage(getActivity().getPackageName());
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     getActivity().startActivity(intent);
@@ -203,8 +198,8 @@ public class SettingFragment extends PreferenceFragment
         tvDone.setOnClickListener(v -> {
             mSharedPreferenceUtil.setAutoUpdate(mSeekBar.getProgress());
             mChangeUpdate.setSummary(
-                mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
-            //需要再调用一次才能生效设置 不会重复的执行onCreate()， 而是会调用onStart()和onStartCommand()。
+                mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新"
+                    : String.format(Locale.CHINA, "每%d小时更新", mSharedPreferenceUtil.getAutoUpdate()));
             getActivity().startService(new Intent(getActivity(), AutoUpdateService.class));
             alertDialog.dismiss();
         });

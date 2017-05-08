@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -62,13 +62,13 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
 
     class MultiCityViewHolder extends BaseViewHolder<Weather> {
 
-        @Bind(R.id.dialog_city)
+        @BindView(R.id.dialog_city)
         TextView mDialogCity;
-        @Bind(R.id.dialog_icon)
+        @BindView(R.id.dialog_icon)
         ImageView mDialogIcon;
-        @Bind(R.id.dialog_temp)
+        @BindView(R.id.dialog_temp)
         TextView mDialogTemp;
-        @Bind(R.id.cardView)
+        @BindView(R.id.cardView)
         CardView mCardView;
 
         public MultiCityViewHolder(View itemView) {
@@ -101,7 +101,6 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
             CardCityUIHelper cardCityUIHelper = new CardCityUIHelper();
             cardCityUIHelper.applyStatus(code, weather.basic.city, mCardView);
 
-            PLog.d(weather.now.cond.txt + " " + weather.now.cond.code);
         }
     }
 

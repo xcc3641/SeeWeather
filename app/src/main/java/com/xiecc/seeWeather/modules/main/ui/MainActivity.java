@@ -17,14 +17,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.animation.DecelerateInterpolator;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.utils.*;
+import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
+import com.xiecc.seeWeather.common.utils.DoubleClickExit;
+import com.xiecc.seeWeather.common.utils.RxDrawer;
+import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
+import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
+import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
 import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
@@ -34,17 +38,17 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    @Bind(R.id.viewPager)
+    @BindView(R.id.viewPager)
     ViewPager mViewPager;
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.tabLayout)
+    @BindView(R.id.tabLayout)
     TabLayout mTabLayout;
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton mFab;
-    @Bind(R.id.nav_view)
+    @BindView(R.id.nav_view)
     NavigationView mNavView;
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
     @Override
@@ -53,7 +57,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        PLog.i("onCreate");
         initView();
         initDrawer();
         initIcon();
@@ -65,35 +68,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        PLog.i("onStart");
-    }
-
-    @Override
     protected void onRestart() {
         super.onRestart();
-        PLog.i("onRestart");
-        //为了实现 Intent 重启使图标生效
         initIcon();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        PLog.i("onResume");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        PLog.i("onPause");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        PLog.i("onStop");
     }
 
     /**
@@ -154,10 +131,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 初始化抽屉
      */
     private void initDrawer() {
-        //https://segmentfault.com/a/1190000004151222
         if (mNavView != null) {
             mNavView.setNavigationItemSelectedListener(this);
-            //navigationView.setItemIconTintList(null);
             mNavView.inflateHeaderView(R.layout.nav_header_main);
             ActionBarDrawerToggle toggle =
                     new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
@@ -216,12 +191,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .show();
     }
 
-    /**
-     * Called when an item in the navigation menu is selected.
-     *
-     * @param item The selected item
-     * @return true to display the item as the selected item
-     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         RxDrawer.close(mDrawerLayout).compose(RxUtils.rxSchedulerHelper(AndroidSchedulers.mainThread())).subscribe(
@@ -258,21 +227,5 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 finish();
             }
         }
-    }
-
-    protected boolean mIsHidden = false;
-
-    public void hideOrShowToolbar() {
-        mTabLayout.animate()
-                .translationY(mIsHidden ? 0 : -mTabLayout.getHeight())
-                .setInterpolator(new DecelerateInterpolator(2))
-                .start();
-        mIsHidden = !mIsHidden;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //OrmLite.getInstance().close();
     }
 }

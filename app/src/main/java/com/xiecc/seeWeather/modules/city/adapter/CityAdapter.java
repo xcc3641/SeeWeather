@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseViewHolder;
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
@@ -50,9 +50,9 @@ public class CityAdapter extends AnimRecyclerViewAdapter<CityAdapter.CityViewHol
 
     class CityViewHolder extends BaseViewHolder<String> {
 
-        @Bind(R.id.item_city)
+        @BindView(R.id.item_city)
         TextView mItemCity;
-        @Bind(R.id.cardView)
+        @BindView(R.id.cardView)
         CardView mCardView;
 
         public CityViewHolder(View itemView) {

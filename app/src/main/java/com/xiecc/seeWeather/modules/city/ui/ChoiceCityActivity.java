@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.ToolbarActivity;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.RxUtils;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
@@ -28,24 +27,20 @@ import com.xiecc.seeWeather.modules.city.domain.Province;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
-import rx.Observable;
-import rx.functions.Action0;
-
 import java.util.ArrayList;
 import java.util.List;
+import rx.Observable;
 
 /**
  * Created by hugo on 2016/2/19 0019.
- * todo 需要统一 Activity 退出的效果
  */
 public class ChoiceCityActivity extends ToolbarActivity {
 
-    private RecyclerView mRecyclerview;
+    private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
 
     private ArrayList<String> dataList = new ArrayList<>();
     private Province selectedProvince;
-    private City selectedCity;
     private List<Province> provincesList = new ArrayList<>();
     private List<City> cityList;
     private CityAdapter mAdapter;
@@ -72,15 +67,14 @@ public class ChoiceCityActivity extends ToolbarActivity {
         initView();
 
         Observable.defer(() -> {
-            //mDBManager = new DBManager(ChoiceCityActivity.this);
             DBManager.getInstance().openDatabase();
             return Observable.just(1);
         }).compose(RxUtils.rxSchedulerHelper())
-                .compose(this.bindToLifecycle())
-                .subscribe(integer -> {
-                    initRecyclerView();
-                    queryProvinces();
-                });
+            .compose(this.bindToLifecycle())
+            .subscribe(integer -> {
+                initRecyclerView();
+                queryProvinces();
+            });
         Intent intent = getIntent();
         isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false);
         if (isChecked && SharedPreferenceUtil.getInstance().getBoolean("Tips", true)) {
@@ -89,7 +83,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
     }
 
     private void initView() {
-        mRecyclerview = (RecyclerView) findViewById(R.id.recyclerview);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -97,23 +91,22 @@ public class ChoiceCityActivity extends ToolbarActivity {
     }
 
     private void initRecyclerView() {
-        mRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerview.setHasFixedSize(true);
-        //mRecyclerview.setItemAnimator(new FadeInUpAnimator());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);
+        //mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mAdapter = new CityAdapter(this, dataList);
-        mRecyclerview.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemClickListener((view, pos) -> {
             if (currentLevel == LEVEL_PROVINCE) {
                 selectedProvince = provincesList.get(pos);
-                mRecyclerview.smoothScrollToPosition(0);
+                mRecyclerView.smoothScrollToPosition(0);
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
                 String city = Util.replaceCity(cityList.get(pos).CityName);
                 if (isChecked) {
                     OrmLite.getInstance().save(new CityORM(city));
                     RxBus.getDefault().post(new MultiUpdate());
-                    PLog.d("是多城市管理模式");
                 } else {
                     SharedPreferenceUtil.getInstance().setCityName(city);
                     RxBus.getDefault().post(new ChangeCityEvent());
@@ -135,26 +128,22 @@ public class ChoiceCityActivity extends ToolbarActivity {
             dataList.clear();
             return Observable.from(provincesList);
         })
-                .map(province -> province.ProName)
-                //.delay(60, TimeUnit.MILLISECONDS, Schedulers.immediate())
-                //.onBackpressureBuffer() // 会缓存所有当前无法消费的数据，直到 Observer 可以处理为止
-                .toList()
-                .compose(RxUtils.rxSchedulerHelper())
-                .compose(this.bindToLifecycle())
-                .doOnTerminate(() -> mProgressBar.setVisibility(View.GONE))
-                .doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        currentLevel = LEVEL_PROVINCE;
-                        mAdapter.notifyDataSetChanged();
-                    }
-                })
-                .subscribe(new SimpleSubscriber<List<String>>() {
-                    @Override
-                    public void onNext(List<String> strings) {
-                        dataList.addAll(strings);
-                    }
-                });
+            .map(province -> province.ProName)
+
+            .toList()
+            .compose(RxUtils.rxSchedulerHelper())
+            .compose(this.bindToLifecycle())
+            .doOnTerminate(() -> mProgressBar.setVisibility(View.GONE))
+            .doOnCompleted(() -> {
+                currentLevel = LEVEL_PROVINCE;
+                mAdapter.notifyDataSetChanged();
+            })
+            .subscribe(new SimpleSubscriber<List<String>>() {
+                @Override
+                public void onNext(List<String> strings) {
+                    dataList.addAll(strings);
+                }
+            });
     }
 
     @Override
@@ -189,35 +178,30 @@ public class ChoiceCityActivity extends ToolbarActivity {
             return Observable.from(cityList);
         })
 
-                .map(city -> city.CityName)
-                .toList()
-                .compose(RxUtils.rxSchedulerHelper())
-                .compose(this.bindToLifecycle())
-                .doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        currentLevel = LEVEL_CITY;
-                        mAdapter.notifyDataSetChanged();
-                        //定位到第一个item
-                        mRecyclerview.smoothScrollToPosition(0);
-                    }
-                })
-                .subscribe(new SimpleSubscriber<List<String>>() {
-                    @Override
-                    public void onNext(List<String> strings) {
-                        dataList.addAll(strings);
-                    }
-                });
+            .map(city -> city.CityName)
+            .toList()
+            .compose(RxUtils.rxSchedulerHelper())
+            .compose(this.bindToLifecycle())
+            .doOnCompleted(() -> {
+                currentLevel = LEVEL_CITY;
+                mAdapter.notifyDataSetChanged();
+                mRecyclerView.smoothScrollToPosition(0);
+            })
+            .subscribe(new SimpleSubscriber<List<String>>() {
+                @Override
+                public void onNext(List<String> strings) {
+                    dataList.addAll(strings);
+                }
+            });
     }
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();  http://www.eoeandroid.com/thread-275312-1-1.html 这里的坑
         if (currentLevel == LEVEL_PROVINCE) {
             quit();
         } else {
             queryProvinces();
-            mRecyclerview.smoothScrollToPosition(0);
+            mRecyclerView.smoothScrollToPosition(0);
         }
     }
 
@@ -232,8 +216,13 @@ public class ChoiceCityActivity extends ToolbarActivity {
     }
 
     private void showTips() {
-        new AlertDialog.Builder(this).setTitle("多城市管理模式").setMessage("您现在是多城市管理模式,直接点击即可新增城市.如果暂时不需要添加,"
-                + "在右上选项中关闭即可像往常一样操作.\n因为 api 次数限制的影响,多城市列表最多三个城市.(๑′ᴗ‵๑)").setPositiveButton("明白", (dialog, which) -> dialog.dismiss()).setNegativeButton("不再提示", (dialog, which) -> SharedPreferenceUtil.getInstance().putBoolean("Tips", false)).show();
+        new AlertDialog.Builder(this)
+            .setTitle("多城市管理模式")
+            .setMessage("您现在是多城市管理模式,直接点击即可新增城市.如果暂时不需要添加,"
+                + "在右上选项中关闭即可像往常一样操作.\n因为 api 次数限制的影响,多城市列表最多三个城市.(๑′ᴗ‵๑)")
+            .setPositiveButton("明白", (dialog, which) -> dialog.dismiss())
+            .setNegativeButton("不再提示", (dialog, which) -> SharedPreferenceUtil.getInstance().putBoolean("Tips", false))
+            .show();
     }
 
     private void quit() {

@@ -9,9 +9,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.xiecc.seeWeather.R;
@@ -21,25 +20,13 @@ import com.xiecc.seeWeather.common.utils.StatusBarUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 
 public class AboutActivity extends BaseActivity {
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.toolbar_layout)
+    @BindView(R.id.toolbar_layout)
     CollapsingToolbarLayout mToolbarLayout;
-    @Bind(R.id.tv_version)
+    @BindView(R.id.tv_version)
     TextView mTvVersion;
 
-    @Bind(R.id.bt_code)
-    Button mBtCode;
-    @Bind(R.id.bt_blog)
-    Button mBtBlog;
-    @Bind(R.id.bt_pay)
-    Button mBtPay;
-    @Bind(R.id.bt_share)
-    Button mBtShare;
-    @Bind(R.id.bt_update)
-    Button mBtUpdate;
-    @Bind(R.id.bt_bug)
-    Button mBtBug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +44,6 @@ public class AboutActivity extends BaseActivity {
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
         mTvVersion.setText(String.format("当前版本: %s (Build %s)", Util.getVersion(this), Util.getVersionCode(this)));
         mToolbarLayout.setTitleEnabled(false);
-        // TODO: 2016/12/4 这里有个 bug
-        //mToolbarLayout.setTitle(getString(R.string.app_name));
         mToolbar.setTitle(getString(R.string.app_name));
     }
 
