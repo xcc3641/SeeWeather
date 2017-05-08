@@ -104,7 +104,7 @@ Fir.im: http://fir.im/seeWeather
 谢三弟
 
 - [简书](http://www.jianshu.com/users/3372b4a3b9e5/latest_articles)
-- [个人博客](imxie.itscoder.com)
+- [个人博客](http://imxie.itscoder.com)
 - [知乎](https://www.zhihu.com/people/xcc3641.github.io)
 
 ### License
