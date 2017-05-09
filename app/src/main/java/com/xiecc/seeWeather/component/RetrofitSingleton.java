@@ -1,25 +1,30 @@
 package com.xiecc.seeWeather.component;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.litesuits.orm.db.assit.WhereBuilder;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.RxUtil;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
-import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
+import com.xiecc.seeWeather.modules.about.domain.Version;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import okhttp3.*;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
-
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import okhttp3.Cache;
+import okhttp3.CacheControl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by zk on 2015/12/16.
@@ -51,21 +56,15 @@ public class RetrofitSingleton {
 
     private static void initOkHttp() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if (BuildConfig.DEBUG) {
-            // https://drakeet.me/retrofit-2-0-okhttp-3-0-config
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-            builder.addInterceptor(loggingInterceptor);
-        }
         // 缓存 http://www.jianshu.com/p/93153b34310e
-        File cacheFile = new File(BaseApplication.getAppCacheDir(), "/NetCache");
+        File cacheFile = new File(C.NET_CACHE);
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
         Interceptor cacheInterceptor = chain -> {
             Request request = chain.request();
             if (!Util.isNetworkConnected(BaseApplication.getAppContext())) {
                 request = request.newBuilder()
-                        .cacheControl(CacheControl.FORCE_CACHE)
-                        .build();
+                    .cacheControl(CacheControl.FORCE_CACHE)
+                    .build();
             }
             Response response = chain.proceed(request);
             Response.Builder newBuilder = response.newBuilder();
@@ -81,6 +80,9 @@ public class RetrofitSingleton {
             return newBuilder.build();
         };
         builder.cache(cache).addInterceptor(cacheInterceptor);
+        if (BuildConfig.DEBUG) {
+            builder.addNetworkInterceptor(new StethoInterceptor());
+        }
         //设置超时
         builder.connectTimeout(15, TimeUnit.SECONDS);
         builder.readTimeout(20, TimeUnit.SECONDS);
@@ -92,46 +94,45 @@ public class RetrofitSingleton {
 
     private static void initRetrofit() {
         sRetrofit = new Retrofit.Builder()
-                .baseUrl(ApiInterface.HOST)
-                .client(sOkHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
+            .baseUrl(ApiInterface.HOST)
+            .client(sOkHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build();
     }
 
-    public static void disposeFailureInfo(Throwable t) {
-        if (t.toString().contains("GaiException") || t.toString().contains("SocketTimeoutException") ||
+    private static Consumer<Throwable> disposeFailureInfo(Throwable t) {
+        return throwable -> {
+            if (t.toString().contains("GaiException") || t.toString().contains("SocketTimeoutException") ||
                 t.toString().contains("UnknownHostException")) {
-            ToastUtil.showShort("网络问题");
-        } else if (t.toString().contains("API没有")) {
-            OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", Util.replaceInfo(t.getMessage())));
-            PLog.w(Util.replaceInfo(t.getMessage()));
-            ToastUtil.showShort("错误: " + t.getMessage());
-        }
-        PLog.w(t.getMessage());
-    }
-
-    public ApiInterface getApiService() {
-        return sApiService;
+                ToastUtil.showShort("网络问题");
+            } else if (t.toString().contains("API没有")) {
+                OrmLite.getInstance()
+                    .delete(new WhereBuilder(CityORM.class).where("name=?", Util.replaceInfo(t.getMessage())));
+                ToastUtil.showShort("错误: " + t.getMessage());
+            }
+            PLog.w(t.getMessage());
+        };
     }
 
     public Observable<Weather> fetchWeather(String city) {
-
         return sApiService.mWeatherAPI(city, C.KEY)
-                .flatMap(weatherAPI -> {
-                    String status = weatherAPI.mHeWeatherDataService30s.get(0).status;
-                    if ("no more requests".equals(status)) {
-                        return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
-                    } else if ("unknown city".equals(status)) {
-                        return Observable.error(new RuntimeException(String.format("API没有%s", city)));
-                    }
-                    return Observable.just(weatherAPI);
-                })
-                .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-                .compose(RxUtils.rxSchedulerHelper());
+            .flatMap(weather -> {
+                String status = weather.mWeathers.get(0).status;
+                if ("no more requests".equals(status)) {
+                    return Observable.error(new RuntimeException("/(ㄒoㄒ)/~~,API免费次数已用完"));
+                } else if ("unknown city".equals(status)) {
+                    return Observable.error(new RuntimeException(String.format("API没有%s", city)));
+                }
+                return Observable.just(weather);
+            })
+            .map(weather -> weather.mWeathers.get(0))
+            .doOnError(RetrofitSingleton::disposeFailureInfo)
+            .compose(RxUtil.io());
     }
 
-    public Observable<VersionAPI> fetchVersion() {
-        return sApiService.mVersionAPI(C.API_TOKEN).compose(RxUtils.rxSchedulerHelper());
+    public Observable<Version> fetchVersion() {
+        return sApiService.mVersionAPI(C.API_TOKEN)
+            .compose(RxUtil.io());
     }
 }

@@ -1,5 +1,7 @@
 package com.xiecc.seeWeather.base;
 
+import java.io.File;
+
 /**
  * Created by HugoXie on 16/5/23.
  *
@@ -18,4 +20,7 @@ public class C {
     public static final String ORM_NAME = "cities.db";
 
     public static final String UNKNOWN_CITY = "unknown city";
+
+    public static final String NET_CACHE = BaseApplication.getAppCacheDir() + File.separator + "NetCache";
+
 }

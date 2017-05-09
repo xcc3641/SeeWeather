@@ -13,10 +13,9 @@ import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import com.xiecc.seeWeather.modules.main.ui.MainActivity;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import java.util.concurrent.TimeUnit;
-import rx.Observable;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by HugoXie on 16/4/18.
@@ -28,9 +27,7 @@ public class AutoUpdateService extends Service {
 
     private final String TAG = AutoUpdateService.class.getSimpleName();
     private SharedPreferenceUtil mSharedPreferenceUtil;
-    private CompositeSubscription mCompositeSubscription;
-    private Subscription mNetSubscription;
-
+    private Disposable mDisposable;
     private boolean mIsUnSubscribed = true;
 
     @Override
@@ -42,7 +39,6 @@ public class AutoUpdateService extends Service {
     public void onCreate() {
         super.onCreate();
         mSharedPreferenceUtil = SharedPreferenceUtil.getInstance();
-        mCompositeSubscription = new CompositeSubscription();
     }
 
     @Override
@@ -52,13 +48,12 @@ public class AutoUpdateService extends Service {
             if (mIsUnSubscribed) {
                 unSubscribed();
                 if (mSharedPreferenceUtil.getAutoUpdate() != 0) {
-                    mNetSubscription = Observable.interval(mSharedPreferenceUtil.getAutoUpdate(), TimeUnit.HOURS)
-                        .subscribe(aLong -> {
+                    mDisposable = Observable.interval(mSharedPreferenceUtil.getAutoUpdate(), TimeUnit.HOURS)
+                        .doOnNext(aLong -> {
                             mIsUnSubscribed = false;
-                            //PLog.i(TAG, SystemClock.elapsedRealtime() + " 当前设置" + mSharedPreferenceUtil.getAutoUpdate());
                             fetchDataByNetWork();
-                        });
-                    mCompositeSubscription.add(mNetSubscription);
+                        })
+                        .subscribe();
                 }
             }
         }
@@ -67,7 +62,9 @@ public class AutoUpdateService extends Service {
 
     private void unSubscribed() {
         mIsUnSubscribed = true;
-        mCompositeSubscription.remove(mNetSubscription);
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 
     @Override

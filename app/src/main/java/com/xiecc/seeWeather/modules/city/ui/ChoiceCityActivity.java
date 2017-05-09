@@ -13,9 +13,9 @@ import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.base.ToolbarActivity;
-import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.Irrelevant;
+import com.xiecc.seeWeather.common.utils.RxUtil;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.component.RxBus;
@@ -27,13 +27,13 @@ import com.xiecc.seeWeather.modules.city.domain.Province;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.Observable;
 import java.util.ArrayList;
 import java.util.List;
-import rx.Observable;
 
-/**
- * Created by hugo on 2016/2/19 0019.
- */
 public class ChoiceCityActivity extends ToolbarActivity {
 
     private RecyclerView mRecyclerView;
@@ -66,15 +66,19 @@ public class ChoiceCityActivity extends ToolbarActivity {
         super.onCreate(savedInstanceState);
         initView();
 
-        Observable.defer(() -> {
+        Observable.create(emitter -> {
             DBManager.getInstance().openDatabase();
-            return Observable.just(1);
-        }).compose(RxUtils.rxSchedulerHelper())
-            .compose(this.bindToLifecycle())
-            .subscribe(integer -> {
+            emitter.onNext(Irrelevant.INSTANCE);
+            emitter.onComplete();
+        })
+            .compose(RxUtil.io())
+            .compose(RxUtil.activityLifecycle(this))
+            .doOnNext(o -> {
                 initRecyclerView();
                 queryProvinces();
-            });
+            })
+            .subscribe();
+
         Intent intent = getIntent();
         isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false);
         if (isChecked && SharedPreferenceUtil.getInstance().getBoolean("Tips", true)) {
@@ -93,7 +97,6 @@ public class ChoiceCityActivity extends ToolbarActivity {
     private void initRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
-        //mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mAdapter = new CityAdapter(this, dataList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -103,7 +106,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 mRecyclerView.smoothScrollToPosition(0);
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
-                String city = Util.replaceCity(cityList.get(pos).CityName);
+                String city = Util.replaceCity(cityList.get(pos).mCityName);
                 if (isChecked) {
                     OrmLite.getInstance().save(new CityORM(city));
                     RxBus.getDefault().post(new MultiUpdate());
@@ -121,29 +124,25 @@ public class ChoiceCityActivity extends ToolbarActivity {
      */
     private void queryProvinces() {
         getToolbar().setTitle("选择省份");
-        Observable.defer(() -> {
+        Flowable.create((FlowableOnSubscribe<String>) emitter -> {
             if (provincesList.isEmpty()) {
                 provincesList.addAll(WeatherDB.loadProvinces(DBManager.getInstance().getDatabase()));
             }
             dataList.clear();
-            return Observable.from(provincesList);
-        })
-            .map(province -> province.ProName)
-
-            .toList()
-            .compose(RxUtils.rxSchedulerHelper())
-            .compose(this.bindToLifecycle())
-            .doOnTerminate(() -> mProgressBar.setVisibility(View.GONE))
-            .doOnCompleted(() -> {
+            for (Province province : provincesList) {
+                emitter.onNext(province.mProName);
+            }
+            emitter.onComplete();
+        }, BackpressureStrategy.BUFFER)
+            .compose(RxUtil.ioF())
+            .compose(RxUtil.activityLifecycleF(this))
+            .doOnNext(proName -> dataList.add(proName))
+            .doOnComplete(() -> {
+                mProgressBar.setVisibility(View.GONE);
                 currentLevel = LEVEL_PROVINCE;
                 mAdapter.notifyDataSetChanged();
             })
-            .subscribe(new SimpleSubscriber<List<String>>() {
-                @Override
-                public void onNext(List<String> strings) {
-                    dataList.addAll(strings);
-                }
-            });
+            .subscribe();
     }
 
     @Override
@@ -173,26 +172,23 @@ public class ChoiceCityActivity extends ToolbarActivity {
         getToolbar().setTitle("选择城市");
         dataList.clear();
         mAdapter.notifyDataSetChanged();
-        Observable.defer(() -> {
-            cityList = WeatherDB.loadCities(DBManager.getInstance().getDatabase(), selectedProvince.ProSort);
-            return Observable.from(cityList);
-        })
 
-            .map(city -> city.CityName)
-            .toList()
-            .compose(RxUtils.rxSchedulerHelper())
-            .compose(this.bindToLifecycle())
-            .doOnCompleted(() -> {
+        Flowable.create((FlowableOnSubscribe<String>) emitter -> {
+            cityList = WeatherDB.loadCities(DBManager.getInstance().getDatabase(), selectedProvince.mProSort);
+            for (City city : cityList) {
+                emitter.onNext(city.mCityName);
+            }
+            emitter.onComplete();
+        }, BackpressureStrategy.BUFFER)
+            .compose(RxUtil.ioF())
+            .compose(RxUtil.activityLifecycleF(this))
+            .doOnNext(proName -> dataList.add(proName))
+            .doOnComplete(() -> {
                 currentLevel = LEVEL_CITY;
                 mAdapter.notifyDataSetChanged();
                 mRecyclerView.smoothScrollToPosition(0);
             })
-            .subscribe(new SimpleSubscriber<List<String>>() {
-                @Override
-                public void onNext(List<String> strings) {
-                    dataList.addAll(strings);
-                }
-            });
+            .subscribe();
     }
 
     @Override

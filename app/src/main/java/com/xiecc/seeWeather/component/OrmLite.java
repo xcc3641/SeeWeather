@@ -4,11 +4,6 @@ import com.litesuits.orm.LiteOrm;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.common.PLog;
-import com.xiecc.seeWeather.common.utils.RxUtils;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
-import com.xiecc.seeWeather.modules.main.domain.CityORM;
-import rx.Observable;
 
 /**
  * Created by HugoXie on 16/7/24.
@@ -33,25 +28,11 @@ public class OrmLite {
     private OrmLite() {
         if (sLiteOrm == null) {
             sLiteOrm = LiteOrm.newSingleInstance(BaseApplication.getAppContext(), C.ORM_NAME);
-
         }
         sLiteOrm.setDebugged(BuildConfig.DEBUG);
     }
 
     private static class OrmHolder {
         private static final OrmLite sInstance = new OrmLite();
-    }
-
-    public static <T> void OrmTest(Class<T> t) {
-        Observable.from(getInstance().query(t))
-            .compose(RxUtils.rxSchedulerHelper())
-            .subscribe(new SimpleSubscriber<T>() {
-                @Override
-                public void onNext(T t) {
-                    if (t instanceof CityORM) {
-                        PLog.w(((CityORM) t).getName());
-                    }
-                }
-            });
     }
 }

@@ -8,6 +8,6 @@ import java.util.List;
 public class WeatherAPI {
 
     @SerializedName("HeWeather5") @Expose
-    public List<Weather> mHeWeatherDataService30s
+    public List<Weather> mWeathers
             = new ArrayList<>();
 }

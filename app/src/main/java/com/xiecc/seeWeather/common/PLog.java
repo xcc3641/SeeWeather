@@ -3,7 +3,7 @@ package com.xiecc.seeWeather.common;
 import android.util.Log;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
-import com.xiecc.seeWeather.common.utils.Time;
+import com.xiecc.seeWeather.common.utils.TimeUitl;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -96,7 +96,7 @@ public class PLog {
         isExist(PATH);
         //isDel();
         String needWriteMessage = "\r\n"
-            + Time.getNowMDHMSTime()
+            + TimeUitl.getNowMDHMSTime()
             + "\r\n"
             + mylogtype
             + "    "

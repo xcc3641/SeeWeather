@@ -17,20 +17,19 @@ import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.BaseApplication;
+import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.utils.FileSizeUtil;
 import com.xiecc.seeWeather.common.utils.FileUtil;
-import com.xiecc.seeWeather.common.utils.RxUtils;
+import com.xiecc.seeWeather.common.utils.RxUtil;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.component.ImageLoader;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.ui.MainActivity;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
+import io.reactivex.Observable;
 import java.io.File;
 import java.util.Locale;
-import rx.Observable;
 
 public class SettingFragment extends PreferenceFragment
     implements Preference.OnPreferenceClickListener,
@@ -42,8 +41,6 @@ public class SettingFragment extends PreferenceFragment
     private Preference mClearCache;
     private CheckBoxPreference mNotificationType;
     private CheckBoxPreference mAnimationOnOff;
-
-    private static final String NET_CACHE = BaseApplication.getAppCacheDir() + File.separator + "NetCache";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +67,7 @@ public class SettingFragment extends PreferenceFragment
 
         mChangeUpdate.setSummary(
             mSharedPreferenceUtil.getAutoUpdate() == 0 ? "禁止刷新" : "每" + mSharedPreferenceUtil.getAutoUpdate() + "小时更新");
-        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(NET_CACHE));
+        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(C.NET_CACHE));
 
         mChangeIcons.setOnPreferenceClickListener(this);
         mChangeUpdate.setOnPreferenceClickListener(this);
@@ -85,18 +82,15 @@ public class SettingFragment extends PreferenceFragment
         if (mChangeIcons == preference) {
             showIconDialog();
         } else if (mClearCache == preference) {
-
             ImageLoader.clear(getActivity());
-            Observable.just(FileUtil.delete(new File(NET_CACHE)))
+            Observable.just(FileUtil.delete(new File(C.NET_CACHE)))
                 .filter(aBoolean -> aBoolean)
-                .compose(RxUtils.rxSchedulerHelper())
-                .subscribe(new SimpleSubscriber<Boolean>() {
-                    @Override
-                    public void onNext(Boolean aBoolean) {
-                        mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(NET_CACHE));
-                        Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+                .compose(RxUtil.io())
+                .doOnNext(aBoolean -> {
+                    mClearCache.setSummary(FileSizeUtil.getAutoFileOrFilesSize(C.NET_CACHE));
+                    Snackbar.make(getView(), "缓存已清除", Snackbar.LENGTH_SHORT).show();
+                })
+                .subscribe();
         } else if (mChangeUpdate == preference) {
             showUpdateDialog();
         }

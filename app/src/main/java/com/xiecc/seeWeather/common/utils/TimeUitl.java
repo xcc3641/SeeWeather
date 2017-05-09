@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Time {
+public class TimeUitl {
 
     /**
      * yyyy-MM-dd HH:mm:ss

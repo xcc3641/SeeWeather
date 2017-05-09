@@ -20,13 +20,13 @@ import com.xiecc.seeWeather.common.utils.StatusBarUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 
 public class AboutActivity extends BaseActivity {
+
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.toolbar_layout)
     CollapsingToolbarLayout mToolbarLayout;
     @BindView(R.id.tv_version)
     TextView mTvVersion;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

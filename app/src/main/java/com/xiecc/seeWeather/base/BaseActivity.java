@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.WindowManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 public class BaseActivity extends RxAppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();

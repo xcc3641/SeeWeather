@@ -2,7 +2,7 @@ package com.xiecc.seeWeather.modules.about.domain;
 
 import com.google.gson.annotations.SerializedName;
 
-public class VersionAPI {
+public class Version {
 
     @SerializedName("name") public String name;
     @SerializedName("version") public String version;

@@ -1,6 +1,5 @@
 package com.xiecc.seeWeather.modules.main.ui;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,14 +21,12 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.BaseFragment;
-import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
+import com.xiecc.seeWeather.common.utils.RxUtil;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -37,9 +34,8 @@ import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.main.adapter.WeatherAdapter;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -87,15 +83,16 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-        // https://github.com/tbruyelle/RxPermissions
-        RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(granted -> {
-                    if (granted) {
-                        location();
-                    } else {
-                        load();
-                    }
-                });
+        // TODO: 2017/5/9 权限后面做下
+        //RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
+        //    .subscribe(granted -> {
+        //        if (granted) {
+        //            location();
+        //        } else {
+        //            load();
+        //        }
+        //    });
+        load();
         CheckVersion.checkVersion(getActivity());
     }
 
@@ -103,26 +100,26 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RxBus.getDefault().toObservable(ChangeCityEvent.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                new SimpleSubscriber<ChangeCityEvent>() {
-                    @Override
-                    public void onNext(ChangeCityEvent changeCityEvent) {
-                        if (mRefreshLayout != null) {
-                            mRefreshLayout.setRefreshing(true);
-                        }
-                        load();
-                    }
-                });
+        RxBus.getDefault()
+            .toObservable(ChangeCityEvent.class)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext(event -> {
+                if (mRefreshLayout != null) {
+                    mRefreshLayout.setRefreshing(true);
+                }
+                load();
+            })
+            .subscribe();
     }
 
     private void initView() {
         if (mRefreshLayout != null) {
             mRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                    android.R.color.holo_green_light,
-                    android.R.color.holo_orange_light,
-                    android.R.color.holo_red_light);
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
             mRefreshLayout.setOnRefreshListener(
-                    () -> mRefreshLayout.postDelayed(this::load, 1000));
+                () -> mRefreshLayout.postDelayed(this::load, 1000));
         }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -132,34 +129,17 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
 
     private void load() {
         fetchDataByNetWork()
-                .doOnRequest(aLong -> mRefreshLayout.setRefreshing(true))
-                .doOnError(throwable -> {
-                    mIvError.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
-                    SharedPreferenceUtil.getInstance().setCityName("北京");
-                    safeSetTitle("找不到城市啦");
-                })
-                .doOnNext(weather -> {
-                    mIvError.setVisibility(View.GONE);
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                })
-                .doOnTerminate(() -> {
-                    mRefreshLayout.setRefreshing(false);
-                    mProgressBar.setVisibility(View.GONE);
-                }).subscribe(new Subscriber<Weather>() {
-            @Override
-            public void onCompleted() {
-                ToastUtil.showShort(getString(R.string.complete));
-            }
+            .doOnSubscribe(aLong -> mRefreshLayout.setRefreshing(true))
+            .doOnError(throwable -> {
+                mIvError.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+                SharedPreferenceUtil.getInstance().setCityName("北京");
+                safeSetTitle("找不到城市啦");
+            })
+            .doOnNext(weather -> {
+                mIvError.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
 
-            @Override
-            public void onError(Throwable e) {
-                PLog.e(e.toString());
-                RetrofitSingleton.disposeFailureInfo(e);
-            }
-
-            @Override
-            public void onNext(Weather weather) {
                 mWeather.status = weather.status;
                 mWeather.aqi = weather.aqi;
                 mWeather.basic = weather.basic;
@@ -167,12 +147,16 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
                 mWeather.now = weather.now;
                 mWeather.dailyForecast = weather.dailyForecast;
                 mWeather.hourlyForecast = weather.hourlyForecast;
-                //mActivity.getToolbar().setTitle(weather.basic.city);
                 safeSetTitle(weather.basic.city);
                 mAdapter.notifyDataSetChanged();
                 normalStyleNotification(weather);
-            }
-        });
+            })
+            .doOnComplete(() -> {
+                mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
+                ToastUtil.showShort(getString(R.string.complete));
+            })
+            .subscribe();
     }
 
     /**
@@ -181,8 +165,8 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     private Observable<Weather> fetchDataByNetWork() {
         String cityName = SharedPreferenceUtil.getInstance().getCityName();
         return RetrofitSingleton.getInstance()
-                .fetchWeather(cityName)
-                .compose(this.bindToLifecycle());
+            .fetchWeather(cityName)
+            .compose(RxUtil.fragmentLifecycle(this));
     }
 
     /**
@@ -252,14 +236,14 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent =
-                PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(getActivity());
         Notification notification = builder.setContentIntent(pendingIntent)
-                .setContentTitle(weather.basic.city)
-                .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
-                // 这里部分 ROM 无法成功
-                .setSmallIcon(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none))
-                .build();
+            .setContentTitle(weather.basic.city)
+            .setContentText(String.format("%s 当前温度: %s℃ ", weather.now.cond.txt, weather.now.tmp))
+            // 这里部分 ROM 无法成功
+            .setSmallIcon(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none))
+            .build();
         notification.flags = SharedPreferenceUtil.getInstance().getNotificationModel();
         NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         // tag和id都是可以拿来区分不同的通知的

@@ -14,12 +14,10 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.litesuits.orm.db.assit.WhereBuilder;
-import com.trello.rxlifecycle.android.FragmentEvent;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
 import com.xiecc.seeWeather.base.C;
-import com.xiecc.seeWeather.common.utils.RxUtils;
-import com.xiecc.seeWeather.common.utils.SimpleSubscriber;
+import com.xiecc.seeWeather.common.utils.RxUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.OrmLite;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
@@ -28,11 +26,11 @@ import com.xiecc.seeWeather.modules.main.adapter.MultiCityAdapter;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
 import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import rx.Observable;
-import rx.Observer;
 
 /**
  * Created by HugoXie on 16/7/9.
@@ -76,12 +74,10 @@ public class MultiCityFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RxBus.getDefault().toObservable(MultiUpdate.class).subscribe(new SimpleSubscriber<MultiUpdate>() {
-            @Override
-            public void onNext(MultiUpdate multiUpdate) {
-                multiLoad();
-            }
-        });
+        RxBus.getDefault()
+            .toObservable(MultiUpdate.class)
+            .doOnNext(event -> multiLoad())
+            .subscribe();
     }
 
     @Override
@@ -99,9 +95,8 @@ public class MultiCityFragment extends BaseFragment {
         mAdapter.setOnMultiCityLongClick(city -> new AlertDialog.Builder(getActivity()).setMessage("是否删除该城市?")
             .setPositiveButton("删除", (dialog, which) -> {
                 OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
-                OrmLite.OrmTest(CityORM.class);
                 multiLoad();
-                Snackbar.make(getView(), String.format(Locale.CHINA,"已经将%s删掉了 Ծ‸ Ծ",city), Snackbar.LENGTH_LONG)
+                Snackbar.make(getView(), String.format(Locale.CHINA, "已经将%s删掉了 Ծ‸ Ծ", city), Snackbar.LENGTH_LONG)
                     .setAction("撤销",
                         v -> {
                             OrmLite.getInstance().save(new CityORM(city));
@@ -123,44 +118,37 @@ public class MultiCityFragment extends BaseFragment {
 
     private void multiLoad() {
         mWeathers.clear();
-        Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))
-            .doOnRequest(aLong -> mRefreshLayout.setRefreshing(true))
-            .map(cityORM -> Util.replaceCity(cityORM.getName()))
+        Observable.create((ObservableOnSubscribe<CityORM>) emitter -> {
+            try {
+                for (CityORM cityORM : OrmLite.getInstance().query(CityORM.class)) {
+                    emitter.onNext(cityORM);
+                }
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        }).doOnSubscribe(subscription -> mRefreshLayout.setRefreshing(true))
+            .map(city -> Util.replaceCity(city.getName()))
             .distinct()
-            .flatMap(s -> RetrofitSingleton.getInstance()
-                .getApiService()
-                .mWeatherAPI(s, C.KEY)
-                .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
-                .compose(RxUtils.rxSchedulerHelper()))
-            .compose(this.bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+            .flatMap(cityName -> RetrofitSingleton.getInstance().fetchWeather(cityName))
             .filter(weather -> !C.UNKNOWN_CITY.equals(weather.status))
             .take(3)
-            .doOnTerminate(() -> {
+            .compose(RxUtil.fragmentLifecycle(this))
+            .doOnNext(weather -> mWeathers.add(weather))
+            .doOnComplete(() -> {
                 mRefreshLayout.setRefreshing(false);
+                mAdapter.notifyDataSetChanged();
+                if (mAdapter.isEmpty()) {
+                    mLayout.setVisibility(View.VISIBLE);
+                } else {
+                    mLayout.setVisibility(View.GONE);
+                }
             })
-            .subscribe(new Observer<Weather>() {
-                @Override
-                public void onCompleted() {
-                    mAdapter.notifyDataSetChanged();
-                    if (mAdapter.isEmpty()) {
-                        mLayout.setVisibility(View.VISIBLE);
-                    } else {
-                        mLayout.setVisibility(View.GONE);
-                    }
+            .doOnError(error -> {
+                if (mAdapter.isEmpty() && mLayout != null) {
+                    mLayout.setVisibility(View.VISIBLE);
                 }
-
-                @Override
-                public void onError(Throwable e) {
-                    if (mAdapter.isEmpty() && mLayout != null) {
-                        mLayout.setVisibility(View.VISIBLE);
-                    }
-                    RetrofitSingleton.disposeFailureInfo(e);
-                }
-
-                @Override
-                public void onNext(Weather weather) {
-                    mWeathers.add(weather);
-                }
-            });
+            })
+            .subscribe();
     }
 }

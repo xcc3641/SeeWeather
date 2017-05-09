@@ -27,8 +27,8 @@ public class WeatherDB {
         if (cursor.moveToFirst()) {
             do {
                 Province province = new Province();
-                province.ProSort = cursor.getInt(cursor.getColumnIndex("ProSort"));
-                province.ProName = cursor.getString(cursor.getColumnIndex("ProName"));
+                province.mProSort = cursor.getInt(cursor.getColumnIndex("ProSort"));
+                province.mProName = cursor.getString(cursor.getColumnIndex("ProName"));
                 list.add(province);
             } while (cursor.moveToNext());
         }
@@ -42,9 +42,9 @@ public class WeatherDB {
         if (cursor.moveToFirst()) {
             do {
                 City city = new City();
-                city.CityName = cursor.getString(cursor.getColumnIndex("CityName"));
-                city.ProID = ProID;
-                city.CitySort = cursor.getInt(cursor.getColumnIndex("CitySort"));
+                city.mCityName = cursor.getString(cursor.getColumnIndex("CityName"));
+                city.mProID = ProID;
+                city.mCitySort = cursor.getInt(cursor.getColumnIndex("CitySort"));
                 list.add(city);
             } while (cursor.moveToNext());
         }
