@@ -18,7 +18,7 @@
     <string name="app_html">https://github.com/xcc3641/SeeWeather</string>
     <string name="readme">https://github.com/xcc3641/SeeWeather/blob/master/README.md</string>
 
-    <string name="chage_icon">更换图标</string>
+    <string name="change_icon">更换图标</string>
     <string name="nav_city">选择城市</string>
     <string name="setting">设置</string>
     <string name="about">关于</string>
@@ -43,4 +43,5 @@
         <item>每6小时</item>
     </string-array>
 
+    <string name="block_canary_display_activity_label">Blocks</string>
 </resources>
