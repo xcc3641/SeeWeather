@@ -16,6 +16,9 @@
         <CheckBoxPreference
             android:key="notification_model"
             android:title="通知栏常驻"/>
+        <CheckBoxPreference
+            android:key="watcher"
+            android:title="监控开关"/>
         <Preference
             android:key="clear_cache"
             android:title="清除缓存"/>

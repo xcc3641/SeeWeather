@@ -3,10 +3,12 @@ package com.xiecc.seeWeather.modules.setting.ui;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -16,7 +18,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import com.hugo.watcher.Watcher;
 import com.xiecc.seeWeather.R;
+import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.C;
 import com.xiecc.seeWeather.common.utils.FileSizeUtil;
 import com.xiecc.seeWeather.common.utils.FileUtil;
@@ -41,6 +45,7 @@ public class SettingFragment extends PreferenceFragment
     private Preference mClearCache;
     private CheckBoxPreference mNotificationType;
     private CheckBoxPreference mAnimationOnOff;
+    private CheckBoxPreference mWatcherSwitch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,15 +59,15 @@ public class SettingFragment extends PreferenceFragment
 
         mAnimationOnOff = (CheckBoxPreference) findPreference(SharedPreferenceUtil.ANIM_START);
         mNotificationType = (CheckBoxPreference) findPreference(SharedPreferenceUtil.NOTIFICATION_MODEL);
+        mWatcherSwitch = (CheckBoxPreference) findPreference(SharedPreferenceUtil.WATCHER);
 
-        if (SharedPreferenceUtil.getInstance().getNotificationModel() != Notification.FLAG_ONGOING_EVENT) {
-            mNotificationType.setChecked(false);
-        } else {
-            mNotificationType.setChecked(true);
-        }
-
+        mNotificationType.setChecked(
+            SharedPreferenceUtil.getInstance().getNotificationModel() == Notification.FLAG_ONGOING_EVENT);
         mAnimationOnOff.setChecked(SharedPreferenceUtil.getInstance().getMainAnim());
-
+        mWatcherSwitch.setChecked(SharedPreferenceUtil.getInstance().getWatcherSwitch());
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(getContext())) {
+            mWatcherSwitch.setEnabled(false);
+        }
         mChangeIcons.setSummary(getResources().getStringArray(R.array.icons)[mSharedPreferenceUtil.getIconType()]);
 
         mChangeUpdate.setSummary(
@@ -73,8 +78,8 @@ public class SettingFragment extends PreferenceFragment
         mChangeUpdate.setOnPreferenceClickListener(this);
         mClearCache.setOnPreferenceClickListener(this);
         mNotificationType.setOnPreferenceChangeListener(this);
-
         mAnimationOnOff.setOnPreferenceChangeListener(this);
+        mWatcherSwitch.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -93,6 +98,10 @@ public class SettingFragment extends PreferenceFragment
                 .subscribe();
         } else if (mChangeUpdate == preference) {
             showUpdateDialog();
+        } else if (mWatcherSwitch == preference) {
+            if (mWatcherSwitch.isChecked()) {
+                Watcher.getInstance().start(BaseApplication.getAppContext());
+            }
         }
         return true;
     }

@@ -20,6 +20,7 @@ public class SharedPreferenceUtil {
     public static final String AUTO_UPDATE = "change_update_time"; //自动更新时长
     public static final String NOTIFICATION_MODEL = "notification_model";
     public static final String ANIM_START = "animation_start";
+    public static final String WATCHER = "watcher";
 
     public static int ONE_HOUR = 1000 * 60 * 60;
 
@@ -117,5 +118,13 @@ public class SharedPreferenceUtil {
 
     public boolean getMainAnim() {
         return mPrefs.getBoolean(ANIM_START, false);
+    }
+
+    public void setWatcherSwitcher(boolean b) {
+        mPrefs.edit().putBoolean(WATCHER, b).apply();
+    }
+
+    public boolean getWatcherSwitch() {
+        return mPrefs.getBoolean(WATCHER, false);
     }
 }

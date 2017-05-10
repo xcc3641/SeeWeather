@@ -13,7 +13,7 @@ import im.fir.sdk.FIR;
 public class BaseApplication extends Application {
 
     private static String sCacheDir;
-    public static Context sAppContext;
+    private static Context sAppContext;
 
     // TODO: 16/8/1 这里的夜间模式 UI 有些没有适配好 暂时放弃夜间模式
     static {
