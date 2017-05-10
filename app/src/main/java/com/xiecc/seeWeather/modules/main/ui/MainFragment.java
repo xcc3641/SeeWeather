@@ -1,5 +1,6 @@
 package com.xiecc.seeWeather.modules.main.ui;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -21,6 +22,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.BaseFragment;
@@ -83,16 +85,15 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-        // TODO: 2017/5/9 权限后面做下
-        //RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
-        //    .subscribe(granted -> {
-        //        if (granted) {
-        //            location();
-        //        } else {
-        //            load();
-        //        }
-        //    });
-        load();
+        new RxPermissions(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
+            .doOnNext(granted -> {
+                if (granted) {
+                    location();
+                } else {
+                    load();
+                }
+            })
+            .subscribe();
         CheckVersion.checkVersion(getActivity());
     }
 
