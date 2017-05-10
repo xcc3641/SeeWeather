@@ -7,7 +7,7 @@ import com.github.moduth.blockcanary.BlockCanary;
 import com.hugo.watcher.Watcher;
 import com.squareup.leakcanary.LeakCanary;
 import com.xiecc.seeWeather.BuildConfig;
-import com.xiecc.seeWeather.common.CrashHandler;
+import com.xiecc.seeWeather.component.CrashHandler;
 import im.fir.sdk.FIR;
 
 public class BaseApplication extends Application {

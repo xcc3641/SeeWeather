@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.C;
+import com.xiecc.seeWeather.common.C;
 import com.xiecc.seeWeather.base.ToolbarActivity;
 import com.xiecc.seeWeather.common.Irrelevant;
 import com.xiecc.seeWeather.common.utils.RxUtil;

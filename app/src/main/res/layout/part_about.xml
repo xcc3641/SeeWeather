@@ -7,14 +7,12 @@
     android:paddingBottom="32dp"
     android:paddingEnd="24dp"
     android:paddingStart="24dp"
-    android:paddingTop="32dp"
-    >
+    android:paddingTop="32dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,8 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:lineSpacingExtra="3dp"
-            android:text="@string/aboutContent"
-            />
+            android:text="@string/aboutContent"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="0.3dp"
@@ -52,8 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,9 +71,8 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="2"
             android:layout_marginBottom="6dp"
-            >
+            android:columnCount="2">
             <Button
                 android:id="@+id/bt_code"
                 android:layout_width="wrap_content"
@@ -87,15 +82,13 @@
                 android:drawablePadding="12dp"
                 android:drawableStart="@drawable/code"
                 android:gravity="start|center_vertical"
-                android:text="查看项目源码"
-                android:textColor="@color/defaultTextColor"
-                tools:targetApi="lollipop"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"/>
-
-            <Button
                 android:paddingEnd="12dp"
                 android:paddingStart="12dp"
+                android:text="查看项目源码"
+                android:textColor="@color/defaultTextColor"
+                tools:targetApi="lollipop"/>
+
+            <Button
                 android:id="@+id/bt_blog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -104,12 +97,12 @@
                 android:drawablePadding="12dp"
                 android:drawableStart="@drawable/home"
                 android:gravity="start|center_vertical"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:text="查看个人博客"
                 android:textColor="@color/defaultTextColor"
                 tools:targetApi="lollipop"/>
             <Button
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
                 android:id="@+id/bt_pay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -118,13 +111,13 @@
                 android:drawablePadding="12dp"
                 android:drawableStart="@drawable/pay"
                 android:gravity="start|center_vertical"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:text="随意捐赠支持"
                 android:textColor="@color/defaultTextColor"
                 tools:targetApi="lollipop"/>
 
             <Button
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
                 android:id="@+id/bt_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -133,12 +126,12 @@
                 android:drawablePadding="12dp"
                 android:drawableStart="@drawable/share"
                 android:gravity="start|center_vertical"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:text="分享就看天气"
                 android:textColor="@color/defaultTextColor"
                 tools:targetApi="lollipop"/>
             <Button
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
                 android:id="@+id/bt_update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -147,12 +140,12 @@
                 android:drawablePadding="12dp"
                 android:drawableStart="@drawable/update"
                 android:gravity="start|center_vertical"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:text="检查软件更新"
                 android:textColor="@color/defaultTextColor"
                 tools:targetApi="lollipop"/>
             <Button
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
                 android:id="@+id/bt_bug"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -161,14 +154,12 @@
                 android:drawablePadding="12dp"
                 android:drawableStart="@drawable/bug"
                 android:gravity="start|center_vertical"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:text="意见错误反馈"
                 android:textColor="@color/defaultTextColor"
                 tools:targetApi="lollipop"/>
-
         </GridLayout>
-
-
-
 
         <View
             android:layout_width="match_parent"
@@ -181,8 +172,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -208,8 +198,7 @@
             android:lineSpacingExtra="6dp"
             android:text="@string/open_source"
             android:textColorLink="@color/cloudyText"
-            android:textSize="12sp"
-            />
+            android:textSize="12sp"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="0.3dp"
@@ -218,7 +207,5 @@
             android:background="@color/lineColor"/>
 
     </LinearLayout>
-
-
 
 </LinearLayout>

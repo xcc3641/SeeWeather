@@ -6,7 +6,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
-import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.component.PLog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

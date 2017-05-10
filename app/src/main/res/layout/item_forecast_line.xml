@@ -12,8 +12,7 @@
         android:id="@+id/forecast_icon"
         android:layout_gravity="center_vertical"
         android:layout_width="32dp"
-        android:layout_height="32dp"
-        />
+        android:layout_height="32dp"/>
 
     <RelativeLayout
         android:layout_marginLeft="36dp"

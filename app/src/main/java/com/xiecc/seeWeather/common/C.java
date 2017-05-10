@@ -1,5 +1,6 @@
-package com.xiecc.seeWeather.base;
+package com.xiecc.seeWeather.common;
 
+import com.xiecc.seeWeather.base.BaseApplication;
 import java.io.File;
 
 /**

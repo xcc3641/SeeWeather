@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.modules.main.adapter;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.common.PLog;
 import java.util.HashMap;
 import java.util.Map;
 

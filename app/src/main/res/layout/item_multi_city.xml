@@ -12,5 +12,4 @@
 
     <include layout="@layout/weather_dialog"/>
 
-
 </android.support.v7.widget.CardView>

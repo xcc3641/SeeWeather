@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.hugo.watcher.Watcher;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseApplication;
-import com.xiecc.seeWeather.base.C;
+import com.xiecc.seeWeather.common.C;
 import com.xiecc.seeWeather.common.utils.FileSizeUtil;
 import com.xiecc.seeWeather.common.utils.FileUtil;
 import com.xiecc.seeWeather.common.utils.RxUtil;

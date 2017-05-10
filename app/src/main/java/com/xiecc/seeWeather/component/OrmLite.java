@@ -3,7 +3,7 @@ package com.xiecc.seeWeather.component;
 import com.litesuits.orm.LiteOrm;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.base.BaseApplication;
-import com.xiecc.seeWeather.base.C;
+import com.xiecc.seeWeather.common.C;
 
 /**
  * Created by HugoXie on 16/7/24.

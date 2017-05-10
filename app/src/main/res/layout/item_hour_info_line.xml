@@ -18,8 +18,7 @@
         android:layout_weight="1"
         android:drawablePadding="12dp"
         android:drawableStart="@drawable/icon_time"
-        tools:text="16:00"
-        />
+        tools:text="16:00"/>
 
     <TextView
         android:id="@+id/one_temp"
@@ -30,7 +29,6 @@
         android:drawableStart="@drawable/icon_temp"
         tools:text="12°"/>
 
-
     <TextView
         android:id="@+id/one_humidity"
         android:layout_width="wrap_content"
@@ -40,9 +38,6 @@
         android:drawableStart="@drawable/icon_humidity"
         tools:text="81%"/>
 
-
-
-
     <TextView
         android:id="@+id/one_wind"
         android:layout_width="wrap_content"
@@ -51,7 +46,5 @@
         android:drawablePadding="12dp"
         android:drawableStart="@drawable/icon_wind"
         tools:text="14Km"/>
-
-
 
 </LinearLayout>

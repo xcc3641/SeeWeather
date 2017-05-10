@@ -16,7 +16,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseViewHolder;
-import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.component.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.modules.main.domain.Weather;

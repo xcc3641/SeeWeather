@@ -15,7 +15,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.component.PLog;
 import java.io.Closeable;
 import java.io.IOException;
 import java.text.SimpleDateFormat;

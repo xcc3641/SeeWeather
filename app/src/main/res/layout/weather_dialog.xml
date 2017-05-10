@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/weather_dialog_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
-
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,11 +21,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="重庆"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:typeface="serif"
-            />
+            tools:text="重庆"/>
     </LinearLayout>
 
     <ImageView
@@ -34,8 +33,7 @@
         android:layout_height="72dp"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="28dp"
-        android:layout_marginTop="28dp"
-        />
+        android:layout_marginTop="28dp"/>
 
     <TextView
         android:id="@+id/dialog_temp"
@@ -43,14 +41,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_icon"
         android:layout_marginStart="16dp"
-        android:text="33"
         android:textColor="@android:color/white"
         android:textSize="58sp"
         android:typeface="monospace"
-        style="@style/text_shadow"
-        />
-
-
-
-
+        tools:text="33"
+        style="@style/text_shadow"/>
 </RelativeLayout>

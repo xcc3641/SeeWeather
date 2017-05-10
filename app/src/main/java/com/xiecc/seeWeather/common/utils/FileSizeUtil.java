@@ -3,7 +3,7 @@ package com.xiecc.seeWeather.common.utils;
 import android.text.format.Formatter;
 import android.util.Log;
 import com.xiecc.seeWeather.base.BaseApplication;
-import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.component.PLog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.DecimalFormat;

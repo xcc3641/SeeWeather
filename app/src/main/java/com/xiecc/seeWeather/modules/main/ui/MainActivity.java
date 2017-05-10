@@ -21,7 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.base.C;
+import com.xiecc.seeWeather.common.C;
 import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
 import com.xiecc.seeWeather.common.utils.RxDrawer;

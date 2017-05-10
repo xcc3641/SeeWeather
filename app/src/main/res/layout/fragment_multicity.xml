@@ -38,8 +38,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="你还没有添加城市噢 (´･_･`)"
-            android:textColor="@color/cloudyText"
-            />
+            android:textColor="@color/cloudyText"/>
 
     </LinearLayout>
 

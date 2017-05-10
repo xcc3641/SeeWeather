@@ -11,37 +11,35 @@
     card_view:cardElevation="2dp">
 
     <RelativeLayout
-        android:paddingTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:paddingTop="15dp">
 
         <ImageView
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:src="@mipmap/type_one_sunny"
             android:id="@+id/weather_icon"
             android:layout_width="80dp"
-            android:layout_height="80dp"/>
+            android:layout_height="80dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@mipmap/type_one_sunny"/>
 
         <LinearLayout
             android:id="@+id/linear_temp"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-
                 android:id="@+id/temp_flu"
-                android:layout_toLeftOf="@+id/temp_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="50sp"
-                   />
+                android:layout_toLeftOf="@+id/temp_layout"
+                android:textSize="50sp"/>
 
             <LinearLayout
                 android:id="@+id/temp_layout"
@@ -50,49 +48,45 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:textColor="#BDBDBD"
                     android:id="@+id/temp_max"
-                    android:textSize="18sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    />
+                    android:textColor="#BDBDBD"
+                    android:textSize="18sp"/>
 
                 <TextView
-                    android:textColor="#BDBDBD"
                     android:id="@+id/temp_min"
-                    android:textSize="18sp"
-                    android:layout_marginTop="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    />
+                    android:layout_marginTop="20dp"
+                    android:textColor="#BDBDBD"
+                    android:textSize="18sp"/>
             </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
-            android:gravity="right"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="6dp"
-            android:layout_below="@+id/linear_temp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linear_temp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginTop="24dp"
+            android:gravity="right">
 
             <TextView
                 android:id="@+id/temp_pm"
-                android:layout_marginRight="12dp"
-                android:textColor="#BDBDBD"
-                android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                />
+                android:layout_marginRight="12dp"
+                android:textColor="#BDBDBD"
+                android:textSize="12sp"/>
 
             <TextView
                 android:id="@+id/temp_quality"
-                android:textColor="#BDBDBD"
-                android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                />
+                android:textColor="#BDBDBD"
+                android:textSize="12sp"/>
         </LinearLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

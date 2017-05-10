@@ -11,7 +11,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseViewHolder;
-import com.xiecc.seeWeather.common.PLog;
+import com.xiecc.seeWeather.component.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter;
