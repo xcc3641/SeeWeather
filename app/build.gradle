@@ -15,8 +15,8 @@ android {
         versionName app.versionName
         resConfigs app.resConfigs
 
-        buildConfigField "String", "$rootProject.ext.weather.name", "$rootProject.ext.weather.value"
-        buildConfigField "String", "$rootProject.ext.fir.name", "$rootProject.ext.fir.value"
+        buildConfigField "String", "$rootProject.ext.weather.name", "\"$rootProject.ext.weather.value\""
+        buildConfigField "String", "$rootProject.ext.fir.name", "\"$rootProject.ext.fir.value\""
     }
 
     buildTypes {

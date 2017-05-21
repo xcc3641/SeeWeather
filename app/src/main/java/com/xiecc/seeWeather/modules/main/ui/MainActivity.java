@@ -13,6 +13,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import butterknife.BindView;
@@ -30,7 +31,6 @@ import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
-import com.xiecc.seeWeather.modules.shareCard.ui.ShareActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -77,6 +77,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private void initView() {
         setSupportActionBar(mToolbar);
+        mFab.setOnClickListener(v -> showShareDialog());
         HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
         mMainFragment = new MainFragment();
         mMultiCityFragment = new MultiCityFragment();
@@ -110,7 +111,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             mFab.setImageResource(R.drawable.ic_favorite);
                             mFab.setBackgroundTintList(
                                 ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
-                            mFab.setOnClickListener(v -> ShareActivity.launch(MainActivity.this, mMainFragment.getWeather()));
+                            mFab.setOnClickListener(v -> showShareDialog());
                         }
                         fab.show();
                     }
@@ -199,6 +200,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             })
             .subscribe();
         return false;
+    }
+
+    private void showShareDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
+        dialog.show();
+        dialog.setContentView(new SharePresenter(this, mMainFragment.getWeather().status).getRootView());
     }
 
     @Override
