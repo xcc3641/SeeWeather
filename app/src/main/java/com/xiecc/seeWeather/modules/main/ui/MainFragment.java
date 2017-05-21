@@ -250,4 +250,8 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         // tag和id都是可以拿来区分不同的通知的
         manager.notify(1, notification);
     }
+
+    public Weather getWeather() {
+        return mWeather;
+    }
 }

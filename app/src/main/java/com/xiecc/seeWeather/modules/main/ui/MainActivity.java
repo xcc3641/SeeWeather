@@ -3,7 +3,6 @@ package com.xiecc.seeWeather.modules.main.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import butterknife.BindView;
@@ -32,6 +30,7 @@ import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
+import com.xiecc.seeWeather.modules.shareCard.ui.ShareActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -47,6 +46,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     NavigationView mNavView;
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
+
+    private MainFragment mMainFragment;
+    private MultiCityFragment mMultiCityFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +78,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initView() {
         setSupportActionBar(mToolbar);
         HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
-        mHomePagerAdapter.addTab(new MainFragment(), "主页面");
-        mHomePagerAdapter.addTab(new MultiCityFragment(), "多城市");
+        mMainFragment = new MainFragment();
+        mMultiCityFragment = new MultiCityFragment();
+        mHomePagerAdapter.addTab(mMainFragment, "主页面");
+        mHomePagerAdapter.addTab(mMultiCityFragment, "多城市");
         mViewPager.setAdapter(mHomePagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager, false);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -106,7 +110,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             mFab.setImageResource(R.drawable.ic_favorite);
                             mFab.setBackgroundTintList(
                                 ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
-                            mFab.setOnClickListener(v -> showFabDialog());
+                            mFab.setOnClickListener(v -> ShareActivity.launch(MainActivity.this, mMainFragment.getWeather()));
                         }
                         fab.show();
                     }
@@ -121,9 +125,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
         });
-
-        //mFab
-        mFab.setOnClickListener(v -> showFabDialog());
     }
 
     /**
@@ -175,19 +176,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             SharedPreferenceUtil.getInstance().putInt("雾", R.mipmap.type_two_fog);
             SharedPreferenceUtil.getInstance().putInt("雨夹雪", R.mipmap.type_two_snowrain);
         }
-    }
-
-    private void showFabDialog() {
-        new AlertDialog.Builder(MainActivity.this).setTitle("点赞")
-            .setMessage("去项目地址给作者个Star，鼓励下作者୧(๑•̀⌄•́๑)૭✧")
-            .setPositiveButton("好嘞", (dialog, which) -> {
-                Uri uri = Uri.parse(getString(R.string.app_html));   //指定网址
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);           //指定Action
-                intent.setData(uri);                            //设置Uri
-                MainActivity.this.startActivity(intent);        //启动Activity
-            })
-            .show();
     }
 
     @Override

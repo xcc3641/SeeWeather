@@ -84,5 +84,8 @@ dependencies {
     compile 'com.github.xcc3641:watcher:0.5'
     compile 'com.facebook.stetho:stetho:1.5.0'
     compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    //share
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.1.6'
 }
 
