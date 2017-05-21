@@ -48,7 +48,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     /**
      * 得到程序崩溃的详细信息
      */
-    public String getCrashInfo(Throwable ex) {
+    private String getCrashInfo(Throwable ex) {
         Writer result = new StringWriter();
         PrintWriter printWriter = new PrintWriter(result);
         ex.setStackTrace(ex.getStackTrace());
@@ -59,7 +59,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     /**
      * 收集程序崩溃的设备信息
      */
-    public String collectCrashDeviceInfo() {
+    private String collectCrashDeviceInfo() {
 
         String versionName = Util.getVersion(mContext);
         String model = android.os.Build.MODEL;

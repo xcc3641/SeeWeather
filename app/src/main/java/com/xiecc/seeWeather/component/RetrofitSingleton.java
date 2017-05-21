@@ -25,10 +25,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by zk on 2015/12/16.
- * update by hugo thanks for brucezz
- */
 public class RetrofitSingleton {
 
     private static ApiInterface sApiService = null;

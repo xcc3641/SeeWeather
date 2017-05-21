@@ -16,9 +16,9 @@ import java.io.IOException;
  * update by hugo on 2016/5/5 thanks for bruce
  */
 public class PLog {
-    public static boolean isDebug = BuildConfig.DEBUG;
-    public static final String PATH = BaseApplication.getAppCacheDir();
-    public static final String PLOG_FILE_NAME = "log.txt";
+    private static boolean isDebug = BuildConfig.DEBUG;
+    private static final String PATH = BaseApplication.getAppCacheDir();
+    private static final String PLOG_FILE_NAME = "log.txt";
 
     /**
      * 是否写入日志文件
