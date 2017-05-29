@@ -16,14 +16,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.C;
 import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
-import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
@@ -31,6 +29,9 @@ import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -50,6 +51,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private MainFragment mMainFragment;
     private MultiCityFragment mMultiCityFragment;
 
+    /**
+     * 启动MainActivity的快捷方式
+     * 建议使用 starter
+     *
+     * @link AndroidStudio->Settings->Editor->Live templates->Android->starter
+     */
+    public static void launch(Context context) {
+        context.startActivity(new Intent(context, MainActivity.class));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +71,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDrawer();
         initIcon();
         startService(new Intent(this, AutoUpdateService.class));
-    }
-
-    public static void launch(Context context) {
-        context.startActivity(new Intent(context, MainActivity.class));
     }
 
     @Override
@@ -78,52 +85,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initView() {
         setSupportActionBar(mToolbar);
         mFab.setOnClickListener(v -> showShareDialog());
-        HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        HomePagerAdapter adapter = new HomePagerAdapter(getSupportFragmentManager());
         mMainFragment = new MainFragment();
         mMultiCityFragment = new MultiCityFragment();
-        mHomePagerAdapter.addTab(mMainFragment, "主页面");
-        mHomePagerAdapter.addTab(mMultiCityFragment, "多城市");
-        mViewPager.setAdapter(mHomePagerAdapter);
+        adapter.addTab(mMainFragment, "主页面");
+        adapter.addTab(mMultiCityFragment, "多城市");
+        mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager, false);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
             public void onPageSelected(int position) {
-
                 mFab.post(() -> mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
                     public void onHidden(FloatingActionButton fab) {
                         if (position == 1) {
                             mFab.setImageResource(R.drawable.ic_add_24dp);
                             mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
+                                    ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
                             mFab.setOnClickListener(v -> {
                                 Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
                                 intent.putExtra(C.MULTI_CHECK, true);
                                 CircularAnimUtil.startActivity(MainActivity.this, intent, mFab,
-                                    R.color.colorPrimary);
+                                        R.color.colorPrimary);
                             });
                         } else {
                             mFab.setImageResource(R.drawable.ic_favorite);
                             mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+                                    ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
                             mFab.setOnClickListener(v -> showShareDialog());
                         }
                         fab.show();
                     }
                 }));
-                if (!mFab.isShown()) {
-                    mFab.show();
-                }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
@@ -136,8 +137,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mNavView.setNavigationItemSelectedListener(this);
             mNavView.inflateHeaderView(R.layout.nav_header_main);
             ActionBarDrawerToggle toggle =
-                new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
-                    R.string.navigation_drawer_close);
+                    new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
+                            R.string.navigation_drawer_close);
             mDrawerLayout.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -145,6 +146,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     /**
      * 初始化Icon
+     * 厉害了..手写Icon/Theme替换..
+     * https://github.com/Bilibili/MagicaSakura
      */
     private void initIcon() {
         if (SharedPreferenceUtil.getInstance().getIconType() == 0) {
@@ -181,31 +184,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        RxDrawer.close(mDrawerLayout)
-            .doOnNext(o -> {
-                switch (item.getItemId()) {
-                    case R.id.nav_set:
-                        SettingActivity.launch(MainActivity.this);
-                        break;
-                    case R.id.nav_about:
-                        AboutActivity.launch(MainActivity.this);
-                        break;
-                    case R.id.nav_city:
-                        ChoiceCityActivity.launch(MainActivity.this);
-                        break;
-                    case R.id.nav_multi_cities:
-                        mViewPager.setCurrentItem(1);
-                        break;
-                }
-            })
-            .subscribe();
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        switch (item.getItemId()) {
+            case R.id.nav_set:
+                SettingActivity.launch(MainActivity.this);
+                break;
+            case R.id.nav_about:
+                AboutActivity.launch(MainActivity.this);
+                break;
+            case R.id.nav_city:
+                ChoiceCityActivity.launch(MainActivity.this);
+                break;
+            case R.id.nav_multi_cities:
+                mViewPager.setCurrentItem(1);
+                break;
+        }
         return false;
     }
 
     private void showShareDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this).create();
         dialog.show();
-        dialog.setContentView(new SharePresenter(this, mMainFragment.getWeather().status).getRootView());
+        SharePresenter presenter = new SharePresenter(this, mMainFragment.getWeather().status, throwable -> {
+            ToastUtil.showShort("未安装微信");
+            dialog.dismiss();
+        });
+        dialog.setContentView(presenter.getRootView());
     }
 
     @Override

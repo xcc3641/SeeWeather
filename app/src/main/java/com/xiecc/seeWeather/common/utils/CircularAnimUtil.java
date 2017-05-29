@@ -11,6 +11,7 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class CircularAnimUtil {
 
     public static final long PERFECT_MILLS = 618;
@@ -107,7 +108,6 @@ public class CircularAnimUtil {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-
                 if (requestCode == null) {
                     thisActivity.startActivity(intent);
                 } else if (bundle == null) {
@@ -120,14 +120,11 @@ public class CircularAnimUtil {
                 thisActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
                 // 默认显示返回至当前Activity的动画.
-                triggerView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Animator anim =
+                triggerView.postDelayed(()-> {
+                        Animator animator =
                             ViewAnimationUtils.createCircularReveal(view, cx, cy, finalRadius, 0);
-                        anim.setDuration(durationMills);
-                        anim.addListener(new AnimatorListenerAdapter() {
+                        animator.setDuration(durationMills);
+                        animator.addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
@@ -138,16 +135,11 @@ public class CircularAnimUtil {
                                 }
                             }
                         });
-                        anim.start();
-
-                    }
+                        animator.start();
                 }, 1000);
-
-
             }
         });
         anim.start();
-
     }
 
 
