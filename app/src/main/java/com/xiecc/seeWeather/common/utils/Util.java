@@ -1,6 +1,5 @@
 package com.xiecc.seeWeather.common.utils;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -11,9 +10,6 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
-import android.view.ViewConfiguration;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.component.PLog;
 import java.io.Closeable;
@@ -109,22 +105,8 @@ public class Util {
         return week;
     }
 
-    /**
-     * 安全的 String 返回
-     *
-     * @param prefix 默认字段
-     * @param obj 拼接字段 (需检查)
-     */
-    public static String safeText(String prefix, String obj) {
-        if (TextUtils.isEmpty(obj)) return "";
-        return TextUtils.concat(prefix, obj).toString();
-    }
-
     public static String safeText(String msg) {
-        if (null == msg) {
-            return "";
-        }
-        return safeText("", msg);
+        return TextUtils.isEmpty(msg) ? "" : msg;
     }
 
     /**
@@ -194,7 +176,7 @@ public class Util {
         Resources resources = mActivity.getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         int height = resources.getDimensionPixelSize(resourceId);
-        PLog.i("Navi height:" + height);
+        PLog.i("Nav height:" + height);
         return height;
     }
 
@@ -207,16 +189,6 @@ public class Util {
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
-    }
-
-    @SuppressLint("NewApi")
-    public static boolean checkDeviceHasNavigationBar(Context activity) {
-        //通过判断设备是否有返回键、菜单键(不是虚拟键,是手机屏幕外的按键)来确定是否有navigation bar
-        boolean hasMenuKey = ViewConfiguration.get(activity)
-            .hasPermanentMenuKey();
-        boolean hasBackKey = KeyCharacterMap
-            .deviceHasKey(KeyEvent.KEYCODE_BACK);
-        return !hasMenuKey && !hasBackKey;
     }
 
     public static void copyToClipboard(String info, Context context) {
