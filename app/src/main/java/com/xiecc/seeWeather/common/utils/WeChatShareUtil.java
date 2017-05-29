@@ -26,7 +26,7 @@ public class WeChatShareUtil {
         intent.setComponent(comp);
         intent.setAction("android.intent.action.SEND");
         intent.putExtra(Intent.EXTRA_TEXT, text);
-        context.startActivity(intent);
+        context.startActivity(intent);//ActivityNotFoundException
     }
 
     /**

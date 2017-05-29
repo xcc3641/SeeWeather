@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.WeChatShareUtil;
 
 import butterknife.BindView;
@@ -31,30 +30,37 @@ class SharePresenter {
     private View mRootView;
 
     @SuppressLint("InflateParams")
-    SharePresenter(Context context, String content) {
+    SharePresenter(Context context, String content, ShareFailedListener listener) {
         mRootView = LayoutInflater.from(context).inflate(R.layout.dialog_share, null, false);
         ButterKnife.bind(this, mRootView);
-        initListener(content);
+        initListener(content,  listener);
     }
 
-    private void initListener(String content) {
+    private void initListener(String content, ShareFailedListener listener) {
         mLayFriends.setOnClickListener(click -> {
             try {
                 WeChatShareUtil.toFriends(mLayFriends.getContext(), content);
             } catch (ActivityNotFoundException e) {
-                ToastUtil.showShort("未安装微信");
+                listener.onActivityNotFound(e);
             }
         });
         mLayTimeLine.setOnClickListener(click -> {
             try {
                 WeChatShareUtil.toTimeLine(mLayFriends.getContext(), content);
             } catch (ActivityNotFoundException e) {
-                ToastUtil.showShort("未安装微信");
+                listener.onActivityNotFound(e);
             }
         });
     }
 
     View getRootView() {
         return mRootView;
+    }
+
+    /**
+     * 分享失败监听器
+     */
+    interface ShareFailedListener{
+        void onActivityNotFound(Throwable throwable);
     }
 }

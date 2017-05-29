@@ -16,8 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.C;
@@ -31,6 +30,9 @@ import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -50,6 +52,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private MainFragment mMainFragment;
     private MultiCityFragment mMultiCityFragment;
 
+    /**
+     * 启动MainActivity的快捷方式
+     * 建议使用 starter
+     *
+     * @link AndroidStudio->Settings->Editor->Live templates->Android->starter
+     */
+    public static void launch(Context context) {
+        context.startActivity(new Intent(context, MainActivity.class));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +72,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initDrawer();
         initIcon();
         startService(new Intent(this, AutoUpdateService.class));
-    }
-
-    public static void launch(Context context) {
-        context.startActivity(new Intent(context, MainActivity.class));
     }
 
     @Override
@@ -100,17 +108,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         if (position == 1) {
                             mFab.setImageResource(R.drawable.ic_add_24dp);
                             mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
+                                    ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
                             mFab.setOnClickListener(v -> {
                                 Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
                                 intent.putExtra(C.MULTI_CHECK, true);
                                 CircularAnimUtil.startActivity(MainActivity.this, intent, mFab,
-                                    R.color.colorPrimary);
+                                        R.color.colorPrimary);
                             });
                         } else {
                             mFab.setImageResource(R.drawable.ic_favorite);
                             mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+                                    ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
                             mFab.setOnClickListener(v -> showShareDialog());
                         }
                         fab.show();
@@ -136,8 +144,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mNavView.setNavigationItemSelectedListener(this);
             mNavView.inflateHeaderView(R.layout.nav_header_main);
             ActionBarDrawerToggle toggle =
-                new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
-                    R.string.navigation_drawer_close);
+                    new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
+                            R.string.navigation_drawer_close);
             mDrawerLayout.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -145,6 +153,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     /**
      * 初始化Icon
+     * 厉害了..手写Icon/Theme替换..
+     * https://github.com/Bilibili/MagicaSakura
      */
     private void initIcon() {
         if (SharedPreferenceUtil.getInstance().getIconType() == 0) {
@@ -182,30 +192,34 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         RxDrawer.close(mDrawerLayout)
-            .doOnNext(o -> {
-                switch (item.getItemId()) {
-                    case R.id.nav_set:
-                        SettingActivity.launch(MainActivity.this);
-                        break;
-                    case R.id.nav_about:
-                        AboutActivity.launch(MainActivity.this);
-                        break;
-                    case R.id.nav_city:
-                        ChoiceCityActivity.launch(MainActivity.this);
-                        break;
-                    case R.id.nav_multi_cities:
-                        mViewPager.setCurrentItem(1);
-                        break;
-                }
-            })
-            .subscribe();
+                .doOnNext(o -> {
+                    switch (item.getItemId()) {
+                        case R.id.nav_set:
+                            SettingActivity.launch(MainActivity.this);
+                            break;
+                        case R.id.nav_about:
+                            AboutActivity.launch(MainActivity.this);
+                            break;
+                        case R.id.nav_city:
+                            ChoiceCityActivity.launch(MainActivity.this);
+                            break;
+                        case R.id.nav_multi_cities:
+                            mViewPager.setCurrentItem(1);
+                            break;
+                    }
+                })
+                .subscribe();
         return false;
     }
 
     private void showShareDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this).create();
         dialog.show();
-        dialog.setContentView(new SharePresenter(this, mMainFragment.getWeather().status).getRootView());
+        SharePresenter presenter = new SharePresenter(this, mMainFragment.getWeather().status, throwable -> {
+            ToastUtil.showShort("未安装微信");
+            dialog.dismiss();
+        });
+        dialog.setContentView(presenter.getRootView());
     }
 
     @Override
