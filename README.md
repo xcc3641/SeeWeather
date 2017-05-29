@@ -74,10 +74,11 @@ Fir.im: http://fir.im/seeWeather
 地理定位服务： 高德地图
 
 #### 开源技术
-1. [Rxjava][2]
+1. [RxJava][2]
 2. [RxAndroid][3]
 3. [Retrofit][4]
-4. [GLide][5]
+4. [Glide][5]
+5. [Watcher][15]
 
 
 ### 截图
@@ -144,7 +145,7 @@ __软件中图片素材均来源于网络，版权属于原作者。__
 [12]: https://github.com/SmartDengg
 [13]: https://github.com/Jude95
 [14]: http://weibo.com/u/2711441293?topnav=1&amp;wvr=6&amp;topsug=1&amp;is_all=1
-
+[15]: https://github.com/xcc3641/Watcher
 
 [image-2]: /images/day.png
 [image-3]: /images/night.png
