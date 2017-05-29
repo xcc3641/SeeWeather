@@ -184,8 +184,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//        RxDrawer.close(mDrawerLayout)
-//                .doOnNext(o -> {
         mDrawerLayout.closeDrawer(GravityCompat.START);
         switch (item.getItemId()) {
             case R.id.nav_set:
@@ -201,8 +199,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mViewPager.setCurrentItem(1);
                 break;
         }
-//                })
-//                .subscribe();
         return false;
     }
 
