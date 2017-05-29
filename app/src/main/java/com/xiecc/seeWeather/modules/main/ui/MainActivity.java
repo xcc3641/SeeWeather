@@ -13,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import butterknife.BindView;
@@ -144,7 +143,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     * 初始化Icon
+     * 初始化 Icons
      */
     private void initIcon() {
         if (SharedPreferenceUtil.getInstance().getIconType() == 0) {
@@ -203,9 +202,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void showShareDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(this).create();
-        dialog.show();
-        dialog.setContentView(new SharePresenter(this, mMainFragment.getWeather().status).getRootView());
+        // wait to do
     }
 
     @Override

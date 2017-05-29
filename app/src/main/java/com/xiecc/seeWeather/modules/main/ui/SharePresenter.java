@@ -16,7 +16,7 @@ import com.xiecc.seeWeather.common.utils.WeChatShareUtil;
  * GitHub: https://github.com/xcc3641
  * Info:
  */
-
+@Deprecated
 public class SharePresenter {
 
     private View mRootView;
