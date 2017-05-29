@@ -77,22 +77,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initView() {
         setSupportActionBar(mToolbar);
         mFab.setOnClickListener(v -> showShareDialog());
-        HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        HomePagerAdapter mAdapter = new HomePagerAdapter(getSupportFragmentManager());
         mMainFragment = new MainFragment();
         mMultiCityFragment = new MultiCityFragment();
-        mHomePagerAdapter.addTab(mMainFragment, "主页面");
-        mHomePagerAdapter.addTab(mMultiCityFragment, "多城市");
-        mViewPager.setAdapter(mHomePagerAdapter);
+        mAdapter.addTab(mMainFragment, "主页面");
+        mAdapter.addTab(mMultiCityFragment, "多城市");
+        mViewPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mViewPager, false);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-
                 mFab.post(() -> mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
                     public void onHidden(FloatingActionButton fab) {
@@ -118,11 +112,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (!mFab.isShown()) {
                     mFab.show();
                 }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
