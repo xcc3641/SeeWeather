@@ -22,7 +22,6 @@ import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.C;
 import com.xiecc.seeWeather.common.utils.CircularAnimUtil;
 import com.xiecc.seeWeather.common.utils.DoubleClickExit;
-import com.xiecc.seeWeather.common.utils.RxDrawer;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.modules.about.ui.AboutActivity;
@@ -86,22 +85,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initView() {
         setSupportActionBar(mToolbar);
         mFab.setOnClickListener(v -> showShareDialog());
-        HomePagerAdapter mHomePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        HomePagerAdapter adapter = new HomePagerAdapter(getSupportFragmentManager());
         mMainFragment = new MainFragment();
         mMultiCityFragment = new MultiCityFragment();
-        mHomePagerAdapter.addTab(mMainFragment, "主页面");
-        mHomePagerAdapter.addTab(mMultiCityFragment, "多城市");
-        mViewPager.setAdapter(mHomePagerAdapter);
+        adapter.addTab(mMainFragment, "主页面");
+        adapter.addTab(mMultiCityFragment, "多城市");
+        mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager, false);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
             public void onPageSelected(int position) {
-
                 mFab.post(() -> mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
                     public void onHidden(FloatingActionButton fab) {
@@ -124,14 +121,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         fab.show();
                     }
                 }));
-                if (!mFab.isShown()) {
-                    mFab.show();
-                }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
@@ -191,24 +184,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        RxDrawer.close(mDrawerLayout)
-                .doOnNext(o -> {
-                    switch (item.getItemId()) {
-                        case R.id.nav_set:
-                            SettingActivity.launch(MainActivity.this);
-                            break;
-                        case R.id.nav_about:
-                            AboutActivity.launch(MainActivity.this);
-                            break;
-                        case R.id.nav_city:
-                            ChoiceCityActivity.launch(MainActivity.this);
-                            break;
-                        case R.id.nav_multi_cities:
-                            mViewPager.setCurrentItem(1);
-                            break;
-                    }
-                })
-                .subscribe();
+//        RxDrawer.close(mDrawerLayout)
+//                .doOnNext(o -> {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        switch (item.getItemId()) {
+            case R.id.nav_set:
+                SettingActivity.launch(MainActivity.this);
+                break;
+            case R.id.nav_about:
+                AboutActivity.launch(MainActivity.this);
+                break;
+            case R.id.nav_city:
+                ChoiceCityActivity.launch(MainActivity.this);
+                break;
+            case R.id.nav_multi_cities:
+                mViewPager.setCurrentItem(1);
+                break;
+        }
+//                })
+//                .subscribe();
         return false;
     }
 
