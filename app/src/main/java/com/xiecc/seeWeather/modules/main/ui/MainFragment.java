@@ -82,16 +82,17 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-        new RxPermissions(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
+        new RxPermissions(getActivity())
+            .request(Manifest.permission.ACCESS_COARSE_LOCATION)
             .doOnNext(granted -> {
                 if (granted) {
                     location();
                 } else {
                     load();
                 }
+                CheckVersion.checkVersion(getActivity());
             })
             .subscribe();
-        CheckVersion.checkVersion(getActivity());
     }
 
     @Override

@@ -130,7 +130,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     String.format("↓ %s ℃", weather.dailyForecast.get(0).tmp.min));
 
                 tempPm.setText(String.format("PM2.5: %s μg/m³", Util.safeText(weather.aqi.city.pm25)));
-                tempQuality.setText(Util.safeText("空气质量： ", weather.aqi.city.qlty));
+                tempQuality.setText(String.format("空气质量：%s", Util.safeText(weather.aqi.city.qlty)));
                 ImageLoader.load(itemView.getContext(),
                     SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none),
                     weatherIcon);

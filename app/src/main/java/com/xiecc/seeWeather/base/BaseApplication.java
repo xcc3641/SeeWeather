@@ -8,7 +8,9 @@ import com.hugo.watcher.Watcher;
 import com.squareup.leakcanary.LeakCanary;
 import com.xiecc.seeWeather.BuildConfig;
 import com.xiecc.seeWeather.component.CrashHandler;
+import com.xiecc.seeWeather.component.PLog;
 import im.fir.sdk.FIR;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class BaseApplication extends Application {
 
@@ -28,11 +30,18 @@ public class BaseApplication extends Application {
         CrashHandler.init(new CrashHandler(getApplicationContext()));
         if (!BuildConfig.DEBUG) {
             FIR.init(this);
-        }else {
+        } else {
             Watcher.getInstance().start(this);
         }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            if (throwable != null) {
+                PLog.e(throwable.toString());
+            } else {
+                PLog.e("call onError but exception is null");
+            }
+        });
         /*
          * 如果存在SD卡则将缓存写入SD卡,否则写入手机内存
          */

@@ -128,6 +128,7 @@ public class RetrofitSingleton {
 
     public Observable<Version> fetchVersion() {
         return sApiService.mVersionAPI(C.API_TOKEN)
+            .doOnError(RetrofitSingleton::disposeFailureInfo)
             .compose(RxUtil.io());
     }
 }
