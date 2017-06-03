@@ -4,51 +4,15 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.component.PLog;
 import java.io.Closeable;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class Util {
-
-    /**
-     * 获取版本号
-     *
-     * @return 当前应用的版本号
-     */
-
-    public static String getVersion(Context context) {
-        try {
-            PackageManager manager = context.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            return info.versionName;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return context.getString(R.string.can_not_find_version_name);
-        }
-    }
-
-    /**
-     * @return 版本号
-     */
-    public static int getVersionCode(Context context) {
-        try {
-            PackageManager manager = context.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            return info.versionCode;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
 
     /**
      * 只关注是否联网
@@ -63,46 +27,6 @@ public class Util {
             }
         }
         return false;
-    }
-
-    /**
-     * 判断当前日期是星期几
-     *
-     * @param pTime 修要判断的时间
-     * @return dayForWeek 判断结果
-     * @Exception 发生异常
-     */
-    public static String dayForWeek(String pTime) throws Exception {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar c = Calendar.getInstance();
-        c.setTime(format.parse(pTime));
-        int dayForWeek;
-        String week = "";
-        dayForWeek = c.get(Calendar.DAY_OF_WEEK);
-        switch (dayForWeek) {
-            case 1:
-                week = "星期日";
-                break;
-            case 2:
-                week = "星期一";
-                break;
-            case 3:
-                week = "星期二";
-                break;
-            case 4:
-                week = "星期三";
-                break;
-            case 5:
-                week = "星期四";
-                break;
-            case 6:
-                week = "星期五";
-                break;
-            case 7:
-                week = "星期六";
-                break;
-        }
-        return week;
     }
 
     public static String safeText(String msg) {

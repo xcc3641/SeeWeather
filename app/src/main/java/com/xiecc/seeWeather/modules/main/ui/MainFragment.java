@@ -19,11 +19,11 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseFragment;
-import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.RxUtil;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.ToastUtil;
 import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.common.utils.VersionUtil;
 import com.xiecc.seeWeather.component.NotificationHelper;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.component.RxBus;
@@ -89,7 +89,7 @@ public class MainFragment extends BaseFragment {
                 } else {
                     load();
                 }
-                CheckVersion.checkVersion(getActivity());
+                VersionUtil.checkVersion(getActivity());
             })
             .subscribe();
     }

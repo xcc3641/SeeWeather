@@ -11,6 +11,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseViewHolder;
+import com.xiecc.seeWeather.common.utils.TimeUitl;
 import com.xiecc.seeWeather.component.PLog;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
 import com.xiecc.seeWeather.common.utils.Util;
@@ -264,7 +265,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                     if (i > 1) {
                         try {
                             forecastDate[i].setText(
-                                Util.dayForWeek(weather.dailyForecast.get(i).date));
+                                TimeUitl.dayForWeek(weather.dailyForecast.get(i).date));
                         } catch (Exception e) {
                             PLog.e(e.toString());
                         }

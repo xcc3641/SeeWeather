@@ -6,7 +6,7 @@ import com.xiecc.seeWeather.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardCityUIHelper {
+public class CardCityHelper {
 
     public static final int SUNNY_CODE = 100;
     public static final int RAINY_CODE = 300;
@@ -15,7 +15,7 @@ public class CardCityUIHelper {
     private static final String SHANG_HAI = "上海";
     private static final String BEI_JING = "北京";
     private static final String SU_ZHOU = "苏州";
-    private static final String Other = "其他";
+    private static final String OTHER = "其他";
 
     private static Map<WeatherInfo, Integer> sMap = new HashMap<>();
 
@@ -33,9 +33,9 @@ public class CardCityUIHelper {
         sMap.put(new WeatherInfo(RAINY_CODE, SU_ZHOU), R.mipmap.city_suzhou_rain);
         sMap.put(new WeatherInfo(CLOUDY_CODE, SU_ZHOU), R.mipmap.city_suzhou_cloudy);
         // 其他
-        sMap.put(new WeatherInfo(SUNNY_CODE, Other), R.mipmap.city_other_sunny);
-        sMap.put(new WeatherInfo(RAINY_CODE, Other), R.mipmap.city_other_rainy);
-        sMap.put(new WeatherInfo(CLOUDY_CODE, Other), R.mipmap.city_other_cloudy);
+        sMap.put(new WeatherInfo(SUNNY_CODE, OTHER), R.mipmap.city_other_sunny);
+        sMap.put(new WeatherInfo(RAINY_CODE, OTHER), R.mipmap.city_other_rainy);
+        sMap.put(new WeatherInfo(CLOUDY_CODE, OTHER), R.mipmap.city_other_cloudy);
     }
 
     void applyStatus(int code, String city, View view) {
@@ -47,7 +47,7 @@ public class CardCityUIHelper {
             code = SUNNY_CODE;
         }
         if (!city.matches(String.format("(?:%s|%s|%s)", SU_ZHOU, SHANG_HAI, BEI_JING))) {
-            city = Other;
+            city = OTHER;
         }
         Integer mipRes = sMap.get(new WeatherInfo(code, city));
         if (mipRes != null) {

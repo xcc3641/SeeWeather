@@ -11,7 +11,7 @@ import android.content.Intent;
  * GitHub: https://github.com/xcc3641
  * Info: 临时微信分享工具
  */
-
+@Deprecated
 public class WeChatShareUtil {
 
     public static void toFriends(Context context, String text) {

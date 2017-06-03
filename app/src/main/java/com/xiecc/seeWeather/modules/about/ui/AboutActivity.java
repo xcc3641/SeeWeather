@@ -15,9 +15,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
-import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.StatusBarUtil;
 import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.common.utils.VersionUtil;
 
 public class AboutActivity extends BaseActivity {
 
@@ -42,7 +42,7 @@ public class AboutActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-        mTvVersion.setText(String.format("当前版本: %s (Build %s)", Util.getVersion(this), Util.getVersionCode(this)));
+        mTvVersion.setText(String.format("当前版本: %s (Build %s)", VersionUtil.getVersion(this), VersionUtil.getVersionCode(this)));
         mToolbarLayout.setTitleEnabled(false);
         mToolbar.setTitle(getString(R.string.app_name));
     }
@@ -80,7 +80,7 @@ public class AboutActivity extends BaseActivity {
                 goToHtml(getString(R.string.bugTableUrl));
                 break;
             case R.id.bt_update:
-                CheckVersion.checkVersion(this, true);
+                VersionUtil.checkVersion(this, true);
                 break;
         }
     }

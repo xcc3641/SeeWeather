@@ -2,7 +2,7 @@ package com.xiecc.seeWeather.component;
 
 import android.content.Context;
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil;
-import com.xiecc.seeWeather.common.utils.Util;
+import com.xiecc.seeWeather.common.utils.VersionUtil;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -61,7 +61,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     private String collectCrashDeviceInfo() {
 
-        String versionName = Util.getVersion(mContext);
+        String versionName = VersionUtil.getVersion(mContext);
         String model = android.os.Build.MODEL;
         String androidVersion = android.os.Build.VERSION.RELEASE;
         String manufacturer = android.os.Build.MANUFACTURER;

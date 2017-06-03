@@ -86,8 +86,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
             }
 
             Glide.with(mContext)
-                .load(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none
-                ))
+                .load(SharedPreferenceUtil.getInstance().getInt(weather.now.cond.txt, R.mipmap.none))
                 .asBitmap()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
@@ -98,9 +97,7 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
                 });
 
             int code = Integer.valueOf(weather.now.cond.code);
-            CardCityUIHelper cardCityUIHelper = new CardCityUIHelper();
-            cardCityUIHelper.applyStatus(code, weather.basic.city, mCardView);
-
+            new CardCityHelper().applyStatus(code, weather.basic.city, mCardView);
         }
     }
 
