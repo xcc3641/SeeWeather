@@ -270,7 +270,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                         }
                     }
                     ImageLoader.load(mContext,
-                        SharedPreferenceUtil.getInstance().getInt(weather.dailyForecast.get(i).cond.txtD, R.mipmap.none),
+                        SharedPreferenceUtil.getInstance().getInt(weather.dailyForecast.get(i).cond.txt, R.mipmap.none),
                         forecastIcon[i]);
                     forecastTemp[i].setText(
                         String.format("%s℃ - %s℃",
@@ -278,7 +278,7 @@ public class WeatherAdapter extends AnimRecyclerViewAdapter<RecyclerView.ViewHol
                             weather.dailyForecast.get(i).tmp.max));
                     forecastTxt[i].setText(
                         String.format("%s。 %s %s %s km/h。 降水几率 %s%%。",
-                            weather.dailyForecast.get(i).cond.txtD,
+                            weather.dailyForecast.get(i).cond.txt,
                             weather.dailyForecast.get(i).wind.sc,
                             weather.dailyForecast.get(i).wind.dir,
                             weather.dailyForecast.get(i).wind.spd,

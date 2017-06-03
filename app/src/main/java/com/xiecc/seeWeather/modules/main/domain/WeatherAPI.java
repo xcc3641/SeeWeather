@@ -7,7 +7,7 @@ import java.util.List;
 
 public class WeatherAPI {
 
-    @SerializedName("HeWeather5") @Expose
-    public List<Weather> mWeathers
-            = new ArrayList<>();
+    @SerializedName("HeWeather5")
+    @Expose
+    public List<Weather> mWeathers = new ArrayList<>();
 }

@@ -7,5 +7,5 @@ package com.xiecc.seeWeather.modules.main.domain;
  * GitHub: https://github.com/xcc3641
  * Info:
  */
-public class MultiUpdate {
+public class MultiUpdateEvent {
 }

@@ -26,7 +26,7 @@ import com.xiecc.seeWeather.modules.city.domain.City;
 import com.xiecc.seeWeather.modules.city.domain.Province;
 import com.xiecc.seeWeather.modules.main.domain.ChangeCityEvent;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
-import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
+import com.xiecc.seeWeather.modules.main.domain.MultiUpdateEvent;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableOnSubscribe;
@@ -109,7 +109,7 @@ public class ChoiceCityActivity extends ToolbarActivity {
                 String city = Util.replaceCity(cityList.get(pos).mCityName);
                 if (isChecked) {
                     OrmLite.getInstance().save(new CityORM(city));
-                    RxBus.getDefault().post(new MultiUpdate());
+                    RxBus.getDefault().post(new MultiUpdateEvent());
                 } else {
                     SharedPreferenceUtil.getInstance().setCityName(city);
                     RxBus.getDefault().post(new ChangeCityEvent());

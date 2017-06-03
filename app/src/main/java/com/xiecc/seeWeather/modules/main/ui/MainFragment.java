@@ -14,13 +14,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xiecc.seeWeather.R;
-import com.xiecc.seeWeather.base.BaseApplication;
 import com.xiecc.seeWeather.base.BaseFragment;
 import com.xiecc.seeWeather.common.utils.CheckVersion;
 import com.xiecc.seeWeather.common.utils.RxUtil;
@@ -43,7 +40,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * GitHub: https://github.com/xcc3641
  * Info:
  */
-public class MainFragment extends BaseFragment implements AMapLocationListener {
+public class MainFragment extends BaseFragment {
 
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
@@ -57,8 +54,9 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     private static Weather mWeather = new Weather();
     private WeatherAdapter mAdapter;
     //声明AMapLocationClient类对象
-    public AMapLocationClient mLocationClient = null;
-    public AMapLocationClientOption mLocationOption = null;
+
+    public AMapLocationClient mLocationClient;
+    public AMapLocationClientOption mLocationOption;
 
     private View view;
 
@@ -84,6 +82,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
         initView();
         new RxPermissions(getActivity())
             .request(Manifest.permission.ACCESS_COARSE_LOCATION)
+            .doOnNext(o -> mRefreshLayout.setRefreshing(true))
             .doOnNext(granted -> {
                 if (granted) {
                     location();
@@ -98,14 +97,12 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         RxBus.getDefault()
             .toObservable(ChangeCityEvent.class)
             .observeOn(AndroidSchedulers.mainThread())
+            .filter(event -> isVisible())
             .doOnNext(event -> {
-                if (mRefreshLayout != null) {
-                    mRefreshLayout.setRefreshing(true);
-                }
+                mRefreshLayout.setRefreshing(true);
                 load();
             })
             .subscribe();
@@ -172,55 +169,37 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
      * 高德定位
      */
     private void location() {
-        mRefreshLayout.setRefreshing(true);
         //初始化定位
-        mLocationClient = new AMapLocationClient(BaseApplication.getAppContext());
-        //设置定位回调监听
-        mLocationClient.setLocationListener(this);
+        mLocationClient = new AMapLocationClient(getActivity());
         mLocationOption = new AMapLocationClientOption();
-        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
-        //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
-        //设置是否只定位一次,默认为false\
-        mLocationOption.setOnceLocation(false);
-        //设置是否强制刷新WIFI，默认为强制刷新
-        mLocationOption.setWifiActiveScan(true);
-        //设置是否允许模拟位置,默认为false，不允许模拟位置
-        mLocationOption.setMockEnable(false);
+        mLocationOption.setOnceLocation(true);
+        mLocationOption.setWifiActiveScan(false);
         //设置定位间隔 单位毫秒
-        int tempTime = SharedPreferenceUtil.getInstance().getAutoUpdate();
-        if (tempTime == 0) {
-            tempTime = 100;
-        }
-        mLocationOption.setInterval(tempTime * SharedPreferenceUtil.ONE_HOUR);
-        //给定位客户端对象设置定位参数
+        int autoUpdateTime = SharedPreferenceUtil.getInstance().getAutoUpdate();
+        mLocationOption.setInterval((autoUpdateTime == 0 ? 100 : autoUpdateTime) * SharedPreferenceUtil.ONE_HOUR);
         mLocationClient.setLocationOption(mLocationOption);
-        //启动定位
-        mLocationClient.startLocation();
-    }
-
-    @Override
-    public void onLocationChanged(AMapLocation aMapLocation) {
-        if (aMapLocation != null) {
-            if (aMapLocation.getErrorCode() == 0) {
-                //定位成功回调信息，设置相关消息
-                aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                SharedPreferenceUtil.getInstance().setCityName(Util.replaceCity(aMapLocation.getCity()));
-            } else {
-                if (isAdded()) {
-                    ToastUtil.showShort(getString(R.string.errorLocation));
+        mLocationClient.setLocationListener(aMapLocation -> {
+            if (aMapLocation != null) {
+                if (aMapLocation.getErrorCode() == 0) {
+                    aMapLocation.getLocationType();
+                    SharedPreferenceUtil.getInstance().setCityName(Util.replaceCity(aMapLocation.getCity()));
+                } else {
+                    if (isAdded()) {
+                        ToastUtil.showShort(getString(R.string.errorLocation));
+                    }
                 }
+                load();
             }
-            load();
-        }
+        });
+        mLocationClient.startLocation();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLocationClient = null;
-        mLocationOption = null;
+        mLocationClient.onDestroy();
     }
 
     /**

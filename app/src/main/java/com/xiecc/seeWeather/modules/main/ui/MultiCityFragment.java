@@ -24,7 +24,7 @@ import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.component.RxBus;
 import com.xiecc.seeWeather.modules.main.adapter.MultiCityAdapter;
 import com.xiecc.seeWeather.modules.main.domain.CityORM;
-import com.xiecc.seeWeather.modules.main.domain.MultiUpdate;
+import com.xiecc.seeWeather.modules.main.domain.MultiUpdateEvent;
 import com.xiecc.seeWeather.modules.main.domain.Weather;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -75,7 +75,7 @@ public class MultiCityFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RxBus.getDefault()
-            .toObservable(MultiUpdate.class)
+            .toObservable(MultiUpdateEvent.class)
             .doOnNext(event -> multiLoad())
             .subscribe();
     }
