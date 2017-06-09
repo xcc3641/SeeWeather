@@ -8,4 +8,6 @@ public class CondEntity implements Serializable {
     public String code;
     @SerializedName("txt")
     public String txt;
+    @SerializedName("txt_d")
+    public String txtDay;
 }

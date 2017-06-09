@@ -3,6 +3,7 @@ package com.xiecc.seeWeather.base;
 import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatDelegate;
+import com.facebook.stetho.Stetho;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.hugo.watcher.Watcher;
 import com.squareup.leakcanary.LeakCanary;
@@ -32,6 +33,7 @@ public class BaseApplication extends Application {
             FIR.init(this);
         } else {
             Watcher.getInstance().start(this);
+            Stetho.initializeWithDefaults(this);
         }
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         LeakCanary.install(this);
