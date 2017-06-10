@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
@@ -31,11 +30,14 @@ public class AboutActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
         StatusBarUtil.setImmersiveStatusBar(this);
         StatusBarUtil.setImmersiveStatusBarToolbar(mToolbar,this);
         initView();
+    }
+
+    @Override
+    protected int layoutId() {
+        return R.layout.activity_about;
     }
 
     private void initView() {

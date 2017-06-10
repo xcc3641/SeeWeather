@@ -52,11 +52,6 @@ public class ChoiceCityActivity extends ToolbarActivity {
     private boolean isChecked = false;
 
     @Override
-    protected int provideContentViewId() {
-        return R.layout.activity_choice_city;
-    }
-
-    @Override
     public boolean canBack() {
         return true;
     }
@@ -84,6 +79,11 @@ public class ChoiceCityActivity extends ToolbarActivity {
         if (isChecked && SharedPreferenceUtil.getInstance().getBoolean("Tips", true)) {
             showTips();
         }
+    }
+
+    @Override
+    protected int layoutId() {
+        return R.layout.activity_choice_city;
     }
 
     private void initView() {

@@ -7,12 +7,6 @@ import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.ToolbarActivity;
 
 public class SettingActivity extends ToolbarActivity {
-
-    @Override
-    protected int provideContentViewId() {
-        return R.layout.activity_setting;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,13 +15,13 @@ public class SettingActivity extends ToolbarActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected int layoutId() {
+        return R.layout.activity_setting;
     }
 
     @Override
-    protected void beforeSetContent() {
-        super.beforeSetContent();
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override

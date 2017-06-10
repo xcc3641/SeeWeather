@@ -1,11 +1,23 @@
 package com.xiecc.seeWeather.base;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import butterknife.ButterKnife;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
-public class BaseActivity extends RxAppCompatActivity {
+public abstract class BaseActivity extends RxAppCompatActivity {
     private static String TAG = BaseActivity.class.getSimpleName();
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(layoutId());
+        ButterKnife.bind(this);
+    }
+
+    protected abstract int layoutId();
 
     @Override
     protected void onStop() {
