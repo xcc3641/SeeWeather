@@ -18,7 +18,6 @@ import com.xiecc.seeWeather.R;
  */
 public abstract class ToolbarActivity extends BaseActivity {
 
-
     public void onToolbarClick() {
     }
 
@@ -74,5 +73,12 @@ public abstract class ToolbarActivity extends BaseActivity {
             .setInterpolator(new DecelerateInterpolator(2))
             .start();
         mIsHidden = !mIsHidden;
+    }
+
+    protected void safeSetTitle(String title) {
+        ActionBar appBarLayout = getSupportActionBar();
+        if (appBarLayout != null) {
+            appBarLayout.setTitle(title);
+        }
     }
 }

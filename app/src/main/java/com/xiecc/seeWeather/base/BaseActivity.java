@@ -52,4 +52,5 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         activity.getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
         activity.recreate();
     }
+
 }

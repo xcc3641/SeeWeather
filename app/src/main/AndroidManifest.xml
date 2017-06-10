@@ -66,6 +66,9 @@
         <activity
             android:name=".modules.about.ui.AboutActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".modules.main.ui.DetailCityActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name="com.hugo.watcher.WatcherService"/>
     </application>

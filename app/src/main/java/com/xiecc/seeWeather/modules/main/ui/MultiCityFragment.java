@@ -92,18 +92,29 @@ public class MultiCityFragment extends BaseFragment {
         mAdapter = new MultiCityAdapter(mWeathers);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnMultiCityLongClick(city -> new AlertDialog.Builder(getActivity()).setMessage("是否删除该城市?")
-            .setPositiveButton("删除", (dialog, which) -> {
-                OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
-                multiLoad();
-                Snackbar.make(getView(), String.format(Locale.CHINA, "已经将%s删掉了 Ծ‸ Ծ", city), Snackbar.LENGTH_LONG)
-                    .setAction("撤销",
-                        v -> {
-                            OrmLite.getInstance().save(new CityORM(city));
-                            multiLoad();
-                        }).show();
-            })
-            .show());
+        mAdapter.setMultiCityClick(new MultiCityAdapter.onMultiCityClick() {
+            @Override
+            public void longClick(String city) {
+                new AlertDialog.Builder(getActivity())
+                    .setMessage("是否删除该城市?")
+                    .setPositiveButton("删除", (dialog, which) -> {
+                        OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
+                        multiLoad();
+                        Snackbar.make(getView(), String.format(Locale.CHINA, "已经将%s删掉了 Ծ‸ Ծ", city), Snackbar.LENGTH_LONG)
+                            .setAction("撤销",
+                                v -> {
+                                    OrmLite.getInstance().save(new CityORM(city));
+                                    multiLoad();
+                                }).show();
+                    })
+                    .show();
+            }
+
+            @Override
+            public void click(Weather weather) {
+                DetailCityActivity.launch(getActivity(), weather);
+            }
+        });
 
         if (mRefreshLayout != null) {
             mRefreshLayout.setColorSchemeResources(

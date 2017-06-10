@@ -10,6 +10,6 @@
     card_view:cardCornerRadius="2dp"
     card_view:cardElevation="1dp">
 
-    <include layout="@layout/weather_dialog"/>
+    <include layout="@layout/dialog_weather"/>
 
 </android.support.v7.widget.CardView>

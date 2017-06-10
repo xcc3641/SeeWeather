@@ -25,10 +25,10 @@ import java.util.List;
 public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.MultiCityViewHolder> {
     private Context mContext;
     private List<Weather> mWeatherList;
-    private onMultiCityLongClick onMultiCityLongClick = null;
+    private onMultiCityClick mMultiCityClick;
 
-    public void setOnMultiCityLongClick(onMultiCityLongClick onMultiCityLongClick) {
-        this.onMultiCityLongClick = onMultiCityLongClick;
+    public void setMultiCityClick(onMultiCityClick multiCityClick) {
+        this.mMultiCityClick = multiCityClick;
     }
 
     public MultiCityAdapter(List<Weather> weatherList) {
@@ -46,9 +46,10 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
 
         holder.bind(mWeatherList.get(position));
         holder.itemView.setOnLongClickListener(v -> {
-            onMultiCityLongClick.longClick(mWeatherList.get(holder.getAdapterPosition()).basic.city);
+            mMultiCityClick.longClick(mWeatherList.get(holder.getAdapterPosition()).basic.city);
             return true;
         });
+        holder.itemView.setOnClickListener(v -> mMultiCityClick.click(mWeatherList.get(holder.getAdapterPosition())));
     }
 
     @Override
@@ -101,7 +102,9 @@ public class MultiCityAdapter extends RecyclerView.Adapter<MultiCityAdapter.Mult
         }
     }
 
-    public interface onMultiCityLongClick {
+    public interface onMultiCityClick {
         void longClick(String city);
+
+        void click(Weather weather);
     }
 }

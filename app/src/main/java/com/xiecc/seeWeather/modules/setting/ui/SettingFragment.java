@@ -108,7 +108,7 @@ public class SettingFragment extends PreferenceFragment
 
     private void showIconDialog() {
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogLayout = inflater.inflate(R.layout.icon_dialog, (ViewGroup) getActivity().findViewById(R.id.dialog_root));
+        View dialogLayout = inflater.inflate(R.layout.dialog_icon, (ViewGroup) getActivity().findViewById(R.id.dialog_root));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(dialogLayout);
         final AlertDialog alertDialog = builder.create();
 
@@ -167,7 +167,7 @@ public class SettingFragment extends PreferenceFragment
     private void showUpdateDialog() {
         //将 SeekBar 放入 Dialog 的方案 http://stackoverflow.com/questions/7184104/how-do-i-put-a-seek-bar-in-an-alert-dialog
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogLayout = inflater.inflate(R.layout.update_dialog, (ViewGroup) getActivity().findViewById(
+        View dialogLayout = inflater.inflate(R.layout.dialog_update, (ViewGroup) getActivity().findViewById(
             R.id.dialog_root));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
             .setView(dialogLayout);
