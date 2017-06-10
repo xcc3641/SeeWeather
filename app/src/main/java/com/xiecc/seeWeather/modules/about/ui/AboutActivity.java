@@ -64,7 +64,7 @@ public class AboutActivity extends BaseActivity {
                 goToHtml(getString(R.string.app_html));
                 break;
             case R.id.bt_blog:
-                goToHtml("http://imxie.cc");
+                goToHtml("http://imxie.itscoder.com");
                 break;
             case R.id.bt_pay:
                 Util.copyToClipboard(getString(R.string.alipay), this);
