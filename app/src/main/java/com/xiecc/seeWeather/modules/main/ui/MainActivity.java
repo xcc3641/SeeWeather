@@ -85,21 +85,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mAdapter.addTab(mMainFragment, "主页面");
         mAdapter.addTab(mMultiCityFragment, "多城市");
         mViewPager.setAdapter(mAdapter);
-        FabChangeRunnable fabChangeRunnable = new FabChangeRunnable();
+        FabVisibilityChangedListener fabVisibilityChangedListener = new FabVisibilityChangedListener();
         mTabLayout.setupWithViewPager(mViewPager, false);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 if (mFab.isShown()) {
-                    mFab.removeCallbacks(fabChangeRunnable);
-                    fabChangeRunnable.position = position;
-                    mFab.post(fabChangeRunnable);
+                    fabVisibilityChangedListener.position = position;
+                    mFab.hide(fabVisibilityChangedListener);
                 } else {
                     changeFabState(position);
                     mFab.show();
                 }
             }
         });
+    }
+
+    private class FabVisibilityChangedListener extends FloatingActionButton.OnVisibilityChangedListener {
+
+        private int position;
+
+        @Override
+        public void onHidden(FloatingActionButton fab) {
+            changeFabState(position);
+            fab.show();
+        }
     }
 
     /**
@@ -206,22 +216,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 finish();
             }
-        }
-    }
-
-    private class FabChangeRunnable implements Runnable {
-
-        private int position;
-
-        @Override
-        public void run() {
-            mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-                @Override
-                public void onHidden(FloatingActionButton fab) {
-                    changeFabState(position);
-                    fab.show();
-                }
-            });
         }
     }
 }
