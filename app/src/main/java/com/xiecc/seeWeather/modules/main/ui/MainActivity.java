@@ -15,8 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.xiecc.seeWeather.R;
 import com.xiecc.seeWeather.base.BaseActivity;
 import com.xiecc.seeWeather.common.C;
@@ -30,6 +29,9 @@ import com.xiecc.seeWeather.modules.city.ui.ChoiceCityActivity;
 import com.xiecc.seeWeather.modules.main.adapter.HomePagerAdapter;
 import com.xiecc.seeWeather.modules.service.AutoUpdateService;
 import com.xiecc.seeWeather.modules.setting.ui.SettingActivity;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -83,33 +85,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mAdapter.addTab(mMainFragment, "主页面");
         mAdapter.addTab(mMultiCityFragment, "多城市");
         mViewPager.setAdapter(mAdapter);
+        FabChangeRunnable fabChangeRunnable = new FabChangeRunnable();
         mTabLayout.setupWithViewPager(mViewPager, false);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                mFab.post(() -> mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-                    @Override
-                    public void onHidden(FloatingActionButton fab) {
-                        if (position == 1) {
-                            mFab.setImageResource(R.drawable.ic_add_24dp);
-                            mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
-                            mFab.setOnClickListener(v -> {
-                                Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                                intent.putExtra(C.MULTI_CHECK, true);
-                                CircularAnimUtil.startActivity(MainActivity.this, intent, mFab,
-                                    R.color.colorPrimary);
-                            });
-                        } else {
-                            mFab.setImageResource(R.drawable.ic_favorite);
-                            mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
-                            mFab.setOnClickListener(v -> showShareDialog());
-                        }
-                        fab.show();
-                    }
-                }));
-                if (!mFab.isShown()) {
+                if (mFab.isShown()) {
+                    mFab.removeCallbacks(fabChangeRunnable);
+                    fabChangeRunnable.position = position;
+                    mFab.post(fabChangeRunnable);
+                } else {
+                    changeFabState(position);
                     mFab.show();
                 }
             }
@@ -190,6 +176,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return false;
     }
 
+    private void changeFabState(int position) {
+        if (position == 1) {
+            mFab.setImageResource(R.drawable.ic_add_24dp);
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
+            mFab.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
+                intent.putExtra(C.MULTI_CHECK, true);
+                CircularAnimUtil.startActivity(MainActivity.this, intent, mFab, R.color.colorPrimary);
+            });
+        } else {
+            mFab.setImageResource(R.drawable.ic_favorite);
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+            mFab.setOnClickListener(v -> showShareDialog());
+        }
+    }
+
     private void showShareDialog() {
         // wait to do
     }
@@ -204,6 +206,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 finish();
             }
+        }
+    }
+
+    private class FabChangeRunnable implements Runnable {
+
+        private int position;
+
+        @Override
+        public void run() {
+            mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+                @Override
+                public void onHidden(FloatingActionButton fab) {
+                    changeFabState(position);
+                    fab.show();
+                }
+            });
         }
     }
 }
