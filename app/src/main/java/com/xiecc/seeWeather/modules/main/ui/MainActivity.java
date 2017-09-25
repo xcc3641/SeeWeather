@@ -83,37 +83,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mAdapter.addTab(mMainFragment, "主页面");
         mAdapter.addTab(mMultiCityFragment, "多城市");
         mViewPager.setAdapter(mAdapter);
+        FabVisibilityChangedListener fabVisibilityChangedListener = new FabVisibilityChangedListener();
         mTabLayout.setupWithViewPager(mViewPager, false);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                mFab.post(() -> mFab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-                    @Override
-                    public void onHidden(FloatingActionButton fab) {
-                        if (position == 1) {
-                            mFab.setImageResource(R.drawable.ic_add_24dp);
-                            mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
-                            mFab.setOnClickListener(v -> {
-                                Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
-                                intent.putExtra(C.MULTI_CHECK, true);
-                                CircularAnimUtil.startActivity(MainActivity.this, intent, mFab,
-                                    R.color.colorPrimary);
-                            });
-                        } else {
-                            mFab.setImageResource(R.drawable.ic_favorite);
-                            mFab.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
-                            mFab.setOnClickListener(v -> showShareDialog());
-                        }
-                        fab.show();
-                    }
-                }));
-                if (!mFab.isShown()) {
+                if (mFab.isShown()) {
+                    fabVisibilityChangedListener.position = position;
+                    mFab.hide(fabVisibilityChangedListener);
+                } else {
+                    changeFabState(position);
                     mFab.show();
                 }
             }
         });
+    }
+
+    private class FabVisibilityChangedListener extends FloatingActionButton.OnVisibilityChangedListener {
+
+        private int position;
+
+        @Override
+        public void onHidden(FloatingActionButton fab) {
+            changeFabState(position);
+            fab.show();
+        }
     }
 
     /**
@@ -188,6 +182,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             })
             .subscribe();
         return false;
+    }
+
+    private void changeFabState(int position) {
+        if (position == 1) {
+            mFab.setImageResource(R.drawable.ic_add_24dp);
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)));
+            mFab.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, ChoiceCityActivity.class);
+                intent.putExtra(C.MULTI_CHECK, true);
+                CircularAnimUtil.startActivity(MainActivity.this, intent, mFab, R.color.colorPrimary);
+            });
+        } else {
+            mFab.setImageResource(R.drawable.ic_favorite);
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+            mFab.setOnClickListener(v -> showShareDialog());
+        }
     }
 
     private void showShareDialog() {
