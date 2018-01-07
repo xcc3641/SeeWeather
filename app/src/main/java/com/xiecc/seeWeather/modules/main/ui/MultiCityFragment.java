@@ -100,12 +100,13 @@ public class MultiCityFragment extends BaseFragment {
                     .setPositiveButton("删除", (dialog, which) -> {
                         OrmLite.getInstance().delete(new WhereBuilder(CityORM.class).where("name=?", city));
                         multiLoad();
-                        Snackbar.make(getView(), String.format(Locale.CHINA, "已经将%s删掉了 Ծ‸ Ծ", city), Snackbar.LENGTH_LONG)
-                            .setAction("撤销",
-                                v -> {
-                                    OrmLite.getInstance().save(new CityORM(city));
-                                    multiLoad();
-                                }).show();
+                        Snackbar snackbar = Snackbar.make(getView(), String.format(Locale.CHINA, "已经将%s删掉了 Ծ‸ Ծ", city), Snackbar.LENGTH_LONG)
+                                    .setAction("撤销", v -> {
+                                        OrmLite.getInstance().save(new CityORM(city));
+                                        multiLoad();
+                                    });
+                        snackbar.getView().setBackgroundResource(R.color.colorPrimary);
+                        snackbar.show();
                     })
                     .show();
             }
