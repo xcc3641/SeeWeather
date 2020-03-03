@@ -99,14 +99,6 @@ Fir.im: http://fir.im/seeWeather
 感谢优秀的设计师提供素材：
 - 多城市卡片 by [YujunZhu](http://yujunzhu.zcool.com.cn/)
 
-### 关于作者
-
-谢三弟
-
-- [简书](http://www.jianshu.com/users/3372b4a3b9e5/latest_articles)
-- [个人博客](http://imxie.itscoder.com)
-- [知乎](https://www.zhihu.com/people/xcc3641.github.io)
-
 ### License
 
     Copyright 2017 HugoXie Inc.
